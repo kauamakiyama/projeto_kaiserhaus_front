@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import '../styles/Header.css';
 
 const Header: React.FC = () => {
-  const [activeLink, setActiveLink] = useState('sobre');
+  const [activeLink, setActiveLink] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Atualiza o link ativo baseado na rota atual
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/') {
+      setActiveLink(''); // Home não tem linha ativa
+    } else if (path === '/cardapio') {
+      setActiveLink('cardapio');
+    } else if (path === '/login') {
+      setActiveLink('login');
+    } else {
+      setActiveLink(''); // Nenhum link ativo para outras rotas
+    }
+  }, [location]);
 
   const handleLinkClick = (linkName: string) => {
     setActiveLink(linkName);
@@ -15,11 +30,13 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-container">
         <div className="logo-container">
-          <img 
-            src="/src/assets/header/image 91.png" 
-            alt="KaizerHaus Logo" 
-            className="logo"
-          />
+          <Link to="/" onClick={() => handleLinkClick('sobre')}>
+            <img 
+              src="/src/assets/header/image 91.png" 
+              alt="KaizerHaus Logo" 
+              className="logo"
+            />
+          </Link>
         </div>
         
         <nav className={`navigation ${isMobileMenuOpen ? 'active' : ''}`}>

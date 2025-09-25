@@ -16,8 +16,17 @@
 }
 
 .logo-container {
-    position: relative;
-  }
+  position: relative;
+}
+
+.logo-container a {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.logo-container a:hover {
+  transform: scale(1.05);
+}
   
   .logo {
     height: 140px; 
@@ -51,6 +60,7 @@
   text-decoration: underline;
   text-underline-offset: 8px;
   text-decoration-thickness: 2px;
+  transition: text-decoration 0.3s ease;
 }
 
 .mobile-menu-toggle {
