@@ -87,15 +87,19 @@
   
   .navigation {
     display: none;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    background-color: #472304;
+    bottom: 0;
+    background-color: rgba(71, 35, 4, 0.95);
+    backdrop-filter: blur(10px);
     flex-direction: column;
-    padding: 1rem;
-    gap: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    z-index: 9999;
+    animation: fadeInOverlay 0.3s ease-out;
   }
   
   .navigation.active {
@@ -104,17 +108,29 @@
   
   .mobile-menu-toggle {
     display: flex;
+    z-index: 10000;
   }
   
   .nav-link {
-    font-size: 1rem;
-    padding: 0.75rem 0;
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
     text-align: center;
-    border-bottom: 1px solid rgba(225, 193, 110, 0.2);
+    border: 2px solid #E1C16E;
+    border-radius: 8px;
+    background-color: rgba(225, 193, 110, 0.1);
+    transition: all 0.3s ease;
+    min-width: 200px;
   }
   
-  .nav-link:last-child {
-    border-bottom: none;
+  .nav-link:hover {
+    background-color: #E1C16E;
+    color: #472304;
+    transform: scale(1.05);
+  }
+  
+  .nav-link.active {
+    background-color: #E1C16E;
+    color: #472304;
   }
 }
 
@@ -147,4 +163,16 @@
 
 .mobile-menu-toggle.active span:nth-child(3) {
   transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Animação do overlay */
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+  }
 }

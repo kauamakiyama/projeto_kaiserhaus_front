@@ -1,20 +1,31 @@
 
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import Login from './pages/Login'
 import './App.css'
 
 function App() {
   return (
-    <div className="app">
-      <Header />
-      <main className="main-content">
-        <div className="hero-section">
-          <h1>Bem-vindo à KaizerHaus</h1>
-          <p>O melhor da culinária alemã em São Paulo</p>
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <div className="app">
+        <Header />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={
+              <>
+                <div className="hero-section">
+                  <h1>Bem-vindo à KaizerHaus</h1>
+                  <p>O melhor da culinária alemã em São Paulo</p>
+                </div>
+                <Footer />
+              </>
+            } />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   )
 }
 
