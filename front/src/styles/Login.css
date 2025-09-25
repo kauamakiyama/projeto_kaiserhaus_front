@@ -1,0 +1,261 @@
+.login-page {
+  min-height: calc(100vh - 300px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0.5rem;
+  padding-top: 4rem;
+  background-color: #F5F5DC;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #472304;
+  margin: 0 0 0.5rem 0;
+  font-family: serif;
+}
+
+.login-divider { display: none; }
+.login-divider-img {
+  display: block;
+  width: 160px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.login-form-container {
+  width: 100%;
+  background-color: #F5F5DC;
+  border: 2px solid #472304;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.login-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(225, 193, 110, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(71, 35, 4, 0.05) 0%, transparent 50%);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.login-form {
+  position: relative;
+  z-index: 1;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #472304;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #E1C16E;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  color: #472304;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #472304;
+  box-shadow: 0 0 0 3px rgba(71, 35, 4, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #472304;
+  color: #E1C16E;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.login-button:hover {
+  background-color: #5A2D04;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(71, 35, 4, 0.3);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  background-color: #FEE2E2;
+  color: #DC2626;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #FECACA;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.success-message {
+  background-color: #D1FAE5;
+  color: #059669;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #A7F3D0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.login-links {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.login-link-text {
+  margin: 0.5rem 0;
+  color: #472304;
+  font-size: 0.95rem;
+}
+
+.login-link {
+  color: #DC2626;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color 0.3s ease;
+}
+
+.login-link:hover {
+  color: #B91C1C;
+  text-decoration-thickness: 2px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .login-page {
+    padding: 0.5rem;
+    padding-top: 3rem;
+    min-height: calc(100vh - 250px);
+  }
+  
+  .login-title {
+    font-size: 2rem;
+  }
+  
+  .login-form-container {
+    padding: 1.5rem;
+  }
+  
+  .form-input {
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .login-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 0.25rem;
+    padding-top: 2rem;
+    min-height: calc(100vh - 150px);
+  }
+  
+  .login-title {
+    font-size: 1.75rem;
+  }
+  
+  .login-form-container {
+    padding: 1.25rem;
+    border-radius: 8px;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-input {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .login-button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9rem;
+  }
+  
+  .login-link-text {
+    font-size: 0.85rem;
+  }
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.login-form-container {
+  animation: fadeInUp 0.8s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
