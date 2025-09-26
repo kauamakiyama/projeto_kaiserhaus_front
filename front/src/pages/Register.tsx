@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Register.css';
@@ -47,7 +48,6 @@ const Register: React.FC = () => {
     return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
   };
 
-  // Função para formatar telefone ((00) 00000-0000)
   const formatPhone = (value: string) => {
     const numbers = value.replace(/\D/g, '');
     if (numbers.length <= 2) return numbers;
@@ -62,30 +62,35 @@ const Register: React.FC = () => {
     setSuccess('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8001/auth/register', {
+      // Mapear os campos do formulário para os campos esperados pelo backend
+      const requestData = {
+        nome: formData.nomeCompleto,
+        email: formData.email,
+        data_nascimento: formData.dataNascimento,
+        telefone: formData.telefone.replace(/\D/g, ''), // Remover formatação do telefone
+        endereco: formData.endereco,
+        complemento: formData.complemento,
+        senha: formData.senha
+      };
+      
+      const response = await fetch('http://127.0.0.1:8001/usuarios', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestData),
       });
 
-      const data = await response.json();
+      if (!response.ok) {
+        const responseText = await response.text();
+        let data;
+        
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          data = { message: responseText || `Erro ${response.status}: ${response.statusText}` };
+        }
 
-      if (response.ok) {
-        setSuccess('Cadastro realizado com sucesso!');
-        // Limpar o formulário após sucesso
-        setFormData({
-          nomeCompleto: '',
-          cpf: '',
-          email: '',
-          senha: '',
-          telefone: '',
-          endereco: '',
-          complemento: '',
-          dataNascimento: ''
-        });
-      } else {
         let errorMessage = `Erro ${response.status}: ${response.statusText}`;
         
         if (data?.detail) {
@@ -101,9 +106,25 @@ const Register: React.FC = () => {
         }
         
         setError(errorMessage);
+        return;
       }
+
+      setSuccess('Cadastro realizado com sucesso!');
+      
+      // Limpar o formulário após sucesso
+      setFormData({
+        nomeCompleto: '',
+        cpf: '',
+        email: '',
+        senha: '',
+        telefone: '',
+        endereco: '',
+        complemento: '',
+        dataNascimento: ''
+      });
+      
     } catch (err) {
-      setError('Erro de conexão com a API');
+      setError('Erro de conexão com a API. Verifique se o backend está rodando.');
     } finally {
       setIsLoading(false);
     }
@@ -274,7 +295,7 @@ const Register: React.FC = () => {
             
             <div className="register-links">
               <p className="register-link-text">
-                Já tem uma conta? <a href="/login" className="register-link">Faça login aqui</a>
+                Já tem uma conta? <Link to="/login" className="register-link">Faça login aqui</Link>
               </p>
             </div>
           </div>
