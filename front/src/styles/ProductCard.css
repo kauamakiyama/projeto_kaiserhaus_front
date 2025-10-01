@@ -1,0 +1,117 @@
+.product-card {
+  display: grid;
+  grid-template-columns: 160px 1fr 56px;
+  align-items: stretch;
+  column-gap: 10px;
+  background: #F5F5DC;
+  border: 1px solid rgba(71, 35, 4, 0.15);
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  min-height: 180px;
+}
+
+.product-image {
+  height: 100%;
+  overflow: hidden;
+}
+
+.product-image img {
+  display: block;
+  width: 115%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  margin-left: -2.5%;
+  transition: opacity 0.2s ease;
+}
+
+.product-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+}
+
+.product-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.product-name {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #472304;
+  font-family: serif;
+}
+
+.product-price {
+  color: #472304;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-top: 45px;
+  display: inline-block;
+}
+
+.product-description {
+  margin: 0;
+  color: #472304;
+  font-size: 0.95rem;
+}
+
+.product-add {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid rgba(71, 35, 4, 0.15);
+  background: #E1C16E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  align-self: end;
+  justify-self: end;
+  margin: 0 14px 14px 0;
+  padding: 0;
+}
+
+.product-add-icon {
+  width: 26px;
+  height: 26px;
+  display: block;
+  fill: #472304;
+}
+
+.product-add:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(71, 35, 4, 0.25);
+}
+
+@media (max-width: 480px) {
+  .product-card {
+     grid-template-columns: 130px 1fr 44px;
+     column-gap: 10px;
+     min-height: 130px;
+  }
+
+  .product-name { font-size: 1.35rem; }
+
+  .product-add {
+    width: 44px;
+    height: 44px;
+  }
+
+  .product-add-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .product-content { padding: 8px; }
+
+  .product-price { margin-top: 10px; }
+}
