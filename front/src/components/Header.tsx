@@ -41,7 +41,7 @@ const Header: React.FC = () => {
         
         <nav className={`navigation ${isMobileMenuOpen ? 'active' : ''}`}>
           <Link 
-            to="/" 
+            to="/sobre" 
             className={`nav-link ${activeLink === 'sobre' ? 'active' : ''}`}
             onClick={() => handleLinkClick('sobre')}
           >
