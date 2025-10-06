@@ -4,7 +4,7 @@ import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
 /** ===== Tipos e dados de exemplo ===== */
-type CategoryKey = "entradas" | "paes" | "pratos" | "doces" | "bebidas";
+type CategoryKey = "entradas" | "acompanhamentos" | "pratos" | "Sobremesas" | "bebidas";
 
 type Product = {
   id: string;
@@ -23,20 +23,20 @@ const CATEGORIES: { key: CategoryKey; label: string; image: string }[] = [
       "https://images.unsplash.com/photo-1526318472351-c75fcf070305?q=80&w=400&auto=format&fit=crop",
   },
   {
-    key: "paes",
-    label: "Pães e Massas",
+    key: "acompanhamentos",
+    label: "Acompanhamentos",
     image:
       "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop",
   },
   {
     key: "pratos",
-    label: "Pratos quentes",
+    label: "Pratos",
     image:
       "https://images.unsplash.com/photo-1460306855393-0410f61241c7?q=80&w=400&auto=format&fit=crop",
   },
   {
-    key: "doces",
-    label: "Doces",
+    key: "Sobremesas",
+    label: "Sobremesas",
     image:
       "https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?q=80&w=400&auto=format&fit=crop",
   },
@@ -83,7 +83,7 @@ const PRODUCTS: Product[] = [
     price: 11.99,
     imageUrl:
       "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600&auto=format&fit=crop",
-    category: "paes",
+    category: "acompanhamentos",
   },
   {
     id: "bratwurst",
@@ -119,7 +119,7 @@ const PRODUCTS: Product[] = [
     price: 18.9,
     imageUrl:
       "https://images.unsplash.com/photo-1604908177074-005f3b5b7b66?q=80&w=600&auto=format&fit=crop",
-    category: "doces",
+    category: "Sobremesas",
   },
   {
     id: "cafe",
@@ -151,9 +151,9 @@ const CardapioPage: React.FC = () => {
   // refs das seções pra rolar suave quando clicar no chip
   const sectionRefs = useRef<Record<CategoryKey, HTMLElement | null>>({
     entradas: null,
-    paes: null,
+    acompanhamentos: null,
     pratos: null,
-    doces: null,
+    Sobremesas: null,
     bebidas: null,
   });
 
@@ -165,9 +165,9 @@ const CardapioPage: React.FC = () => {
   const byCategory: Record<CategoryKey, Product[]> = useMemo(() => {
     return {
       entradas: PRODUCTS.filter((p) => p.category === "entradas"),
-      paes: PRODUCTS.filter((p) => p.category === "paes"),
+      acompanhamentos: PRODUCTS.filter((p) => p.category === "acompanhamentos"),
       pratos: PRODUCTS.filter((p) => p.category === "pratos"),
-      doces: PRODUCTS.filter((p) => p.category === "doces"),
+      Sobremesas: PRODUCTS.filter((p) => p.category === "Sobremesas"),
       bebidas: PRODUCTS.filter((p) => p.category === "bebidas"),
     };
   }, []);
@@ -279,16 +279,16 @@ const CardapioPage: React.FC = () => {
       </section>
 
       <section
-        ref={(el) => { sectionRefs.current.paes = el; }}
-        id="paes"
+        ref={(el) => { sectionRefs.current.acompanhamentos = el; }}
+        id="acompanhamentos"
         className="menu-section"
-        aria-labelledby="paes-title"
+        aria-labelledby="acompanhamentos-title"
       >
-        <h2 id="paes-title" className="section-title">
-          Pães e Massas
+        <h2 id="acompanhamentos-title" className="section-title">
+          Acompanhamentos
         </h2>
         <div className="product-list product-list--rows">
-          {byCategory.paes.map((p) => (
+          {byCategory.acompanhamentos.map((p) => (
             <ProductCard
               key={p.id}
               name={p.name}
@@ -310,7 +310,7 @@ const CardapioPage: React.FC = () => {
         aria-labelledby="pratos-title"
       >
         <h2 id="pratos-title" className="section-title">
-          Pratos quentes
+          Pratos
         </h2>
         <div className="product-list product-list--rows">
           {byCategory.pratos.map((p) => (
@@ -329,16 +329,16 @@ const CardapioPage: React.FC = () => {
       </section>
 
       <section
-        ref={(el) => { sectionRefs.current.doces = el; }}
-        id="doces"
+        ref={(el) => { sectionRefs.current.Sobremesas = el; }}
+        id="Sobremesas"
         className="menu-section"
-        aria-labelledby="doces-title"
+        aria-labelledby="Sobremesas-title"
       >
-        <h2 id="doces-title" className="section-title">
-          Doces
+        <h2 id="Sobremesas-title" className="section-title">
+          Sobremesas
         </h2>
         <div className="product-list product-list--rows">
-          {byCategory.doces.map((p) => (
+          {byCategory.Sobremesas.map((p) => (
             <ProductCard
               key={p.id}
               name={p.name}
