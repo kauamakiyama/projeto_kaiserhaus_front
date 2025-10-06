@@ -1,5 +1,5 @@
-import React from 'react';
-import '../styles/ProductCard.css';
+import React from "react";
+import "../styles/ProductCard.css";
 
 export type ProductCardProps = {
   name: string;
@@ -7,10 +7,12 @@ export type ProductCardProps = {
   price: number;
   imageUrl: string;
   onAddToBag?: () => void;
+  /** "card" (padrão) ou "row" para lista em linha (mock do Figma) */
+  variant?: "card" | "row";
 };
 
 const formatBRL = (value: number) =>
-  value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   name,
@@ -18,12 +20,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   price,
   imageUrl,
   onAddToBag,
+  variant = "card",
 }) => {
   return (
-    <div className="product-card">
+    <div className={`product-card ${variant === "row" ? "is-row" : ""}`}>
       <div className="product-image">
         <img src={imageUrl} alt={name} />
       </div>
+
       <div className="product-content">
         <div className="product-header">
           <h3 className="product-name">{name}</h3>
@@ -31,7 +35,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <p className="product-description">{description}</p>
         <span className="product-price">{formatBRL(price)}</span>
       </div>
-      <button className="product-add" aria-label="Adicionar à sacola" onClick={onAddToBag} type="button">
+
+      <button
+        className="product-add"
+        aria-label={`Adicionar ${name} à sacola`}
+        onClick={onAddToBag}
+        type="button"
+      >
         <svg
           className="product-add-icon"
           xmlns="http://www.w3.org/2000/svg"
