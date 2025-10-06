@@ -1,20 +1,51 @@
+/* --- Alturas padrão do layout --- */
+:root{
+  /* ajuste esses valores se o header/footer mudar */
+  --kh-header-h: 96px;   /* altura do header fixo */
+  --kh-footer-h: 260px;  /* altura aproximada do footer */
+}
+
+/* Página de Login */
 .login-page {
-  min-height: calc(100vh - 300px);
+  /* antes: min-height: calc(100vh - 300px);  padding-top: 4rem; */
+  min-height: calc(100vh - var(--kh-footer-h));
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 0.5rem;
-  padding-top: 4rem;
+  padding: 5rem;
+  /* reserva espaço para o header fixo + um respiro */
+  padding-top: calc(var(--kh-header-h) + 1.5rem);
   background-color: #F5F5DC;
 }
 
+/* Caso role até âncoras dentro do login, evita o “corte” pelo header */
 .login-container {
+  margin-top: 100px;
   width: 100%;
   max-width: 500px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  scroll-margin-top: var(--kh-header-h);
 }
+
+/* Responsividade: se o header for menor no mobile, reduza a folga */
+@media (max-width: 768px) {
+  :root{ --kh-header-h: 80px; }
+  .login-page {
+    padding-top: calc(var(--kh-header-h) + 1rem);
+    min-height: calc(100vh - var(--kh-footer-h));
+  }
+}
+
+@media (max-width: 480px) {
+  :root{ --kh-header-h: 72px; }
+  .login-page {
+    padding-top: calc(var(--kh-header-h) + 0.75rem);
+    min-height: calc(100vh - var(--kh-footer-h));
+  }
+}
+
 
 .login-header {
   text-align: center;

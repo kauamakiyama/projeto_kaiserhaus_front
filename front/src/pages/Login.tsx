@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Footer from '../components/Footer';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Login.css';
 
@@ -128,7 +127,6 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };
