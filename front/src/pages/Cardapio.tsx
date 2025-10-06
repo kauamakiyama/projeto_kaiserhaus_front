@@ -204,6 +204,7 @@ const CardapioPage: React.FC = () => {
         {CATEGORIES.map((c) => (
           <button
             key={c.key}
+            data-key={c.key}
             className={`category-chip ${
               selected === c.key ? "is-active" : ""
             }`}
