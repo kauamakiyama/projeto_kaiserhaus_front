@@ -175,7 +175,7 @@
   bottom: 0;
   width: 68px;
   height: 3px;
-  background: #7a1717; /* um vinhozinho como no mock */
+  background: transparent;
   border-radius: 6px;
 }
 
@@ -226,10 +226,6 @@
   gap: 8px;
 }
 .best-price {
-  background: var(--kh-cream-50);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 4px 10px;
-  border-radius: 999px;
   font-weight: 700;
   color: var(--kh-brown-900);
 }
@@ -243,8 +239,9 @@
   color: #3a2a09;
   font-size: 22px;
   line-height: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -254,10 +251,23 @@
 }
 .product-list {
   display: grid;
-  gap: 12px;
+  gap: 24px;
 }
 .product-list--rows {
   grid-template-columns: 1fr;
+}
+
+.product-list--grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .product-list--grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
 }
 
 @media (min-width: 900px) {

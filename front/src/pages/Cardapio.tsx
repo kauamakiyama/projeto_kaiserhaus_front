@@ -1,5 +1,6 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import { ProductCard } from "../components/ProductCard";
+import { useCart } from "../contexts/CartContext";
 import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
@@ -42,7 +43,8 @@ const CATEGORIES: { key: CategoryKey; label: string; image: string }[] = [
   },
 ];
 
-const PRODUCTS: Product[] = [
+// Dados de exemplo (serão substituídos pelos dados do banco)
+const EXAMPLE_PRODUCTS: Product[] = [
   {
     id: "sauerkraut",
     name: "Sauerkraut",
@@ -126,12 +128,17 @@ const PRODUCTS: Product[] = [
   },
 ];
 
-const BEST_IDS = ["schnitzel", "brezel", "eisbein"];
+// IDs dos produtos mais pedidos (ajustar conforme seus produtos reais)
+const BEST_IDS = ["68e4296c80c36cc86b34e108", "68e4172649baa35c2c95542b", "68e429c080c36cc86b34e109"];
 
 /** ===== Página ===== */
 const CardapioPage: React.FC = () => {
   const [cartTotal, setCartTotal] = useState(0);
   const [selected, setSelected] = useState<CategoryKey | "todos">("todos");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { addToCart } = useCart();
 
   // refs das seções pra rolar suave quando clicar no chip
   const sectionRefs = useRef<Record<CategoryKey, HTMLElement | null>>({
@@ -141,9 +148,73 @@ const CardapioPage: React.FC = () => {
     bebidas: null,
   });
 
+  // Função para buscar produtos do banco de dados
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await fetch('http://localhost:8001/produtos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Dados recebidos do backend:', data);
+      
+      // Mapear os dados do backend para o formato esperado
+      const mappedProducts = data.map((product: any) => ({
+        id: product.id,
+        name: product.titulo,
+        description: product.descricao,
+        price: product.preco,
+        imageUrl: product.imagem.startsWith('http') 
+          ? product.imagem 
+          : `http://localhost:8001${product.imagem}`, // Usar imagens do backend
+        category: mapCategoryId(product.categoria_id)
+      }));
+      
+      console.log('Produtos mapeados:', mappedProducts);
+      setProducts(mappedProducts);
+    } catch (err) {
+      console.error('Erro ao buscar produtos:', err);
+      setError('Erro ao carregar produtos. Usando dados de exemplo.');
+      setProducts(EXAMPLE_PRODUCTS); // Fallback para dados de exemplo
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função para mapear categoria_id para categoria
+  const mapCategoryId = (categoriaId: string): CategoryKey => {
+    // Mapear os IDs das categorias para as chaves esperadas
+    const categoryMap: Record<string, CategoryKey> = {
+      "68e40bb06dafd5b8a433c1f7": "entradas", // Entradas
+      "68e40cdc6dafd5b8a433c1f9": "pratos",   // Pratos
+      "68e40cfe6dafd5b8a433c1fa": "Sobremesas", // Sobremesas
+      "68e40d366dafd5b8a433c1fbc": "bebidas"  // Bebidas
+    };
+    
+    return categoryMap[categoriaId] || "entradas"; // Fallback para entradas
+  };
+
+  // Carrega produtos quando o componente monta
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   const bestSellers = useMemo(
-    () => PRODUCTS.filter((p) => BEST_IDS.includes(p.id)),
-    []
+    () => products.filter((p) => BEST_IDS.includes(p.id)),
+    [products]
   );
 
   const byCategory: Record<CategoryKey, Product[]> = useMemo(() => {
@@ -153,18 +224,29 @@ const CardapioPage: React.FC = () => {
       Sobremesas: PRODUCTS.filter((p) => p.category === "Sobremesas"),
       bebidas: PRODUCTS.filter((p) => p.category === "bebidas"),
     };
-  }, []);
+  }, [products]);
 
-  const handleAdd = (price: number, name?: string) => {
-    setCartTotal((t) => t + price);
-    if (name) console.log(`Adicionado: ${name}`);
-  };
 
   const goTo = (key: CategoryKey) => {
     setSelected(key);
     const el = sectionRefs.current[key];
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  // Se estiver carregando, mostra loading
+  if (isLoading) {
+    return (
+      <div className="menu-page">
+        <div className="menu-header">
+          <h1 className="menu-title">Cardápio</h1>
+          <img src={douradoImg} alt="" className="menu-divider" />
+        </div>
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#472304' }}>
+          <p>Carregando produtos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="menu-page">
@@ -181,6 +263,19 @@ const CardapioPage: React.FC = () => {
           <span className="bag-text">Ver sacola</span>
         </button>
       </div>
+
+      {error && (
+        <div style={{ 
+          textAlign: 'center', 
+          padding: '1rem', 
+          backgroundColor: '#FEE2E2', 
+          color: '#DC2626',
+          margin: '1rem',
+          borderRadius: '8px'
+        }}>
+          {error}
+        </div>
+      )}
 
       {/* Chips de categorias */}
       <section className="category-strip" aria-label="Categorias">
@@ -223,7 +318,13 @@ const CardapioPage: React.FC = () => {
                   </span>
                   <button
                     className="best-add"
-                    onClick={() => handleAdd(p.price, p.name)}
+                    onClick={() => addToCart({
+                      id: p.id,
+                      name: p.name,
+                      price: p.price,
+                      image: p.imageUrl,
+                      category: p.category,
+                    })}
                     aria-label={`Adicionar ${p.name}`}
                     type="button"
                   >
@@ -246,16 +347,17 @@ const CardapioPage: React.FC = () => {
         <h2 id="entradas-title" className="section-title">
           Entradas
         </h2>
-        <div className="product-list product-list--rows">
+        <div className="product-list product-list--grid">
           {byCategory.entradas.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
-              variant="row"
+              category={p.category}
+              variant="card"
             />
           ))}
         </div>
@@ -271,16 +373,17 @@ const CardapioPage: React.FC = () => {
         <h2 id="pratos-title" className="section-title">
           Pratos
         </h2>
-        <div className="product-list product-list--rows">
+        <div className="product-list product-list--grid">
           {byCategory.pratos.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
-              variant="row"
+              category={p.category}
+              variant="card"
             />
           ))}
         </div>
@@ -296,16 +399,17 @@ const CardapioPage: React.FC = () => {
         <h2 id="Sobremesas-title" className="section-title">
           Sobremesas
         </h2>
-        <div className="product-list product-list--rows">
+        <div className="product-list product-list--grid">
           {byCategory.Sobremesas.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
-              variant="row"
+              category={p.category}
+              variant="card"
             />
           ))}
         </div>
@@ -320,16 +424,17 @@ const CardapioPage: React.FC = () => {
         <h2 id="bebidas-title" className="section-title">
           Bebidas
         </h2>
-        <div className="product-list product-list--rows">
+        <div className="product-list product-list--grid">
           {byCategory.bebidas.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
-              variant="row"
+              category={p.category}
+              variant="card"
             />
           ))}
         </div>

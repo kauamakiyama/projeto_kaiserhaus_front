@@ -17,45 +17,40 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 4rem 2rem;
-  background: #F5F5DC;
-  color: #472304;
+  padding: 8% 4%;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+              url('https://images.unsplash.com/photo-1568600891621-50f697b9c4e3?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
+  color: #E1C16E;
+  min-height: 80%;
 }
 
 .hero-section h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  color: #472304;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin-bottom: 2%;
+  color: #E1C16E;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  font-weight: 700;
 }
 
 .hero-section p {
-  font-size: 1.2rem;
-  max-width: 600px;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  max-width: 60%;
   line-height: 1.6;
+  color: #E1C16E;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 2rem 1rem;
-  }
-  
-  .hero-section h1 {
-    font-size: 2.5rem;
-  }
-  
-  .hero-section p {
-    font-size: 1.1rem;
+    padding: 6% 3%;
+    min-height: 70%;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-section h1 {
-    font-size: 2rem;
-  }
-  
-  .hero-section p {
-    font-size: 1rem;
+  .hero-section {
+    padding: 5% 2%;
+    min-height: 60%;
   }
 }
 
