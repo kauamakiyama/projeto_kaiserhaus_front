@@ -7,6 +7,8 @@ import Home from "./pages/Home";
 import SobreNos from './pages/SobreNos'
 import CardapioPage from './pages/Cardapio'
 import Sacola from './pages/Sacola'
+import Usuario from './pages/Usuario'
+import MeusDados from './pages/MeusDados'
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import './App.css'
@@ -26,6 +28,8 @@ export default function App() {
                 <Route path="/cardapio" element={<CardapioPage />} />
                 <Route path="/sobre" element={<SobreNos />} />
                 <Route path="/sacola" element={<Sacola />} />
+                <Route path="/usuario" element={<Usuario />} />
+                <Route path="/usuario/dados" element={<MeusDados />} />
               </Routes>
             </main>
             <Footer />

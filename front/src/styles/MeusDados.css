@@ -1,0 +1,61 @@
+.dados-page {
+  background: #F5F5DC;
+  min-height: calc(100vh - var(--kh-footer-h, 60px));
+  padding-top: calc(var(--kh-header-h, 96px) + 32px);
+  padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dados-header { text-align: center; margin-bottom: 16px; }
+.dados-title { margin: 0; font-size: clamp(28px, 4vw, 40px); color: #472304; font-weight: 700; font-family: serif; }
+.dados-divider { width: 150px; opacity: .9; }
+
+.dados-card {
+  width: clamp(740px, 82vw, 1000px);
+  min-height: 360px;
+  background: #e3dfcc;
+  border: 2px solid #b7b09a;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  padding: 18px 20px 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+}
+
+.col { display: grid; gap: 10px; }
+.dados-label { font-weight: 700; color: #472304; font-size: 20px; }
+.dados-input {
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #c8c1ac;
+  background: #fff;
+  padding: 0 12px;
+  color: #472304;
+  font-size: 16px;
+}
+.dados-password {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #c8c1ac;
+  background: #fff;
+  color: #472304;
+}
+.eye { opacity: .7; }
+
+@media (max-width: 900px) {
+  .dados-card { grid-template-columns: 1fr; width: 92vw; }
+  .dados-header { margin-bottom: 20px; }
+}
+
+@media (min-width: 1200px) {
+  .dados-header { margin-bottom: 12px; }
+}
+
+
