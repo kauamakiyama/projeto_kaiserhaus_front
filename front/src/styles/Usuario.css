@@ -1,0 +1,96 @@
+.usuario-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px 8px; /* reduz espaço inferior */
+  background-color: #F5F5DC; /* mesmo fundo do login */
+  min-height: auto; /* evita empurrar o footer para baixo demais */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: calc(var(--kh-header-h, 96px) + 32px); /* mesmo espaçamento do login/cadastro */
+}
+
+.usuario-header {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.usuario-title {
+  margin: 0;
+  font-size: clamp(32px, 4.5vw, 44px);
+  color: #4a1f0e;
+  font-weight: 700;
+}
+.usuario-divider { width: 160px; opacity: .9; }
+
+/* Cartão central ampliado */
+.usuario-card {
+  width: clamp(720px, 80vw, 980px);
+  min-height: 460px;
+  margin: 40px auto 12px; /* desce a caixa e reduz espaço inferior */
+  background: #e3dfcc; /* tom claro com leve textura simulada */
+  border: 2px solid #b7b09a;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  padding: 22px 22px 26px;
+  display: grid;
+  grid-template-columns: 1fr 240px; /* coluna para o logoff à direita */
+  column-gap: 18px;
+}
+
+.usuario-actions {
+  display: grid;
+  gap: 22px;
+  align-content: start;
+  padding-top: 4px;
+}
+
+.usuario-btn {
+  height: 52px; /* menor, conforme pedido */
+  border-radius: 10px;
+  border: none;
+  background: #5b2a15;
+  color: #f5f3da;
+  font-weight: 700;
+  font-size: 18px; /* um pouco menor */
+  padding: 0 20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.usuario-btn--link { display: inline-flex; align-items: center; text-decoration: none; }
+.usuario-btn:hover { filter: brightness(1.03); }
+
+.usuario-logoff {
+  display: grid;
+  grid-auto-rows: min-content;
+  justify-items: end;
+}
+.logoff-btn {
+  background: #f5f3da;
+  border: 1px solid #b7b09a;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-weight: 700;
+  color: #3a2a09;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+.logoff-btn:hover { filter: brightness(0.98); }
+
+@media (max-width: 900px) {
+  .usuario-card {
+    width: 100%;
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+    min-height: auto;
+  }
+  .usuario-logoff { justify-items: stretch; }
+  .logoff-btn { justify-self: end; }
+}
+
+

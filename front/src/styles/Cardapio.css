@@ -1,3 +1,61 @@
+.with-drawer { position: relative; }
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 40;
+}
+.cart-overlay.is-open { opacity: 1; pointer-events: auto; }
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(420px, 88vw);
+  background: #fff;
+  box-shadow: -12px 0 30px rgba(0,0,0,0.12);
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  z-index: 41;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.cart-drawer.is-open { transform: translateX(0); }
+.cart-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.drawer-close { border: none; background: transparent; font-size: 22px; cursor: pointer; }
+.cart-drawer-body { padding: 12px 16px; overflow: auto; }
+/* Itens no drawer como cards */
+.side-cart-items { display: grid; gap: 10px; }
+.side-cart-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: var(--kh-shadow-soft);
+}
+.side-cart-thumb { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; }
+.side-cart-info { display: grid; gap: 6px; }
+.side-cart-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.side-cart-name { font-weight: 600; color: var(--kh-brown-900); }
+.side-cart-remove { border: none; background: transparent; font-size: 18px; cursor: pointer; color: #8a4b2a; }
+.side-cart-qty { display: inline-flex; align-items: center; gap: 8px; }
+.side-cart-qty > button { width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); background: #fff; cursor: pointer; }
+.side-cart-price { font-weight: 600; color: var(--kh-brown-900); }
+.side-cart-prices { display: grid; text-align: right; }
+.side-cart-subtotal { color: var(--kh-brown-800); font-size: 0.9rem; }
+.side-cart-footer { margin-top: 12px; display: grid; gap: 10px; }
+.side-cart-total-row { display: flex; align-items: center; justify-content: space-between; }
+.side-cart-button { text-align: center; padding: 10px 12px; border-radius: 999px; background: var(--kh-gold-300); color: #3a2a09; font-weight: 700; text-decoration: none; }
 /* ---------- Tokens / herda do App.css se existir ---------- */
 :root {
   --kh-brown-900: var(--brown-900, #4a1f0e);
@@ -11,7 +69,7 @@
 
   --kh-radius-xl: 20px;
   --kh-shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.08);
-  --kh-header-h: -100px;
+  --kh-header-h: 112px; /* altura aproximada do header fixo */
 }
 
 /* ---------- Layout base ---------- */
@@ -21,7 +79,7 @@
   max-width: 1100px;
   margin: 0 auto;
   scroll-padding-top: 120px; /* evita cabeçalho fixo sobrepor a âncora */
-  margin-top: calc(-1 * var(--kh-header-h, 112px));
+  margin-top: 0;
   padding-top: calc(var(--kh-header-h, 112px) + env(safe-area-inset-top, 0px));
 }
 
@@ -30,8 +88,11 @@
   display: grid;
   justify-items: center;
   gap: 6px;
-  margin-bottom: 18px;
+  margin-bottom: 36px;
 }
+
+/* Espaço extra inicial abaixo do topo do Cardápio */
+.menu-spacer { height: 24px; }
 
 .menu-title {
   margin: 0;
@@ -82,7 +143,7 @@
   justify-content: center;
   gap: 18px 22px;
   padding: 10px 4px 18px;
-  margin: 12px 0 26px;
+  margin: 20px 0 36px;
   overflow: visible;          /* sem scroll quando couber em linha */
 }
 
@@ -161,7 +222,7 @@
 .section-title {
   font-size: clamp(20px, 2.6vw, 28px);
   color: var(--kh-brown-900);
-  margin: 22px 0 12px;
+  margin: 28px 0 18px;
   font-weight: 700;
 }
 .with-accent {
@@ -181,7 +242,8 @@
 
 /* ---------- “Mais pedidos” (cards horizontais) ---------- */
 .best-section {
-  margin-bottom: 14px;
+  margin-top: 8px;
+  margin-bottom: 28px;
 }
 
 .best-scroll {
@@ -189,9 +251,13 @@
   grid-auto-flow: column;
   grid-auto-columns: minmax(220px, 1fr);
   gap: 14px;
-  overflow-x: auto;
+  overflow-x: auto;                 /* mantém o scroll */
+  -webkit-overflow-scrolling: touch;/* suave no iOS */
   padding: 8px 2px 6px;
-  scrollbar-width: thin;
+  scrollbar-width: none;            /* Firefox: esconde */
+}
+.best-scroll::-webkit-scrollbar {   /* Chrome/Safari: esconde */
+  display: none;
 }
 
 .best-card {
@@ -248,10 +314,38 @@
 /* ---------- Lista por categoria ---------- */
 .menu-section {
   scroll-margin-top: 120px;
+  margin-top: 28px;
 }
 .product-list {
   display: grid;
   gap: 24px;
+}
+.menu-section .product-list { margin-top: 20px; }
+
+/* Botão flutuante para abrir a sacola */
+.cart-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: none;
+  background: var(--kh-gold-300);
+  color: #3a2a09;
+  font-size: 26px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  cursor: pointer;
+  z-index: 45;
+}
+.cart-fab:hover { filter: brightness(0.98); }
+
+/* Em telas maiores, posicione um pouco mais à esquerda e acima */
+@media (min-width: 900px) {
+  .cart-fab {
+    right: 64px;   /* um pouco mais à esquerda */
+    bottom: 64px;  /* um pouco mais para baixo */
+  }
 }
 .product-list--rows {
   grid-template-columns: 1fr;

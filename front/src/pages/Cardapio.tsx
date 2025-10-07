@@ -5,7 +5,7 @@ import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
 const BASE_URL =
-  (import.meta.env.VITE_API_URL as string | undefined) || "http://127.0.0.1:8000";
+  (import.meta.env.VITE_API_URL as string | undefined) || "http://127.0.0.1:8001";
 
 type CategoryKey = "entradas" | "pratos" | "Sobremesas" | "bebidas";
 
@@ -61,13 +61,33 @@ const mapCategoryId = (categoriaId: string): CategoryKey => {
 const coerceId = (p: any): string =>
   p?.id ?? p?._id?.$oid ?? p?._id ?? (typeof crypto !== "undefined" ? crypto.randomUUID() : String(Math.random()));
 
+const isLikelyBase64 = (s: any): boolean => {
+  if (typeof s !== "string") return false;
+  if (s.startsWith("data:")) return true;
+  // Heurística simples: string longa com caracteres base64
+  return /^[A-Za-z0-9+/=]+$/.test(s) && s.length > 200;
+};
+
+const resolveImageUrl = (product: any): string => {
+  const raw = product.imagem ?? product.image ?? product.imageUrl ?? "";
+  const mime = product.imagemMime || product.mime || product.contentType || "image/avif"; // ajuste se o backend expuser o mime
+
+  if (typeof raw !== "string" || raw.length === 0) return "";
+  if (raw.startsWith("http")) return raw;
+  if (raw.startsWith("/")) return `${BASE_URL}${raw}`;
+  if (raw.startsWith("data:")) return raw;
+  if (isLikelyBase64(raw)) return `data:${mime};base64,${raw}`;
+  return String(raw);
+};
+
 const CardapioPage: React.FC = () => {
   const [cartTotal] = useState<number>(0);
   const [selected, setSelected] = useState<CategoryKey | "todos">("todos");
   const [products, setProducts] = useState<Product[]>([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity, removeFromCart, getTotalPrice } = useCart();
 
   const sectionRefs = useRef<Record<CategoryKey, HTMLDivElement | null>>({
     entradas: null,
@@ -95,10 +115,7 @@ const CardapioPage: React.FC = () => {
         name: product.titulo ?? product.nome ?? product.name ?? "Produto",
         description: product.descricao ?? product.description ?? "",
         price: Number(product.preco ?? product.price ?? 0),
-        imageUrl:
-          typeof product.imagem === "string" && product.imagem.startsWith("http")
-            ? product.imagem
-            : `${BASE_URL}${product.imagem ?? ""}`,
+        imageUrl: resolveImageUrl(product),
         category: mapCategoryId(product.categoria_id),
       }));
 
@@ -150,21 +167,21 @@ const CardapioPage: React.FC = () => {
     );
   }
 
+  const openDrawer = () => setIsDrawerOpen(true);
+  const closeDrawer = () => setIsDrawerOpen(false);
+  const toggleDrawer = () => setIsDrawerOpen(prev => !prev);
+
+  const formatPrice = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
   return (
-    <div className="menu-page">
+    <div className={`menu-page ${isDrawerOpen ? 'with-drawer' : ''}`}>
       <div className="menu-header">
         <h1 className="menu-title">Cardápio</h1>
         <img src={douradoImg} alt="" className="menu-divider" />
-        <button className="bag-pill" type="button" aria-label="Ver sacola">
-          <span className="bag-amount">
-            {cartTotal.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })}
-          </span>
-          <span className="bag-text">Ver sacola</span>
-        </button>
       </div>
+
+      {/* Espaço extra após o topo */}
+      <div className="menu-spacer"></div>
 
       {error && (
         <div
@@ -218,15 +235,16 @@ const CardapioPage: React.FC = () => {
                   </span>
                   <button
                     className="best-add"
-                    onClick={() =>
+                    onClick={() => {
                       addToCart({
                         id: p.id,
                         name: p.name,
                         price: p.price,
                         image: p.imageUrl,
                         category: p.category,
-                      })
-                    }
+                      });
+                      openDrawer();
+                    }}
                     aria-label={`Adicionar ${p.name}`}
                     type="button"
                   >
@@ -261,6 +279,7 @@ const CardapioPage: React.FC = () => {
               imageUrl={p.imageUrl}
               category={p.category}
               variant="card"
+              onAdded={openDrawer}
             />
           ))}
         </div>
@@ -288,6 +307,7 @@ const CardapioPage: React.FC = () => {
               imageUrl={p.imageUrl}
               category={p.category}
               variant="card"
+              onAdded={openDrawer}
             />
           ))}
         </div>
@@ -315,6 +335,7 @@ const CardapioPage: React.FC = () => {
               imageUrl={p.imageUrl}
               category={p.category}
               variant="card"
+              onAdded={openDrawer}
             />
           ))}
         </div>
@@ -342,10 +363,66 @@ const CardapioPage: React.FC = () => {
               imageUrl={p.imageUrl}
               category={p.category}
               variant="card"
+              onAdded={openDrawer}
             />
           ))}
         </div>
       </section>
+
+      {/* Botão flutuante para abrir a sacola */}
+      <button
+        type="button"
+        className="cart-fab"
+        aria-label={isDrawerOpen ? "Fechar sacola" : "Abrir sacola"}
+        onClick={toggleDrawer}
+      >
+        🛍️
+      </button>
+
+      {/* Drawer: overlay e painel lateral */}
+      <div className={`cart-overlay ${isDrawerOpen ? 'is-open' : ''}`} onClick={closeDrawer} aria-hidden={!isDrawerOpen}></div>
+      <div className={`cart-drawer ${isDrawerOpen ? 'is-open' : ''}`} aria-hidden={!isDrawerOpen}>
+        <div className="cart-drawer-header">
+          <h3>Sua sacola</h3>
+          <button className="drawer-close" onClick={closeDrawer} aria-label="Fechar">×</button>
+        </div>
+        <div className="cart-drawer-body">
+          <div className="side-cart-items">
+            {cartItems.length === 0 && (
+              <p className="side-cart-empty" style={{color:'#472304'}}>Sua sacola está vazia</p>
+            )}
+            {cartItems.map((item) => (
+              <div key={item.id} className="side-cart-item">
+                <img src={item.image} alt={item.name} className="side-cart-thumb" />
+                <div className="side-cart-info">
+                  <div className="side-cart-row">
+                    <span className="side-cart-name">{item.name}</span>
+                    <button className="side-cart-remove" onClick={() => removeFromCart(item.id)} aria-label="Remover">×</button>
+                  </div>
+                  <div className="side-cart-row">
+                    <div className="side-cart-qty">
+                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)} aria-label="Diminuir">-</button>
+                      <span>{item.quantity}</span>
+                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} aria-label="Aumentar">+</button>
+                    </div>
+                    <div className="side-cart-prices">
+                      <span className="side-cart-price">{formatPrice(item.price)}</span>
+                      <span className="side-cart-subtotal">{formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="side-cart-footer">
+            <div className="side-cart-total-row">
+              <span>Total</span>
+              <strong>{formatPrice(getTotalPrice())}</strong>
+            </div>
+            <a href="/sacola" className="side-cart-button">Ir para a sacola</a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

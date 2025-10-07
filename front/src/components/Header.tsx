@@ -60,7 +60,7 @@ const Header: React.FC = () => {
           </Link>
           {isAuthenticated ? (
             <Link 
-              to="/sobre" 
+              to="/usuario" 
               className={`nav-link ${activeLink === 'profile' ? 'active' : ''}`}
               onClick={() => handleLinkClick('profile')}
             >

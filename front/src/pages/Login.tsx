@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Login.css';
 
+const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:8001';
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +23,7 @@ const Login: React.FC = () => {
     setSuccess('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8001/auth/login', {
+      const response = await fetch(`${BASE_URL}/usuarios/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,10 +38,15 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         setSuccess('Login realizado com sucesso!');
-        if (data.token) {
-          login(data.token);
-          const redirectTo = (location.state as any)?.from || '/';
-          navigate(redirectTo, { replace: true });
+        const tokenGuess = (data as any).token || (data as any).access_token || (data as any).jwt || (data as any).authToken || 'session';
+        // persiste token e um snapshot do usuário retornado para uso em "Meus dados"
+        try { localStorage.setItem('user', JSON.stringify((data as any).usuario || (data as any).user || data)); } catch {}
+        login(tokenGuess);
+        const role = (data as any).hierarquia || (data as any).user?.hierarquia || (data as any).usuario?.hierarquia || 'usuario';
+        if (role === 'usuario') {
+          navigate('/', { replace: true });
+        } else {
+          navigate('/', { replace: true });
         }
       } else {
         let errorMessage = `Erro ${response.status}: ${response.statusText}`;
