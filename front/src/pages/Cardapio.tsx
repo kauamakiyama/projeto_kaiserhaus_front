@@ -133,7 +133,7 @@ const BEST_IDS = ["68e4296c80c36cc86b34e108", "68e4172649baa35c2c95542b", "68e42
 
 /** ===== Página ===== */
 const CardapioPage: React.FC = () => {
-  const [cartTotal, setCartTotal] = useState(0);
+  const [cartTotal] = useState<number>(0);
   const [selected, setSelected] = useState<CategoryKey | "todos">("todos");
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -219,10 +219,10 @@ const CardapioPage: React.FC = () => {
 
   const byCategory: Record<CategoryKey, Product[]> = useMemo(() => {
     return {
-      entradas: PRODUCTS.filter((p) => p.category === "entradas"),
-      pratos: PRODUCTS.filter((p) => p.category === "pratos"),
-      Sobremesas: PRODUCTS.filter((p) => p.category === "Sobremesas"),
-      bebidas: PRODUCTS.filter((p) => p.category === "bebidas"),
+      entradas: products.filter((p) => p.category === "entradas"),
+      pratos: products.filter((p) => p.category === "pratos"),
+      Sobremesas: products.filter((p) => p.category === "Sobremesas"),
+      bebidas: products.filter((p) => p.category === "bebidas"),
     };
   }, [products]);
 
