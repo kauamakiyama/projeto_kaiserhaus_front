@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Login.css';
 
@@ -8,6 +10,9 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +37,9 @@ const Login: React.FC = () => {
       if (response.ok) {
         setSuccess('Login realizado com sucesso!');
         if (data.token) {
-          localStorage.setItem('token', data.token);
+          login(data.token);
+          const redirectTo = (location.state as any)?.from || '/';
+          navigate(redirectTo, { replace: true });
         }
       } else {
         let errorMessage = `Erro ${response.status}: ${response.statusText}`;
