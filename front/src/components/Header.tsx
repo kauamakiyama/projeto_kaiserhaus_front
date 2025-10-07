@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useCart } from '../contexts/CartContext';
 import '../styles/Header.css';
 
 const Header: React.FC = () => {
   const [activeLink, setActiveLink] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { getTotalItems } = useCart();
 
   // Atualiza o link ativo baseado na rota atual
   useEffect(() => {
@@ -61,6 +63,20 @@ const Header: React.FC = () => {
           >
             Log-in
           </Link>
+          
+          {/* Carrinho de compras dentro da navegação */}
+          <div className="cart-container">
+            <Link to="/sacola" className="cart-button" aria-label="Carrinho de compras">
+              <img 
+                src="/src/assets/header/shopping-cart.png" 
+                alt="Carrinho" 
+                className="cart-icon" 
+              />
+              {getTotalItems() > 0 && (
+                <span className="cart-badge">{getTotalItems()}</span>
+              )}
+            </Link>
+          </div>
         </nav>
         
         {/* Menu hambúrguer para mobile */}
