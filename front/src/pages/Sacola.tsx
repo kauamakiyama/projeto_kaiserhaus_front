@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/Sacola.css';
 
 const Sacola: React.FC = () => {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
@@ -31,6 +35,15 @@ const Sacola: React.FC = () => {
   const cancelDelete = () => {
     setShowDeleteModal(false);
     setItemToDelete(null);
+  };
+
+  const handleContinue = () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/sacola' } });
+      return;
+    }
+    // continuar para próxima etapa (ex.: /entrega)
+    navigate('/entrega');
   };
 
   const formatPrice = (price: number) => {
@@ -140,7 +153,7 @@ const Sacola: React.FC = () => {
       
       {/* Action Buttons */}
       <div className="action-buttons">
-        <button className="continue-btn">Continuar</button>
+        <button className="continue-btn" onClick={handleContinue}>Continuar</button>
         <a href="/cardapio" className="add-more-link">Adicionar mais itens</a>
       </div>
 

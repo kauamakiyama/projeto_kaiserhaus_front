@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import '../styles/Header.css';
 
@@ -8,6 +9,7 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { getTotalItems } = useCart();
+  const { isAuthenticated } = useAuth();
 
   // Atualiza o link ativo baseado na rota atual
   useEffect(() => {
@@ -56,13 +58,27 @@ const Header: React.FC = () => {
           >
             Cardápio
           </Link>
-          <Link 
-            to="/login" 
-            className={`nav-link ${activeLink === 'login' ? 'active' : ''}`}
-            onClick={() => handleLinkClick('login')}
-          >
-            Log-in
-          </Link>
+          {isAuthenticated ? (
+            <Link 
+              to="/sobre" 
+              className={`nav-link ${activeLink === 'profile' ? 'active' : ''}`}
+              onClick={() => handleLinkClick('profile')}
+            >
+              <img 
+                src="/src/assets/header/Group 78.png" 
+                alt="Perfil" 
+                style={{ width: 28, height: 28, borderRadius: '50%', transform: 'translateY(2px)' }}
+              />
+            </Link>
+          ) : (
+            <Link 
+              to="/login" 
+              className={`nav-link ${activeLink === 'login' ? 'active' : ''}`}
+              onClick={() => handleLinkClick('login')}
+            >
+              Log-in
+            </Link>
+          )}
           
           {/* Carrinho de compras dentro da navegação */}
           <div className="cart-container">
