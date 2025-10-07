@@ -4,7 +4,9 @@ import { useCart } from "../contexts/CartContext";
 import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
-/** ===== Tipos e dados de exemplo ===== */
+const BASE_URL =
+  (import.meta.env.VITE_API_URL as string | undefined) || "http://127.0.0.1:8000";
+
 type CategoryKey = "entradas" | "pratos" | "Sobremesas" | "bebidas";
 
 type Product = {
@@ -43,95 +45,22 @@ const CATEGORIES: { key: CategoryKey; label: string; image: string }[] = [
   },
 ];
 
-// Dados de exemplo (serão substituídos pelos dados do banco)
-const EXAMPLE_PRODUCTS: Product[] = [
-  {
-    id: "sauerkraut",
-    name: "Sauerkraut",
-    description: "Repolho fermentado, com grãos de mostarda",
-    price: 27.99,
-    imageUrl:
-      "https://images.unsplash.com/photo-1604908553721-569ce10b20aa?q=80&w=600&auto=format&fit=crop",
-    category: "entradas",
-  },
-  {
-    id: "kartoffelsalat",
-    name: "Kartoffelsalat",
-    description: "Salada de batatas alemã, com acompanhamento",
-    price: 37.99,
-    imageUrl:
-      "https://images.unsplash.com/photo-1505576633757-0ac1084af824?q=80&w=600&auto=format&fit=crop",
-    category: "entradas",
-  },
-  {
-    id: "queijos",
-    name: "Seleção de Queijos",
-    description: "Emmental e Münster, com mostarda e pão",
-    price: 27.99,
-    imageUrl:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=600&auto=format&fit=crop",
-    category: "entradas",
-  },
-  {
-    id: "bratwurst",
-    name: "Bratwurst",
-    description: "Salsicha alemã grelhada com especiarias",
-    price: 34.5,
-    imageUrl:
-      "https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=600&auto=format&fit=crop",
-    category: "pratos",
-  },
-  {
-    id: "schnitzel",
-    name: "Schnitzel",
-    description: "Milanesa alemã com batatas",
-    price: 35.99,
-    imageUrl:
-      "https://images.unsplash.com/photo-1625944526005-498f4ca1a68f?q=80&w=600&auto=format&fit=crop",
-    category: "pratos",
-  },
-  {
-    id: "eisbein",
-    name: "Eisbein",
-    description: "Joelho de porco com chucrute",
-    price: 59.99,
-    imageUrl:
-      "https://images.unsplash.com/photo-1568600891621-50f697b9c4e3?q=80&w=600&auto=format&fit=crop",
-    category: "pratos",
-  },
-  {
-    id: "strudel",
-    name: "Apfelstrudel",
-    description: "Strudel de maçã com canela",
-    price: 18.9,
-    imageUrl:
-      "https://images.unsplash.com/photo-1604908177074-005f3b5b7b66?q=80&w=600&auto=format&fit=crop",
-    category: "Sobremesas",
-  },
-  {
-    id: "cafe",
-    name: "Café",
-    description: "Café filtrado ou espresso",
-    price: 7.5,
-    imageUrl:
-      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=600&auto=format&fit=crop",
-    category: "bebidas",
-  },
-  {
-    id: "chope",
-    name: "Chope",
-    description: "Pilsen gelado",
-    price: 12.0,
-    imageUrl:
-      "https://images.unsplash.com/photo-1541558869434-2840d308329a?q=80&w=600&auto=format&fit=crop",
-    category: "bebidas",
-  },
-];
 
-// IDs dos produtos mais pedidos (ajustar conforme seus produtos reais)
-const BEST_IDS = ["68e4296c80c36cc86b34e108", "68e4172649baa35c2c95542b", "68e429c080c36cc86b34e109"];
+const BEST_IDS: string[] = []; // ajuste quando tiver os IDs reais
 
-/** ===== Página ===== */
+const mapCategoryId = (categoriaId: string): CategoryKey => {
+  const categoryMap: Record<string, CategoryKey> = {
+    "68e40bb06dafd5b8a433c1f7": "entradas",
+    "68e40cdc6dafd5b8a433c1f9": "pratos",
+    "68e40cfe6dafd5b8a433c1fa": "Sobremesas",
+    "68e40d366dafd5b8a433c1fb": "bebidas",
+  };
+  return categoryMap[categoriaId] || "entradas";
+};
+
+const coerceId = (p: any): string =>
+  p?.id ?? p?._id?.$oid ?? p?._id ?? (typeof crypto !== "undefined" ? crypto.randomUUID() : String(Math.random()));
+
 const CardapioPage: React.FC = () => {
   const [cartTotal] = useState<number>(0);
   const [selected, setSelected] = useState<CategoryKey | "todos">("todos");
@@ -140,80 +69,55 @@ const CardapioPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
 
-  // refs das seções pra rolar suave quando clicar no chip
-  const sectionRefs = useRef<Record<CategoryKey, HTMLElement | null>>({
+  const sectionRefs = useRef<Record<CategoryKey, HTMLDivElement | null>>({
     entradas: null,
     pratos: null,
     Sobremesas: null,
     bebidas: null,
   });
 
-  // Função para buscar produtos do banco de dados
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      
-      const response = await fetch('http://localhost:8001/produtos', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+
+      const res = await fetch(`${BASE_URL}/produtos`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}: ${response.statusText}`);
-      }
+      const data: any[] = await res.json();
 
-      const data = await response.json();
-      console.log('Dados recebidos do backend:', data);
-      
-      // Mapear os dados do backend para o formato esperado
-      const mappedProducts = data.map((product: any) => ({
-        id: product.id,
-        name: product.titulo,
-        description: product.descricao,
-        price: product.preco,
-        imageUrl: product.imagem.startsWith('http') 
-          ? product.imagem 
-          : `http://localhost:8001${product.imagem}`, // Usar imagens do backend
-        category: mapCategoryId(product.categoria_id)
+      const mapped: Product[] = data.map((product: any) => ({
+        id: coerceId(product),
+        name: product.titulo ?? product.nome ?? product.name ?? "Produto",
+        description: product.descricao ?? product.description ?? "",
+        price: Number(product.preco ?? product.price ?? 0),
+        imageUrl:
+          typeof product.imagem === "string" && product.imagem.startsWith("http")
+            ? product.imagem
+            : `${BASE_URL}${product.imagem ?? ""}`,
+        category: mapCategoryId(product.categoria_id),
       }));
-      
-      console.log('Produtos mapeados:', mappedProducts);
-      setProducts(mappedProducts);
-    } catch (err) {
-      console.error('Erro ao buscar produtos:', err);
-      setError('Erro ao carregar produtos. Usando dados de exemplo.');
-      setProducts(EXAMPLE_PRODUCTS); // Fallback para dados de exemplo
+
+      setProducts(mapped);
+    } catch (e) {
+      console.error("Erro ao buscar produtos:", e);
+      setError("Erro ao carregar produtos. Usando dados de exemplo.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Função para mapear categoria_id para categoria
-  const mapCategoryId = (categoriaId: string): CategoryKey => {
-    // Mapear os IDs das categorias para as chaves esperadas
-    const categoryMap: Record<string, CategoryKey> = {
-      "68e40bb06dafd5b8a433c1f7": "entradas", // Entradas
-      "68e40cdc6dafd5b8a433c1f9": "pratos",   // Pratos
-      "68e40cfe6dafd5b8a433c1fa": "Sobremesas", // Sobremesas
-      "68e40d366dafd5b8a433c1fbc": "bebidas"  // Bebidas
-    };
-    
-    return categoryMap[categoriaId] || "entradas"; // Fallback para entradas
-  };
-
-  // Carrega produtos quando o componente monta
   useEffect(() => {
     fetchProducts();
   }, []);
 
   const bestSellers = useMemo(
-    () => products.filter((p) => BEST_IDS.includes(p.id)),
+    () =>
+      (BEST_IDS.length ? products.filter((p) => BEST_IDS.includes(p.id)) : products).slice(0, 6),
     [products]
   );
 
@@ -226,14 +130,12 @@ const CardapioPage: React.FC = () => {
     };
   }, [products]);
 
-
   const goTo = (key: CategoryKey) => {
     setSelected(key);
     const el = sectionRefs.current[key];
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Se estiver carregando, mostra loading
   if (isLoading) {
     return (
       <div className="menu-page">
@@ -241,7 +143,7 @@ const CardapioPage: React.FC = () => {
           <h1 className="menu-title">Cardápio</h1>
           <img src={douradoImg} alt="" className="menu-divider" />
         </div>
-        <div style={{ textAlign: 'center', padding: '2rem', color: '#472304' }}>
+        <div style={{ textAlign: "center", padding: "2rem", color: "#472304" }}>
           <p>Carregando produtos...</p>
         </div>
       </div>
@@ -265,27 +167,26 @@ const CardapioPage: React.FC = () => {
       </div>
 
       {error && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '1rem', 
-          backgroundColor: '#FEE2E2', 
-          color: '#DC2626',
-          margin: '1rem',
-          borderRadius: '8px'
-        }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "1rem",
+            backgroundColor: "#FEE2E2",
+            color: "#DC2626",
+            margin: "1rem",
+            borderRadius: "8px",
+          }}
+        >
           {error}
         </div>
       )}
 
-      {/* Chips de categorias */}
       <section className="category-strip" aria-label="Categorias">
         {CATEGORIES.map((c) => (
           <button
             key={c.key}
             data-key={c.key}
-            className={`category-chip ${
-              selected === c.key ? "is-active" : ""
-            }`}
+            className={`category-chip ${selected === c.key ? "is-active" : ""}`}
             onClick={() => goTo(c.key)}
             type="button"
           >
@@ -297,7 +198,6 @@ const CardapioPage: React.FC = () => {
         ))}
       </section>
 
-      {/* Mais pedidos */}
       <section className="best-section" aria-labelledby="best-title">
         <h2 id="best-title" className="section-title with-accent">
           Mais pedidos
@@ -318,13 +218,15 @@ const CardapioPage: React.FC = () => {
                   </span>
                   <button
                     className="best-add"
-                    onClick={() => addToCart({
-                      id: p.id,
-                      name: p.name,
-                      price: p.price,
-                      image: p.imageUrl,
-                      category: p.category,
-                    })}
+                    onClick={() =>
+                      addToCart({
+                        id: p.id,
+                        name: p.name,
+                        price: p.price,
+                        image: p.imageUrl,
+                        category: p.category,
+                      })
+                    }
                     aria-label={`Adicionar ${p.name}`}
                     type="button"
                   >
@@ -337,9 +239,10 @@ const CardapioPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Seções por categoria */}
       <section
-        ref={(el) => { sectionRefs.current.entradas = el; }}
+        ref={(el: HTMLDivElement | null) => {
+          sectionRefs.current.entradas = el;
+        }}
         id="entradas"
         className="menu-section"
         aria-labelledby="entradas-title"
@@ -361,11 +264,12 @@ const CardapioPage: React.FC = () => {
             />
           ))}
         </div>
-
       </section>
 
       <section
-        ref={(el) => { sectionRefs.current.pratos = el; }}
+        ref={(el: HTMLDivElement | null) => {
+          sectionRefs.current.pratos = el;
+        }}
         id="pratos"
         className="menu-section"
         aria-labelledby="pratos-title"
@@ -387,11 +291,12 @@ const CardapioPage: React.FC = () => {
             />
           ))}
         </div>
-
       </section>
 
       <section
-        ref={(el) => { sectionRefs.current.Sobremesas = el; }}
+        ref={(el: HTMLDivElement | null) => {
+          sectionRefs.current.Sobremesas = el;
+        }}
         id="Sobremesas"
         className="menu-section"
         aria-labelledby="Sobremesas-title"
@@ -416,7 +321,9 @@ const CardapioPage: React.FC = () => {
       </section>
 
       <section
-        ref={(el) => { sectionRefs.current.bebidas = el; }}
+        ref={(el: HTMLDivElement | null) => {
+          sectionRefs.current.bebidas = el;
+        }}
         id="bebidas"
         className="menu-section"
         aria-labelledby="bebidas-title"
