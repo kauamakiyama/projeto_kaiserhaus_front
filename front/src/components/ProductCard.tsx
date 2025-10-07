@@ -1,12 +1,14 @@
 import React from "react";
+import { useCart } from "../contexts/CartContext";
 import "../styles/ProductCard.css";
 
 export type ProductCardProps = {
+  id: string;
   name: string;
   description: string;
   price: number;
   imageUrl: string;
-  onAddToBag?: () => void;
+  category?: string;
   /** "card" (padrão) ou "row" para lista em linha (mock do Figma) */
   variant?: "card" | "row";
 };
@@ -15,13 +17,25 @@ const formatBRL = (value: number) =>
   value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export const ProductCard: React.FC<ProductCardProps> = ({
+  id,
   name,
   description,
   price,
   imageUrl,
-  onAddToBag,
+  category,
   variant = "card",
 }) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart({
+      id,
+      name,
+      price,
+      image: imageUrl,
+      category,
+    });
+  };
   return (
     <div className={`product-card ${variant === "row" ? "is-row" : ""}`}>
       <div className="product-image">
@@ -39,7 +53,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <button
         className="product-add"
         aria-label={`Adicionar ${name} à sacola`}
-        onClick={onAddToBag}
+        onClick={handleAddToCart}
         type="button"
       >
         <svg

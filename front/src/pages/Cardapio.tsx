@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import { ProductCard } from "../components/ProductCard";
+import { useCart } from "../contexts/CartContext";
 import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
@@ -152,6 +153,7 @@ const CardapioPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { addToCart } = useCart();
 
   // refs das seções pra rolar suave quando clicar no chip
   const sectionRefs = useRef<Record<CategoryKey, HTMLElement | null>>({
@@ -241,10 +243,6 @@ const CardapioPage: React.FC = () => {
     };
   }, [products]);
 
-  const handleAdd = (price: number, name?: string) => {
-    setCartTotal((t) => t + price);
-    if (name) console.log(`Adicionado: ${name}`);
-  };
 
   const goTo = (key: CategoryKey) => {
     setSelected(key);
@@ -337,7 +335,13 @@ const CardapioPage: React.FC = () => {
                   </span>
                   <button
                     className="best-add"
-                    onClick={() => handleAdd(p.price, p.name)}
+                    onClick={() => addToCart({
+                      id: p.id,
+                      name: p.name,
+                      price: p.price,
+                      image: p.imageUrl,
+                      category: p.category,
+                    })}
                     aria-label={`Adicionar ${p.name}`}
                     type="button"
                   >
@@ -364,11 +368,12 @@ const CardapioPage: React.FC = () => {
           {byCategory.entradas.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
+              category={p.category}
               variant="card"
             />
           ))}
@@ -389,11 +394,12 @@ const CardapioPage: React.FC = () => {
           {byCategory.acompanhamentos.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
+              category={p.category}
               variant="card"
             />
           ))}
@@ -414,11 +420,12 @@ const CardapioPage: React.FC = () => {
           {byCategory.pratos.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
+              category={p.category}
               variant="card"
             />
           ))}
@@ -439,11 +446,12 @@ const CardapioPage: React.FC = () => {
           {byCategory.Sobremesas.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
+              category={p.category}
               variant="card"
             />
           ))}
@@ -463,11 +471,12 @@ const CardapioPage: React.FC = () => {
           {byCategory.bebidas.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               description={p.description}
               price={p.price}
               imageUrl={p.imageUrl}
-              onAddToBag={() => handleAdd(p.price, p.name)}
+              category={p.category}
               variant="card"
             />
           ))}
