@@ -5,7 +5,7 @@ import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
 /** ===== Tipos e dados de exemplo ===== */
-type CategoryKey = "entradas" | "acompanhamentos" | "pratos" | "Sobremesas" | "bebidas";
+type CategoryKey = "entradas" | "pratos" | "Sobremesas" | "bebidas";
 
 type Product = {
   id: string;
@@ -22,12 +22,6 @@ const CATEGORIES: { key: CategoryKey; label: string; image: string }[] = [
     label: "Entradas",
     image:
       "https://images.unsplash.com/photo-1526318472351-c75fcf070305?q=80&w=400&auto=format&fit=crop",
-  },
-  {
-    key: "acompanhamentos",
-    label: "Acompanhamentos",
-    image:
-      "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop",
   },
   {
     key: "pratos",
@@ -77,15 +71,6 @@ const EXAMPLE_PRODUCTS: Product[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=600&auto=format&fit=crop",
     category: "entradas",
-  },
-  {
-    id: "brezel",
-    name: "Brezel",
-    description: "Pretzel tradicional alemão",
-    price: 11.99,
-    imageUrl:
-      "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600&auto=format&fit=crop",
-    category: "acompanhamentos",
   },
   {
     id: "bratwurst",
@@ -158,7 +143,6 @@ const CardapioPage: React.FC = () => {
   // refs das seções pra rolar suave quando clicar no chip
   const sectionRefs = useRef<Record<CategoryKey, HTMLElement | null>>({
     entradas: null,
-    acompanhamentos: null,
     pratos: null,
     Sobremesas: null,
     bebidas: null,
@@ -235,11 +219,10 @@ const CardapioPage: React.FC = () => {
 
   const byCategory: Record<CategoryKey, Product[]> = useMemo(() => {
     return {
-      entradas: products.filter((p) => p.category === "entradas"),
-      acompanhamentos: products.filter((p) => p.category === "acompanhamentos"),
-      pratos: products.filter((p) => p.category === "pratos"),
-      Sobremesas: products.filter((p) => p.category === "Sobremesas"),
-      bebidas: products.filter((p) => p.category === "bebidas"),
+      entradas: PRODUCTS.filter((p) => p.category === "entradas"),
+      pratos: PRODUCTS.filter((p) => p.category === "pratos"),
+      Sobremesas: PRODUCTS.filter((p) => p.category === "Sobremesas"),
+      bebidas: PRODUCTS.filter((p) => p.category === "bebidas"),
     };
   }, [products]);
 
@@ -366,32 +349,6 @@ const CardapioPage: React.FC = () => {
         </h2>
         <div className="product-list product-list--grid">
           {byCategory.entradas.map((p) => (
-            <ProductCard
-              key={p.id}
-              id={p.id}
-              name={p.name}
-              description={p.description}
-              price={p.price}
-              imageUrl={p.imageUrl}
-              category={p.category}
-              variant="card"
-            />
-          ))}
-        </div>
-
-      </section>
-
-      <section
-        ref={(el) => { sectionRefs.current.acompanhamentos = el; }}
-        id="acompanhamentos"
-        className="menu-section"
-        aria-labelledby="acompanhamentos-title"
-      >
-        <h2 id="acompanhamentos-title" className="section-title">
-          Acompanhamentos
-        </h2>
-        <div className="product-list product-list--grid">
-          {byCategory.acompanhamentos.map((p) => (
             <ProductCard
               key={p.id}
               id={p.id}
