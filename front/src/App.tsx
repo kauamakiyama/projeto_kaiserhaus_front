@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import SobreNos from './pages/SobreNos'
 import CardapioPage from './pages/Cardapio'
 import Sacola from './pages/Sacola'
+import Adm from './pages/Adm'
 import { CartProvider } from './contexts/CartContext'
 import './App.css'
 
@@ -24,6 +25,7 @@ export default function App() {
               <Route path="/cardapio" element={<CardapioPage />} />
               <Route path="/sobre" element={<SobreNos />} />
               <Route path="/sacola" element={<Sacola />} />
+              <Route path="/admin" element={<Adm />} />
             </Routes>
           </main>
           <Footer />

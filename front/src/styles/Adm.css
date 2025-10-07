@@ -1,0 +1,182 @@
+/* ===== Alturas padrão do layout (iguais ao Login) ===== */
+:root{
+  --kh-header-h: 96px;      /* altura do header fixo */
+  --kh-footer-h: 260px;     /* altura do footer */
+  --kh-brown-900: var(--brown-900, #4a1f0e);
+  --kh-brown-800: var(--brown-800, #5b2a15);
+  --kh-brown-700: var(--brown-700, #6a351d);
+  --kh-gold-500: var(--gold-500, #d4a017);
+  --kh-gold-300: var(--gold-300, #e8c465);
+  --kh-cream-50: var(--cream-50, #f5f3da);
+  --kh-text: var(--text, #2a241f);
+  --kh-radius-lg: 12px;
+  --kh-shadow-card: 0 10px 22px rgba(0,0,0,.15);
+}
+
+/* ===== Página ===== */
+.adm-page{
+  min-height: calc(100vh - var(--kh-footer-h));
+  background: #F5F5DC; /* bege do layout */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4.5rem 2rem;
+  padding-top: calc(var(--kh-header-h) + 1.5rem); /* não deixar o header cortar */
+}
+
+.adm-wrapper{
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* ===== Cabeçalho: título + ornamento ===== */
+.adm-header{
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.adm-title{
+  margin: 0;
+  font-size: 2.4rem;
+  line-height: 1.15;
+  color: var(--kh-brown-900);
+  font-family: serif;
+  font-weight: 600;
+}
+
+.adm-divider-img{
+  display: block;
+  width: 160px;
+  margin: .5rem auto 0 auto;
+  height: auto;
+}
+
+/* ===== Painel principal ===== */
+.adm-panel{
+  display: grid;
+  grid-template-columns: 290px 1px 1fr; /* sidebar | divisor | conteúdo */
+  gap: 0;
+  background: #e0dccb; /* leve textura/bege dentro do cartão */
+  border: 2px solid var(--kh-brown-900);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--kh-shadow-card);
+}
+
+/* ===== Sidebar com botões ===== */
+.adm-sidebar{
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: .25rem .75rem .25rem .25rem;
+}
+
+.adm-nav-btn{
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  padding: .9rem 1.2rem;
+  border-radius: 10px;
+  background: var(--kh-brown-900);
+  color: #f8e9bf; /* levemente mais claro que o gold */
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: .2px;
+  box-shadow: 0 3px 0 rgba(0,0,0,.25), 0 8px 14px rgba(0,0,0,.12);
+  transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
+  text-align: center;
+}
+.adm-nav-btn:hover{
+  background: var(--kh-brown-800);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 rgba(0,0,0,.25), 0 12px 18px rgba(0,0,0,.16);
+}
+.adm-nav-btn:active{
+  transform: translateY(0);
+  box-shadow: 0 2px 0 rgba(0,0,0,.25), 0 6px 10px rgba(0,0,0,.14);
+}
+
+/* ===== Divisor vertical ===== */
+.adm-sep{
+  width: 1px;
+  background: #2b1a0d88; /* marrom com transparência */
+  margin: .25rem 1rem;
+}
+
+/* ===== Conteúdo à direita ===== */
+.adm-content{
+  padding: .25rem .25rem .25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Barra de busca */
+.adm-search{
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: #fff;
+  border-radius: 10px;
+  padding: .6rem .8rem;
+  border: 2px solid #eee3bf;
+  max-width: 540px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.adm-search-icon{
+  display: inline-flex;
+  align-items: center;
+  color: var(--kh-brown-900);
+}
+
+.adm-search-input{
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: var(--kh-text);
+  background: transparent;
+}
+.adm-search-input::placeholder{
+  color: #7b6b58;
+}
+
+/* Espaço para render futuro (tabela/lista) */
+.adm-content-placeholder{
+  min-height: 320px;
+  border-radius: 10px;
+  /* apenas um fundo discreto */
+  background: radial-gradient(1000px 300px at 85% -50%, rgba(71,35,4,.06), transparent 60%),
+              radial-gradient(800px 300px at -20% 120%, rgba(212,160,23,.10), transparent 50%);
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 960px){
+  .adm-panel{
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .adm-sep{ display: none; }
+  .adm-sidebar{
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .75rem;
+    padding-right: 0;
+  }
+  .adm-nav-btn{
+    flex: 1 1 220px;
+  }
+  .adm-content{
+    padding-left: .25rem;
+  }
+}
+
+@media (max-width: 600px){
+  :root{ --kh-header-h: 80px; }
+  .adm-page{ padding: 2.5rem .75rem; padding-top: calc(var(--kh-header-h) + 1rem); }
+  .adm-title{ font-size: 2rem; }
+  .adm-divider-img{ width: 140px; }
+  .adm-search{ max-width: 100%; }
+}
