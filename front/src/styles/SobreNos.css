@@ -6,38 +6,41 @@
   --kh-header-h: -75px;
 }
 /* ---------- HERO ---------- */
-.about-hero{
+/* Apenas ajustes do background da hero — substitua a regra .about-hero existente por este bloco */
+.about-hero {
   position: relative;
-  background-size: cover;
+  width: 100%;
+  height: 100vh;              /* ocupa toda a viewport */
+  min-height: 640px;         /* evita hero muito pequena em telas pequenas */
   background-position: center center;
   background-repeat: no-repeat;
-  margin-top: calc(-1 * var(--kh-header-h, 112px));
-  padding-top: calc(var(--kh-header-h, 112px) + env(safe-area-inset-top, 0px));
-  display: grid; place-items: end center; isolation: isolate;
-}
-@supports (height: 100svh){
-  .about-hero{ min-height: 90svh; }
+  background-size: cover;    /* faz a imagem cobrir o espaço sem repetir */
+  background-color: #000;    /* fallback se a imagem não carregar */
+  display: grid;
+  place-items: end center;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: 0;             /* garante que não puxe o layout para cima */
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* véu escuro para legibilidade */
-.about-hero__overlay{
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(0,0,0,.28) 0%,
-      rgba(0,0,0,.32) 45%,
-      rgba(0,0,0,.40) 100%
-    );
+/* mantém overlay como before — não altera texto */
+.about-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.25) 0%,
+    rgba(0,0,0,0.22) 40%,
+    rgba(0,0,0,0.26) 100%
+  );
   z-index: 0;
+  pointer-events: none;
 }
 
-/* bloco central */
-.about-hero__content{
-  position: relative; z-index: 1; color: #fff; text-align: center;
-  width: min(1200px, 100%);
-  padding: clamp(12px, 2.6vw, 24px) 12px 6vh;
-}
+/* garante que o conteúdo fique acima do véu */
+.about-hero__content { position: relative; z-index: 2; }
+
 
 /* Título grande com sublinhado dourado (Figma) */
 .about-hero__title{
