@@ -25,7 +25,7 @@ export default function Home() {
           <h1 className="kh-hero__title">Tradição que viaja até sua casa</h1>
 
           <div className="kh-hero__cta">
-            <Link to="/menu" className="btn btn--primary">
+            <Link to="/cardapio" className="btn btn--primary">
               Peça Já
             </Link>
           </div>
@@ -40,7 +40,6 @@ export default function Home() {
           <header className="kh-welcome-figma__header">
             <h2 className="kh-welcome-figma__title">
               Bem-Vindo a KaizerHaus
-              <span className="kh-welcome-figma__orn" aria-hidden>🥨</span>
             </h2>
             <p className="kh-welcome-figma__lead">
               Há mais de <strong>40 anos</strong> mantendo viva a tradição alemã no Brooklin
@@ -85,7 +84,6 @@ export default function Home() {
           <header className="kh-spec__header">
             <h2 className="kh-spec__title">
               <span>Especialidades</span>
-              <i className="kh-spec__orn" aria-hidden>🥨</i>
             </h2>
           </header>
 
@@ -108,7 +106,7 @@ export default function Home() {
           </ul>
 
           <div className="kh-spec__actions">
-            <Link to="/menu" className="btn btn--history">
+            <Link to="/cardapio" className="btn btn--history">
               Cardápio Completo
             </Link>
           </div>
