@@ -10,7 +10,6 @@ const Adm: React.FC = () => {
 
   const goHistorico = () => console.log("Ir para Histórico de pedidos");
   const goAvaliacoes = () => console.log("Ir para Avaliações");
-  const goCardapio = () => console.log("Ir para Gerenciar Cardápio");
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +39,9 @@ const Adm: React.FC = () => {
               <button className="adm-nav-btn" onClick={goAvaliacoes}>
                 Avaliações
               </button>
-              <button className="adm-nav-btn" onClick={goCardapio}>
+              <Link className="adm-nav-btn" to="/admin/categorias">
                 Gerenciar Cardápio
-              </button>
+              </Link>
               <Link className="adm-nav-btn" to="/admin/funcionarios">
                 Funcionários
               </Link>
