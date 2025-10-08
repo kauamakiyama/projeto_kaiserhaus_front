@@ -1,61 +1,59 @@
 .dados-page {
   background: #F5F5DC;
-  min-height: calc(100vh - var(--kh-footer-h, 60px));
-  padding-top: calc(var(--kh-header-h, 96px) + 72px);
-  padding-bottom: 8px;
+  min-height: calc(100vh - var(--kh-footer-h, 3.75rem));
+  padding-top: calc(var(--kh-header-h, 6rem) + 2rem);
+  padding-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.dados-header { text-align: center; margin-bottom: 16px; }
-.dados-title { margin: 0; font-size: clamp(28px, 4vw, 40px); color: #472304; font-weight: 700; font-family: serif; }
-.dados-divider { width: 150px; opacity: .9; }
+.dados-header { text-align: center; margin-bottom: 1rem; }
+.dados-title { margin: 0; font-size: clamp(1.75rem, 4vw, 2.5rem); color: #472304; font-weight: 700; font-family: serif; }
+.dados-divider { width: 9.375rem; opacity: .9; }
 
 .dados-card {
-  width: clamp(740px, 82vw, 1000px);
-  min-height: 360px;
+  width: clamp(46.25rem, 82vw, 62.5rem);
+  min-height: 22.5rem;
   background: #e3dfcc;
-  border: 2px solid #b7b09a;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.12);
-  padding: 18px 20px 22px;
+  border: 0.125rem solid #b7b09a;
+  border-radius: 0.625rem;
+  box-shadow: 0 0.625rem 1.875rem rgba(0,0,0,.12);
+  padding: 1.125rem 1.25rem 1.375rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px 24px;
+  gap: 1.125rem 1.5rem;
 }
 
-.col { display: grid; gap: 10px; }
-.dados-label { font-weight: 700; color: #472304; font-size: 20px; }
+.col { display: grid; gap: 0.625rem; }
+.dados-label { font-weight: 700; color: #472304; font-size: 1.25rem; }
 .dados-input {
-  height: 38px;
-  border-radius: 8px;
-  border: 1px solid #c8c1ac;
+  height: 2.375rem;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #c8c1ac;
   background: #fff;
-  padding: 0 12px;
+  padding: 0 0.75rem;
   color: #472304;
-  font-size: 16px;
+  font-size: 1rem;
 }
 .dados-password {
-  height: 38px;
+  height: 2.375rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
-  border-radius: 8px;
-  border: 1px solid #c8c1ac;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #c8c1ac;
   background: #fff;
   color: #472304;
 }
 .eye { opacity: .7; }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
   .dados-card { grid-template-columns: 1fr; width: 92vw; }
-  .dados-header { margin-bottom: 20px; }
+  .dados-header { margin-bottom: 1.25rem; }
 }
 
-@media (min-width: 1200px) {
-  .dados-header { margin-bottom: 12px; }
+@media (min-width: 75rem) {
+  .dados-header { margin-bottom: 0.75rem; }
 }
-
-
