@@ -8,8 +8,6 @@ import douradoImg from "../assets/login/dourado.png";
 const Adm: React.FC = () => {
   const [query, setQuery] = useState("");
 
-  const goHistorico = () => console.log("Ir para Histórico de pedidos");
-
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Buscar:", query);
@@ -32,9 +30,9 @@ const Adm: React.FC = () => {
 
           <section className="adm-panel">
             <nav className="adm-sidebar" aria-label="Menu do administrador">
-              <button className="adm-nav-btn" onClick={goHistorico}>
+              <Link className="adm-nav-btn" to="/admin/historico">
                 Histórico de pedidos
-              </button>
+              </Link>
               <Link className="adm-nav-btn" to="/admin/avaliacoes">
                 Avaliações
               </Link>
