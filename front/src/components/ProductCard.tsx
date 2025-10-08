@@ -11,6 +11,7 @@ export type ProductCardProps = {
   category?: string;
   /** "card" (padrão) ou "row" para lista em linha (mock do Figma) */
   variant?: "card" | "row";
+  onAdded?: () => void;
 };
 
 const formatBRL = (value: number) =>
@@ -24,6 +25,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   imageUrl,
   category,
   variant = "card",
+  onAdded,
 }) => {
   const { addToCart } = useCart();
 
@@ -35,6 +37,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       image: imageUrl,
       category,
     });
+    if (onAdded) onAdded();
   };
   return (
     <div className={`product-card ${variant === "row" ? "is-row" : ""}`}>

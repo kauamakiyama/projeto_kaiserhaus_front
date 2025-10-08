@@ -7,7 +7,7 @@ import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
 const BASE_URL =
-  (import.meta.env.VITE_API_URL as string | undefined) || "http://127.0.0.1:8000";
+  (import.meta.env.VITE_API_URL as string | undefined) || "http://127.0.0.1:8001";
 
 type CategoryKey = "entradas" | "pratos" | "Sobremesas" | "bebidas";
 
@@ -63,13 +63,33 @@ const mapCategoryId = (categoriaId: string): CategoryKey => {
 const coerceId = (p: any): string =>
   p?.id ?? p?._id?.$oid ?? p?._id ?? (typeof crypto !== "undefined" ? crypto.randomUUID() : String(Math.random()));
 
+const isLikelyBase64 = (s: any): boolean => {
+  if (typeof s !== "string") return false;
+  if (s.startsWith("data:")) return true;
+  // Heurística simples: string longa com caracteres base64
+  return /^[A-Za-z0-9+/=]+$/.test(s) && s.length > 200;
+};
+
+const resolveImageUrl = (product: any): string => {
+  const raw = product.imagem ?? product.image ?? product.imageUrl ?? "";
+  const mime = product.imagemMime || product.mime || product.contentType || "image/avif"; // ajuste se o backend expuser o mime
+
+  if (typeof raw !== "string" || raw.length === 0) return "";
+  if (raw.startsWith("http")) return raw;
+  if (raw.startsWith("/")) return `${BASE_URL}${raw}`;
+  if (raw.startsWith("data:")) return raw;
+  if (isLikelyBase64(raw)) return `data:${mime};base64,${raw}`;
+  return String(raw);
+};
+
 const CardapioPage: React.FC = () => {
   const [cartTotal] = useState<number>(0);
   const [selected, setSelected] = useState<CategoryKey | "todos">("todos");
   const [products, setProducts] = useState<Product[]>([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity, removeFromCart, getTotalPrice } = useCart();
 
   const sectionRefs = useRef<Record<CategoryKey, HTMLDivElement | null>>({
     entradas: null,
@@ -97,10 +117,7 @@ const CardapioPage: React.FC = () => {
         name: product.titulo ?? product.nome ?? product.name ?? "Produto",
         description: product.descricao ?? product.description ?? "",
         price: Number(product.preco ?? product.price ?? 0),
-        imageUrl:
-          typeof product.imagem === "string" && product.imagem.startsWith("http")
-            ? product.imagem
-            : `${BASE_URL}${product.imagem ?? ""}`,
+        imageUrl: resolveImageUrl(product),
         category: mapCategoryId(product.categoria_id),
       }));
 
@@ -155,6 +172,12 @@ const CardapioPage: React.FC = () => {
       </>
     );
   }
+
+  const openDrawer = () => setIsDrawerOpen(true);
+  const closeDrawer = () => setIsDrawerOpen(false);
+  const toggleDrawer = () => setIsDrawerOpen(prev => !prev);
+
+  const formatPrice = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   return (
     <>

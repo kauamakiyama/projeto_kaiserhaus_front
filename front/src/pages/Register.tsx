@@ -71,7 +71,8 @@ const Register: React.FC = () => {
         telefone: formData.telefone.replace(/\D/g, ''), // Remover formatação do telefone
         endereco: formData.endereco,
         complemento: formData.complemento,
-        senha: formData.senha
+        senha: formData.senha,
+        cpf: formData.cpf.replace(/\D/g, '') // Adicionar CPF sem formatação
       };
       
       const response = await fetch('http://127.0.0.1:8001/usuarios', {
