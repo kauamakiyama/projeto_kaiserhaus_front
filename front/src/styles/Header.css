@@ -40,7 +40,6 @@
     position: relative;
     top: 20px; 
   }
-  
 
 .navigation {
   display: flex;
@@ -48,7 +47,6 @@
   align-items: center;
 }
 
-/* Carrinho de compras */
 .cart-container {
   position: relative;
   display: flex;

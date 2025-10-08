@@ -198,7 +198,6 @@
   text-decoration: underline;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .register-page {
     padding: 0.5rem;
@@ -248,7 +247,6 @@
   }
 }
 
-/* Animações */
 @keyframes fadeInUp {
   from {
     opacity: 0;

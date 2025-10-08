@@ -1,6 +1,6 @@
 .footer {
-  background-color: #472304; /* Marrom escuro personalizado */
-  border-top: 2px solid #5A2D04; /* Marrom mais claro para a borda */
+  background-color: #472304;
+  border-top: 2px solid #5A2D04;
   padding: 0.75rem 0;
   margin-top: auto;
 }
@@ -27,12 +27,12 @@
 }
 
 .section-title {
-  color: #E1C16E; /* Dourado personalizado */
+  color: #E1C16E;
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
   padding-bottom: 0.3rem;
-  border-bottom: 2px solid #E1C16E; /* Dourado personalizado */
+  border-bottom: 2px solid #E1C16E;
   display: inline-block;
   width: fit-content;
 }
@@ -100,7 +100,6 @@
   color: #F5E6A8;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .footer {
     padding: 0.5rem 0;
@@ -165,7 +164,6 @@
   }
 }
 
-/* Animações */
 @keyframes fadeInUp {
   from {
     opacity: 0;

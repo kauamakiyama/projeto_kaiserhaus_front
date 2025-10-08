@@ -9,7 +9,6 @@ const Adm: React.FC = () => {
   const [query, setQuery] = useState("");
 
   const goHistorico = () => console.log("Ir para Histórico de pedidos");
-  const goAvaliacoes = () => console.log("Ir para Avaliações");
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,9 +35,9 @@ const Adm: React.FC = () => {
               <button className="adm-nav-btn" onClick={goHistorico}>
                 Histórico de pedidos
               </button>
-              <button className="adm-nav-btn" onClick={goAvaliacoes}>
+              <Link className="adm-nav-btn" to="/admin/avaliacoes">
                 Avaliações
-              </button>
+              </Link>
               <Link className="adm-nav-btn" to="/admin/categorias">
                 Gerenciar Cardápio
               </Link>
