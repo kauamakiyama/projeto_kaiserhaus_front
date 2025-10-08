@@ -1,7 +1,7 @@
 .sacola-page {
   min-height: 100vh;
   background-color: #F5F5DC;
-  padding: 2rem 1rem;
+  padding: calc(var(--kh-header-h, 96px) + 32px) 1rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;

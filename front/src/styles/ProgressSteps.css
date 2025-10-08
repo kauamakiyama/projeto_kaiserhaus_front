@@ -1,0 +1,10 @@
+.kh-progress{display:flex; align-items:center; justify-content:center; gap:14px; max-width:980px; margin:0 auto 28px; color:#472304;}
+.kh-progress__step{display:grid; justify-items:center; gap:6px;}
+.kh-progress__icon{width:54px; height:54px; border-radius:999px; background:#e6d8c2; box-shadow:inset 0 0 0 3px #b78f54; display:grid; place-items:center;}
+.kh-progress__icon img{width:28px; height:28px; display:block; object-fit:contain;}
+.kh-progress__label{font-size:14px;}
+.kh-progress__step.active .kh-progress__icon{background:#f4e6c8; box-shadow:inset 0 0 0 3px #7a4b22;}
+.kh-progress__step.done .kh-progress__icon{background:#d9c6a7; box-shadow:inset 0 0 0 3px #7a4b22;}
+.kh-progress__line{width:120px; height:6px; border-radius:999px; background:#e6d8c2;}
+.kh-progress__line.active{background:#b78f54;}
+
