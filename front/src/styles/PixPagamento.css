@@ -1,0 +1,179 @@
+.pix-page{
+  background:#F5F5DC;
+  min-height:calc(100vh - var(--kh-footer-h,60px));
+  padding: calc(var(--kh-header-h,96px) + 80px) 0 24px;
+}
+
+.pix-card{
+  max-width:980px;
+  margin:0 auto 28px;
+  background:#fff;
+  border:2px solid #b7b09a;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  padding:32px 40px;
+}
+
+.pix-header{
+  margin-bottom:24px;
+  text-align:center;
+}
+
+.pix-title{
+  font-size:32px;
+  font-family:serif;
+  margin:0;
+  color:#3b2a12;
+  font-weight:700;
+}
+
+.pix-content{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:24px;
+}
+
+.pix-instructions{
+  color:#666;
+  font-size:16px;
+  line-height:1.5;
+  text-align:center;
+  margin:0;
+  max-width:600px;
+}
+
+.qr-code-container{
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+
+.qr-code{
+  width:280px;
+  height:280px;
+  background:#fff;
+  border:2px solid #e6d8c2;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.qr-image{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.pix-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  width:100%;
+  max-width:400px;
+}
+
+.btn-copy-pix{
+  background:#fff;
+  color:#d94f5c;
+  border:2px solid #d94f5c;
+  border-radius:8px;
+  padding:12px 24px;
+  font-weight:600;
+  font-size:16px;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  width:100%;
+}
+
+.btn-copy-pix:hover{
+  background:#d94f5c;
+  color:#fff;
+}
+
+.btn-copy-pix.copied{
+  background:#22c55e;
+  border-color:#22c55e;
+  color:#fff;
+}
+
+.btn-continue{
+  background:#4a2105;
+  color:#f5e1b8;
+  font-family:serif;
+  font-size:28px;
+  border:0;
+  border-radius:10px;
+  padding:14px 32px;
+  cursor:pointer;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  transition:all 0.2s ease;
+  width:100%;
+}
+
+.btn-continue:hover{
+  background:#5a2a15;
+  transform:translateY(-2px);
+  box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+@media (max-width: 900px){
+  .pix-page{
+    padding: calc(var(--kh-header-h,96px) + 60px) 16px 24px;
+  }
+  
+  .pix-card{
+    margin: 0 auto 20px;
+    padding: 24px;
+  }
+  
+  .pix-title{
+    font-size: 28px;
+  }
+  
+  .pix-instructions{
+    font-size: 14px;
+  }
+  
+  .qr-code{
+    width: 240px;
+    height: 240px;
+  }
+  
+  .btn-continue{
+    font-size: 24px;
+    padding: 12px 24px;
+  }
+}
+
+@media (max-width: 600px){
+  .pix-page{
+    padding: calc(var(--kh-header-h,96px) + 40px) 12px 20px;
+  }
+  
+  .pix-card{
+    padding: 20px;
+  }
+  
+  .pix-title{
+    font-size: 24px;
+  }
+  
+  .qr-code{
+    width: 200px;
+    height: 200px;
+  }
+  
+  .btn-copy-pix{
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .btn-continue{
+    font-size: 20px;
+    padding: 10px 20px;
+  }
+}

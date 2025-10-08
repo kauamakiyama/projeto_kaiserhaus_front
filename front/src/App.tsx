@@ -8,6 +8,8 @@ import Sacola from './pages/Sacola'
 import Usuario from './pages/Usuario'
 import MeusDados from './pages/MeusDados'
 import Entrega from './pages/Entrega'
+import Pagamento from './pages/Pagamento'
+import PixPagamento from './pages/PixPagamento'
 import Adm from './pages/Adm'
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -28,6 +30,8 @@ export default function App() {
                 <Route path="/sobre" element={<SobreNos />} />
                 <Route path="/sacola" element={<Sacola />} />
                 <Route path="/entrega" element={<Entrega />} />
+                <Route path="/pagamento" element={<Pagamento />} />
+                <Route path="/pix-pagamento" element={<PixPagamento />} />
 
                 <Route path="/usuario" element={<Usuario />} />
                 <Route path="/usuario/dados" element={<MeusDados />} />

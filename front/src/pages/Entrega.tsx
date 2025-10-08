@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../styles/Entrega.css';
 import { ProgressSteps } from '../components/ProgressSteps';
 
 const Entrega: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedSpeed, setSelectedSpeed] = useState<'padrao' | 'turbo'>('padrao');
   const [addressLine, setAddressLine] = useState<string>('Endereço não informado');
   const [addressSub, setAddressSub] = useState<string>('');
@@ -141,7 +143,10 @@ const Entrega: React.FC = () => {
               </button>
             </div>
             <div className="entrega-actions">
-              <button className="btn-continue">Continuar</button>
+              <button 
+                className="btn-continue"
+                onClick={() => navigate('/pagamento')}
+              >Continuar</button>
             </div>
           </section>
         </div>
