@@ -186,15 +186,6 @@ const CardapioPage: React.FC = () => {
         <div className="menu-header">
           <h1 className="menu-title">Cardápio</h1>
           <img src={douradoImg} alt="" className="menu-divider" />
-          <button className="bag-pill" type="button" aria-label="Ver sacola">
-            <span className="bag-amount">
-              {cartTotal.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </span>
-            <span className="bag-text">Ver sacola</span>
-          </button>
         </div>
 
         {error && (
@@ -249,15 +240,16 @@ const CardapioPage: React.FC = () => {
                     </span>
                     <button
                       className="best-add"
-                      onClick={() =>
+                      onClick={() => {
                         addToCart({
                           id: p.id,
                           name: p.name,
                           price: p.price,
                           image: p.imageUrl,
                           category: p.category,
-                        })
-                      }
+                        });
+                        openDrawer();
+                      }}
                       aria-label={`Adicionar ${p.name}`}
                       type="button"
                     >
@@ -292,6 +284,7 @@ const CardapioPage: React.FC = () => {
                 imageUrl={p.imageUrl}
                 category={p.category}
                 variant="card"
+                onAdded={openDrawer}
               />
             ))}
           </div>
@@ -319,6 +312,7 @@ const CardapioPage: React.FC = () => {
                 imageUrl={p.imageUrl}
                 category={p.category}
                 variant="card"
+                onAdded={openDrawer}
               />
             ))}
           </div>
@@ -346,6 +340,7 @@ const CardapioPage: React.FC = () => {
                 imageUrl={p.imageUrl}
                 category={p.category}
                 variant="card"
+                onAdded={openDrawer}
               />
             ))}
           </div>
@@ -373,10 +368,65 @@ const CardapioPage: React.FC = () => {
                 imageUrl={p.imageUrl}
                 category={p.category}
                 variant="card"
+                onAdded={openDrawer}
               />
             ))}
           </div>
         </section>
+        {/* Botão flutuante para abrir a sacola */}
+        <button
+          type="button"
+          className="cart-fab"
+          aria-label={isDrawerOpen ? "Fechar sacola" : "Abrir sacola"}
+          onClick={toggleDrawer}
+        >
+          🛍️
+        </button>
+
+        {/* Drawer: overlay e painel lateral */}
+        <div className={`cart-overlay ${isDrawerOpen ? 'is-open' : ''}`} onClick={closeDrawer} aria-hidden={!isDrawerOpen}></div>
+        <div className={`cart-drawer ${isDrawerOpen ? 'is-open' : ''}`} aria-hidden={!isDrawerOpen}>
+          <div className="cart-drawer-header">
+            <h3>Sua sacola</h3>
+            <button className="drawer-close" onClick={closeDrawer} aria-label="Fechar">×</button>
+          </div>
+          <div className="cart-drawer-body">
+            <div className="side-cart-items">
+              {cartItems.length === 0 && (
+                <p className="side-cart-empty" style={{color:'#472304'}}>Sua sacola está vazia</p>
+              )}
+              {cartItems.map((item) => (
+                <div key={item.id} className="side-cart-item">
+                  <img src={item.image} alt={item.name} className="side-cart-thumb" />
+                  <div className="side-cart-info">
+                    <div className="side-cart-row">
+                      <span className="side-cart-name">{item.name}</span>
+                      <button className="side-cart-remove" onClick={() => removeFromCart(item.id)} aria-label="Remover">×</button>
+                    </div>
+                    <div className="side-cart-row">
+                      <div className="side-cart-qty">
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} aria-label="Diminuir">-</button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} aria-label="Aumentar">+</button>
+                      </div>
+                      <div className="side-cart-prices">
+                        <span className="side-cart-price">{formatPrice(item.price)}</span>
+                        <span className="side-cart-subtotal">{formatPrice(item.price * item.quantity)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="side-cart-footer">
+              <div className="side-cart-total-row">
+                <span>Total</span>
+                <strong>{formatPrice(getTotalPrice())}</strong>
+              </div>
+              <a href="/sacola" className="side-cart-button">Ir para a sacola</a>
+            </div>
+          </div>
+        </div>
       </div>
       <Footer />
     </>
