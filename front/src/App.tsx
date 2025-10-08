@@ -7,6 +7,7 @@ import CardapioPage from './pages/Cardapio'
 import Sacola from './pages/Sacola'
 import Usuario from './pages/Usuario'
 import MeusDados from './pages/MeusDados'
+import Entrega from './pages/Entrega'
 import Adm from './pages/Adm'
 import GerFunc from './pages/admin/GerenciarFuncionarios'
 import { CartProvider } from './contexts/CartContext'
@@ -27,6 +28,7 @@ export default function App() {
                 <Route path="/cardapio" element={<CardapioPage />} />
                 <Route path="/sobre" element={<SobreNos />} />
                 <Route path="/sacola" element={<Sacola />} />
+                <Route path="/entrega" element={<Entrega />} />
 
                 <Route path="/usuario" element={<Usuario />} />
                 <Route path="/usuario/dados" element={<MeusDados />} />

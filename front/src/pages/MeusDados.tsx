@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import '../styles/MeusDados.css';
 import douradoImg from '../assets/login/dourado.png';
 
@@ -65,42 +67,46 @@ const MeusDados: React.FC = () => {
   }, []);
 
   return (
-    <div className="dados-page">
-      <div className="dados-header">
-        <h1 className="dados-title">Dados pessoais</h1>
-        <img src={douradoImg} alt="" className="dados-divider" />
+    <>
+      <Header />
+      <div className="dados-page">
+        <div className="dados-header">
+          <h1 className="dados-title">Dados pessoais</h1>
+          <img src={douradoImg} alt="" className="dados-divider" />
+        </div>
+
+        <section className="dados-card">
+          <div className="col">
+            <label className="dados-label">Nome Completo:</label>
+            <input className="dados-input" value={usuario.nome} readOnly />
+
+            <label className="dados-label">CPF:</label>
+            <input className="dados-input" value={usuario.cpf || 'Não informado'} readOnly />
+
+            <label className="dados-label">Email:</label>
+            <input className="dados-input" value={usuario.email} readOnly />
+
+            <label className="dados-label">Senha:</label>
+            <div className="dados-password">**********</div>
+          </div>
+
+          <div className="col">
+            <label className="dados-label">Telefone:</label>
+            <input className="dados-input" value={usuario.telefone} readOnly />
+
+            <label className="dados-label">Endereço:</label>
+            <input className="dados-input" value={usuario.endereco} readOnly />
+
+            <label className="dados-label">Complemento</label>
+            <input className="dados-input" value={usuario.complemento} readOnly />
+
+            <label className="dados-label">Data de Nascimento:</label>
+            <input className="dados-input" value={usuario.data_nascimento} readOnly />
+          </div>
+        </section>
       </div>
-
-      <section className="dados-card">
-        <div className="col">
-          <label className="dados-label">Nome Completo:</label>
-          <input className="dados-input" value={usuario.nome} readOnly />
-
-          <label className="dados-label">CPF:</label>
-          <input className="dados-input" value={usuario.cpf || 'Não informado'} readOnly />
-
-          <label className="dados-label">Email:</label>
-          <input className="dados-input" value={usuario.email} readOnly />
-
-          <label className="dados-label">Senha:</label>
-          <div className="dados-password">**********</div>
-        </div>
-
-        <div className="col">
-          <label className="dados-label">Telefone:</label>
-          <input className="dados-input" value={usuario.telefone} readOnly />
-
-          <label className="dados-label">Endereço:</label>
-          <input className="dados-input" value={usuario.endereco} readOnly />
-
-          <label className="dados-label">Complemento</label>
-          <input className="dados-input" value={usuario.complemento} readOnly />
-
-          <label className="dados-label">Data de Nascimento:</label>
-          <input className="dados-input" value={usuario.data_nascimento} readOnly />
-        </div>
-      </section>
-    </div>
+      <Footer />
+    </>
   );
 };
 

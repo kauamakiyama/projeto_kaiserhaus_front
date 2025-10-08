@@ -1,7 +1,7 @@
 .dados-page {
   background: #F5F5DC;
   min-height: calc(100vh - var(--kh-footer-h, 60px));
-  padding-top: calc(var(--kh-header-h, 96px) + 32px);
+  padding-top: calc(var(--kh-header-h, 96px) + 72px);
   padding-bottom: 8px;
   display: flex;
   flex-direction: column;
