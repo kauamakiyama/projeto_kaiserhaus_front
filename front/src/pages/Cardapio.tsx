@@ -1,4 +1,6 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { ProductCard } from "../components/ProductCard";
 import { useCart } from "../contexts/CartContext";
 import "../styles/Cardapio.css";
@@ -138,215 +140,223 @@ const CardapioPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="menu-page">
-        <div className="menu-header">
-          <h1 className="menu-title">Cardápio</h1>
-          <img src={douradoImg} alt="" className="menu-divider" />
+      <>
+        <Header />
+        <div className="menu-page">
+          <div className="menu-header">
+            <h1 className="menu-title">Cardápio</h1>
+            <img src={douradoImg} alt="" className="menu-divider" />
+          </div>
+          <div style={{ textAlign: "center", padding: "2rem", color: "#472304" }}>
+            <p>Carregando produtos...</p>
+          </div>
         </div>
-        <div style={{ textAlign: "center", padding: "2rem", color: "#472304" }}>
-          <p>Carregando produtos...</p>
-        </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <div className="menu-page">
-      <div className="menu-header">
-        <h1 className="menu-title">Cardápio</h1>
-        <img src={douradoImg} alt="" className="menu-divider" />
-        <button className="bag-pill" type="button" aria-label="Ver sacola">
-          <span className="bag-amount">
-            {cartTotal.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })}
-          </span>
-          <span className="bag-text">Ver sacola</span>
-        </button>
-      </div>
-
-      {error && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "1rem",
-            backgroundColor: "#FEE2E2",
-            color: "#DC2626",
-            margin: "1rem",
-            borderRadius: "8px",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      <section className="category-strip" aria-label="Categorias">
-        {CATEGORIES.map((c) => (
-          <button
-            key={c.key}
-            data-key={c.key}
-            className={`category-chip ${selected === c.key ? "is-active" : ""}`}
-            onClick={() => goTo(c.key)}
-            type="button"
-          >
-            <span className="chip-thumb">
-              <img src={c.image} alt="" />
+    <>
+      <Header />
+      <div className="menu-page">
+        <div className="menu-header">
+          <h1 className="menu-title">Cardápio</h1>
+          <img src={douradoImg} alt="" className="menu-divider" />
+          <button className="bag-pill" type="button" aria-label="Ver sacola">
+            <span className="bag-amount">
+              {cartTotal.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
             </span>
-            <span className="chip-label">{c.label}</span>
+            <span className="bag-text">Ver sacola</span>
           </button>
-        ))}
-      </section>
+        </div>
 
-      <section className="best-section" aria-labelledby="best-title">
-        <h2 id="best-title" className="section-title with-accent">
-          Mais pedidos
-        </h2>
+        {error && (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "1rem",
+              backgroundColor: "#FEE2E2",
+              color: "#DC2626",
+              margin: "1rem",
+              borderRadius: "8px",
+            }}
+          >
+            {error}
+          </div>
+        )}
 
-        <div className="best-scroll">
-          {bestSellers.map((p) => (
-            <article key={p.id} className="best-card">
-              <img src={p.imageUrl} alt={p.name} className="best-thumb" />
-              <div className="best-info">
-                <h3 className="best-name">{p.name}</h3>
-                <div className="best-bottom">
-                  <span className="best-price">
-                    {p.price.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </span>
-                  <button
-                    className="best-add"
-                    onClick={() =>
-                      addToCart({
-                        id: p.id,
-                        name: p.name,
-                        price: p.price,
-                        image: p.imageUrl,
-                        category: p.category,
-                      })
-                    }
-                    aria-label={`Adicionar ${p.name}`}
-                    type="button"
-                  >
-                    +
-                  </button>
+        <section className="category-strip" aria-label="Categorias">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.key}
+              data-key={c.key}
+              className={`category-chip ${selected === c.key ? "is-active" : ""}`}
+              onClick={() => goTo(c.key)}
+              type="button"
+            >
+              <span className="chip-thumb">
+                <img src={c.image} alt="" />
+              </span>
+              <span className="chip-label">{c.label}</span>
+            </button>
+          ))}
+        </section>
+
+        <section className="best-section" aria-labelledby="best-title">
+          <h2 id="best-title" className="section-title with-accent">
+            Mais pedidos
+          </h2>
+
+          <div className="best-scroll">
+            {bestSellers.map((p) => (
+              <article key={p.id} className="best-card">
+                <img src={p.imageUrl} alt={p.name} className="best-thumb" />
+                <div className="best-info">
+                  <h3 className="best-name">{p.name}</h3>
+                  <div className="best-bottom">
+                    <span className="best-price">
+                      {p.price.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </span>
+                    <button
+                      className="best-add"
+                      onClick={() =>
+                        addToCart({
+                          id: p.id,
+                          name: p.name,
+                          price: p.price,
+                          image: p.imageUrl,
+                          category: p.category,
+                        })
+                      }
+                      aria-label={`Adicionar ${p.name}`}
+                      type="button"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section
-        ref={(el: HTMLDivElement | null) => {
-          sectionRefs.current.entradas = el;
-        }}
-        id="entradas"
-        className="menu-section"
-        aria-labelledby="entradas-title"
-      >
-        <h2 id="entradas-title" className="section-title">
-          Entradas
-        </h2>
-        <div className="product-list product-list--grid">
-          {byCategory.entradas.map((p) => (
-            <ProductCard
-              key={p.id}
-              id={p.id}
-              name={p.name}
-              description={p.description}
-              price={p.price}
-              imageUrl={p.imageUrl}
-              category={p.category}
-              variant="card"
-            />
-          ))}
-        </div>
-      </section>
+        <section
+          ref={(el: HTMLDivElement | null) => {
+            sectionRefs.current.entradas = el;
+          }}
+          id="entradas"
+          className="menu-section"
+          aria-labelledby="entradas-title"
+        >
+          <h2 id="entradas-title" className="section-title">
+            Entradas
+          </h2>
+          <div className="product-list product-list--grid">
+            {byCategory.entradas.map((p) => (
+              <ProductCard
+                key={p.id}
+                id={p.id}
+                name={p.name}
+                description={p.description}
+                price={p.price}
+                imageUrl={p.imageUrl}
+                category={p.category}
+                variant="card"
+              />
+            ))}
+          </div>
+        </section>
 
-      <section
-        ref={(el: HTMLDivElement | null) => {
-          sectionRefs.current.pratos = el;
-        }}
-        id="pratos"
-        className="menu-section"
-        aria-labelledby="pratos-title"
-      >
-        <h2 id="pratos-title" className="section-title">
-          Pratos
-        </h2>
-        <div className="product-list product-list--grid">
-          {byCategory.pratos.map((p) => (
-            <ProductCard
-              key={p.id}
-              id={p.id}
-              name={p.name}
-              description={p.description}
-              price={p.price}
-              imageUrl={p.imageUrl}
-              category={p.category}
-              variant="card"
-            />
-          ))}
-        </div>
-      </section>
+        <section
+          ref={(el: HTMLDivElement | null) => {
+            sectionRefs.current.pratos = el;
+          }}
+          id="pratos"
+          className="menu-section"
+          aria-labelledby="pratos-title"
+        >
+          <h2 id="pratos-title" className="section-title">
+            Pratos
+          </h2>
+          <div className="product-list product-list--grid">
+            {byCategory.pratos.map((p) => (
+              <ProductCard
+                key={p.id}
+                id={p.id}
+                name={p.name}
+                description={p.description}
+                price={p.price}
+                imageUrl={p.imageUrl}
+                category={p.category}
+                variant="card"
+              />
+            ))}
+          </div>
+        </section>
 
-      <section
-        ref={(el: HTMLDivElement | null) => {
-          sectionRefs.current.Sobremesas = el;
-        }}
-        id="Sobremesas"
-        className="menu-section"
-        aria-labelledby="Sobremesas-title"
-      >
-        <h2 id="Sobremesas-title" className="section-title">
-          Sobremesas
-        </h2>
-        <div className="product-list product-list--grid">
-          {byCategory.Sobremesas.map((p) => (
-            <ProductCard
-              key={p.id}
-              id={p.id}
-              name={p.name}
-              description={p.description}
-              price={p.price}
-              imageUrl={p.imageUrl}
-              category={p.category}
-              variant="card"
-            />
-          ))}
-        </div>
-      </section>
+        <section
+          ref={(el: HTMLDivElement | null) => {
+            sectionRefs.current.Sobremesas = el;
+          }}
+          id="Sobremesas"
+          className="menu-section"
+          aria-labelledby="Sobremesas-title"
+        >
+          <h2 id="Sobremesas-title" className="section-title">
+            Sobremesas
+          </h2>
+          <div className="product-list product-list--grid">
+            {byCategory.Sobremesas.map((p) => (
+              <ProductCard
+                key={p.id}
+                id={p.id}
+                name={p.name}
+                description={p.description}
+                price={p.price}
+                imageUrl={p.imageUrl}
+                category={p.category}
+                variant="card"
+              />
+            ))}
+          </div>
+        </section>
 
-      <section
-        ref={(el: HTMLDivElement | null) => {
-          sectionRefs.current.bebidas = el;
-        }}
-        id="bebidas"
-        className="menu-section"
-        aria-labelledby="bebidas-title"
-      >
-        <h2 id="bebidas-title" className="section-title">
-          Bebidas
-        </h2>
-        <div className="product-list product-list--grid">
-          {byCategory.bebidas.map((p) => (
-            <ProductCard
-              key={p.id}
-              id={p.id}
-              name={p.name}
-              description={p.description}
-              price={p.price}
-              imageUrl={p.imageUrl}
-              category={p.category}
-              variant="card"
-            />
-          ))}
-        </div>
-      </section>
-    </div>
+        <section
+          ref={(el: HTMLDivElement | null) => {
+            sectionRefs.current.bebidas = el;
+          }}
+          id="bebidas"
+          className="menu-section"
+          aria-labelledby="bebidas-title"
+        >
+          <h2 id="bebidas-title" className="section-title">
+            Bebidas
+          </h2>
+          <div className="product-list product-list--grid">
+            {byCategory.bebidas.map((p) => (
+              <ProductCard
+                key={p.id}
+                id={p.id}
+                name={p.name}
+                description={p.description}
+                price={p.price}
+                imageUrl={p.imageUrl}
+                category={p.category}
+                variant="card"
+              />
+            ))}
+          </div>
+        </section>
+      </div>
+      <Footer />
+    </>
   );
 };
 

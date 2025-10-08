@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import "../styles/Home.css";
-
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import hero from "../assets/home/Imagem principal.png";
 import emblem from "../assets/home/Logo da KaizerHaus.png";
 import imgSalao from "../assets/home/Restaurante interno.png";
@@ -12,6 +13,7 @@ import bandeira from "../assets/home/Bandeira da Alemanha de fundo.png";
 export default function Home() {
   return (
     <>
+      <Header />
       <section className="kh-hero" style={{ backgroundImage: `url(${hero})` }}>
         <div className="kh-hero__overlay" />
 
@@ -112,6 +114,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 }

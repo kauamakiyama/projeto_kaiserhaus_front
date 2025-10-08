@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/Header.css';
 
 const Header: React.FC = () => {
   const [activeLink, setActiveLink] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/') setActiveLink('');
-    else if (path === '/cardapio') setActiveLink('cardapio');
-    else if (path === '/login') setActiveLink('login');
-    else setActiveLink('');
+    if (path === '/') {
+      setActiveLink('');
+    } else if (path === '/cardapio') {
+      setActiveLink('cardapio');
+    } else if (path === '/admin') {
+      setActiveLink('admin');
+    } else {
+      setActiveLink('');
+    }
   }, [location]);
 
   const handleLinkClick = (linkName: string) => {
@@ -25,43 +32,60 @@ const Header: React.FC = () => {
       <div className="header-container">
         <div className="logo-container">
           <Link to="/" onClick={() => handleLinkClick('sobre')}>
-            <img
-              src="/src/assets/header/image 91.png"
-              alt="KaizerHaus Logo"
+            <img 
+              src="/src/assets/header/image 91.png" 
+              alt="KaizerHaus Logo" 
               className="logo"
             />
           </Link>
         </div>
-
+        
         <nav className={`navigation ${isMobileMenuOpen ? 'active' : ''}`}>
-          <Link
-            to="/sobre"
+          <Link 
+            to="/sobre" 
             className={`nav-link ${activeLink === 'sobre' ? 'active' : ''}`}
             onClick={() => handleLinkClick('sobre')}
           >
             Sobre Nós
           </Link>
-
-          <Link
-            to="/cardapio"
+          <Link 
+            to="/cardapio" 
             className={`nav-link ${activeLink === 'cardapio' ? 'active' : ''}`}
             onClick={() => handleLinkClick('cardapio')}
           >
             Cardápio
           </Link>
-          <Link
-            to="/login"
-            className={`nav-link login-link ${activeLink === 'login' ? 'active' : ''}`}
-            onClick={() => handleLinkClick('login')}
-            aria-label="Entrar"
-          >
-            <img src="/src/assets/header/perfil.png" alt="" className="login-avatar" />
-            <span className="sr-only">Entrar</span>
-          </Link>
+          {isAuthenticated ? (
+            <Link 
+              to="/sobre" 
+              className={`nav-link ${activeLink === 'profile' ? 'active' : ''}`}
+              onClick={() => handleLinkClick('profile')}
+            >
+              <img 
+                src="/src/assets/header/Group 78.png" 
+                alt="Perfil" 
+                style={{ width: 28, height: 28, borderRadius: '50%', transform: 'translateY(2px)' }}
+              />
+            </Link>
+          ) : (
+            <Link 
+              to="/admin" 
+              className={`nav-link ${activeLink === 'admin' ? 'active' : ''}`}
+              onClick={() => handleLinkClick('admin')}
+            >
+              <img 
+                src="/src/assets/header/Group 78.png" 
+                alt="Perfil" 
+                style={{ width: 28, height: 28, borderRadius: '50%', transform: 'translateY(2px)' }}
+              />
+            </Link>
+          )}
+          
         </nav>
-
-        <button
-          className={`mobile-menu-toggle ${isMobileMenuOpen ? 'active' : ''}`}
+        
+        {/* Menu hambúrguer para mobile */}
+        <button 
+          className={`mobile-menu-toggle ${isMobileMenuOpen ? 'active' : ''}`} 
           aria-label="Menu"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >

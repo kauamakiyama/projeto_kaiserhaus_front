@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import douradoImg from '../assets/login/dourado.png';
@@ -67,6 +69,7 @@ const Login: React.FC = () => {
 
   return (
     <>
+      <Header />
       <div className="login-page">
         <div className="login-container">
           <div className="login-header">
@@ -134,6 +137,7 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
