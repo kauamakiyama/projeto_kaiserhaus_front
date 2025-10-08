@@ -8,6 +8,7 @@ import Sacola from './pages/Sacola'
 import Usuario from './pages/Usuario'
 import MeusDados from './pages/MeusDados'
 import Adm from './pages/Adm'
+import GerFunc from './pages/admin/GerenciarFuncionarios'
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import './App.css'
@@ -31,7 +32,8 @@ export default function App() {
                 <Route path="/usuario/dados" element={<MeusDados />} />
 
                 <Route path="/admin" element={<Adm />} />
-                
+                <Route path="/admin/funcionarios" element={<GerFunc />} />
+
               </Routes>
             </main>
           </div>

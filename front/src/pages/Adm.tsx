@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Header from "../components/HeaderLogadoLoja.tsx";
 import Footer from "../components/Footer";
 import "../styles/Adm.css";
+import {Link} from "react-router-dom";
 import douradoImg from "../assets/login/dourado.png";
 
 const Adm: React.FC = () => {
@@ -10,7 +11,6 @@ const Adm: React.FC = () => {
   const goHistorico = () => console.log("Ir para Histórico de pedidos");
   const goAvaliacoes = () => console.log("Ir para Avaliações");
   const goCardapio = () => console.log("Ir para Gerenciar Cardápio");
-  const goFuncionarios = () => console.log("Ir para Funcionários");
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +43,9 @@ const Adm: React.FC = () => {
               <button className="adm-nav-btn" onClick={goCardapio}>
                 Gerenciar Cardápio
               </button>
-              <button className="adm-nav-btn" onClick={goFuncionarios}>
+              <Link className="adm-nav-btn" to="/admin/funcionarios">
                 Funcionários
-              </button>
+              </Link>
             </nav>
 
             <div className="adm-sep" aria-hidden />
