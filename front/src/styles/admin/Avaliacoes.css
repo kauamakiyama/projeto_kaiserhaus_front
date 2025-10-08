@@ -1,0 +1,201 @@
+:root{
+  --kh-container: 1200px;
+
+  --kh-cream-10: var(--cream-10, #f9f5df);
+  --kh-cream-25: var(--cream-25, #fbf9ec);
+  --kh-cream-40: var(--cream-40, #f4e9cf);
+
+  --kh-brown-950: var(--brown-950, #3b160a);
+  --kh-brown-900: var(--brown-900, #4a1f0e);
+  --kh-brown-800: var(--brown-800, #5b2a15);
+
+  --kh-gold-500: var(--gold-500, #d4a017);
+
+  --kh-text: var(--text, #2a241f);
+
+  --kh-radius-lg: 18px;
+  --kh-radius-xl: 24px;
+
+  --kh-shadow-soft: 0 8px 22px rgba(0,0,0,.10);
+  --kh-shadow-card: 0 12px 28px rgba(0,0,0,.16);
+
+  --kh-header-h: 72px;
+}
+
+/* ===== Página ===== */
+.ratings-page{
+  min-height: 100dvh;
+  background: var(--kh-cream-25);
+  padding: clamp(1.5rem, 2vw, 2rem);
+  padding-top: var(--kh-header-h);
+}
+
+/* ===== Hero ===== */
+.ratings-hero{
+  padding: 48px 16px 8px;
+  display: grid;
+  place-items: center;
+}
+.ratings-title{
+  font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--kh-brown-900);
+  margin: 0;
+  line-height: 1.1;
+}
+.ratings-divider{
+  width: 160px;
+  height: 12px;
+  margin-top: 10px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--kh-gold-500) 15%,
+    var(--kh-gold-500) 85%,
+    transparent 100%
+  );
+  mask: radial-gradient(8px 6px at center, #000 45%, transparent 46%) center/28px 12px repeat-x;
+  opacity: .9;
+}
+
+/* ===== Painel/lista ===== */
+.ratings-wrap{
+  max-width: var(--kh-container);
+  margin: 22px auto 64px;
+  padding: 24px 18px 32px;
+  background: #dcd8c2;
+  border-radius: var(--kh-radius-xl);
+  box-shadow: var(--kh-shadow-soft);
+  border: 2px solid rgba(0,0,0,.06);
+
+  /* Altura constante + scroll interno */
+  height: clamp(520px, 68vh, 700px);
+  display: flex;
+  flex-direction: column;
+}
+
+.ratings-controls{
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+  flex: 0 0 auto; /* não crescer */
+}
+.select-group{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ===== Selects ===== */
+.kh-select{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  color: var(--kh-brown-900);
+  font-size: 14px;
+  padding: 10px 36px 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04) inset;
+  cursor: pointer;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--kh-brown-900) 50%),
+    linear-gradient(135deg, var(--kh-brown-900) 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) 50%,
+    calc(100% - 11px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+.kh-select:focus{
+  outline: 3px solid rgba(212,160,23,.25);
+  border-color: var(--kh-gold-500);
+}
+/* Larguras fixas p/ não variar com o texto */
+#rating-select.kh-select{ width: 92px; }
+#time-select.kh-select{   width: 118px; }
+#sort-select.kh-select{   width: 96px; }
+
+/* ===== Lista ===== */
+.ratings-list{
+  list-style: none;
+  margin: 0;
+  padding: 6px 0 0;
+  display: grid;
+  gap: 12px;
+
+  /* scroll interno estável */
+  flex: 1 1 auto;
+  min-height: 0; /* essencial em layouts flex */
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
+  padding-inline-end: 12px; /* reserva pro scroll */
+  padding-bottom: 8px;       /* evita cortar sombra do último card */
+  box-sizing: border-box;
+}
+
+/* ===== Card ===== */
+.rating-card{
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: var(--kh-shadow-card);
+  border: 1px solid rgba(0,0,0,.06);
+  min-height: 96px; /* estável */
+  box-sizing: border-box;
+}
+
+/* Cabeçalho do card: texto (1fr) + estrelas (fixo) */
+.rating-card__row{
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  align-items: center;
+  gap: 12px;
+}
+
+.rating-user{
+  margin: 0 0 6px 0;
+  color: var(--kh-text);
+}
+.rating-comment{
+  margin: 0;
+  color: var(--kh-text);
+}
+.rating-empty{
+  text-align: center;
+  color: var(--kh-brown-800);
+  padding: 18px 0 8px;
+}
+
+/* Estrelas fixas à direita (não quebram) */
+.kh-stars{
+  justify-self: end;
+  width: 120px;
+  min-width: 120px;
+  display: inline-flex;
+  gap: 4px;
+}
+.kh-star{ fill: #e6e6e6; }
+.kh-star.is-filled{ fill: var(--kh-gold-500); }
+
+/* Acessibilidade */
+.sr-only{
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 720px){
+  .ratings-wrap{
+    margin: 12px 12px 56px;
+    padding: 18px 14px 24px;
+    height: clamp(460px, 70vh, 640px);
+  }
+  .rating-card{ padding: 12px 12px; }
+}
