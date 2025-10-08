@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Header from "../../components/HeaderLogadoLoja";
 import Footer from "../../components/Footer";
 import "../../styles/admin/GerenciarFuncionarios.css";
+import douradoImg from "../../assets/login/dourado.png";
 
 type Cargo = "ADMIN" | "COLABORADOR";
 type Status = "ATIVO" | "INATIVO";
@@ -191,7 +192,12 @@ const GerenciarFuncionarios: React.FC = () => {
         <main className="gf-page">
         <div className="gf-header">
             <h1 className="gf-title">Gerenciar Funcionários</h1>
-            <div className="gf-title-ornament" aria-hidden />
+            <img
+              src={douradoImg}
+              alt=""
+              aria-hidden
+              className="adm-divider-img"
+            />
         </div>
 
         <section className="gf-panel">

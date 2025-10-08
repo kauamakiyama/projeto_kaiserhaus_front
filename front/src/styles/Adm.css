@@ -1,7 +1,6 @@
-/* ===== Alturas padrão do layout (iguais ao Login) ===== */
 :root{
-  --kh-header-h: 96px;      /* altura do header fixo */
-  --kh-footer-h: 260px;     /* altura do footer */
+  --kh-header-h: 96px;
+  --kh-footer-h: 260px;
   --kh-brown-900: var(--brown-900, #4a1f0e);
   --kh-brown-800: var(--brown-800, #5b2a15);
   --kh-brown-700: var(--brown-700, #6a351d);
@@ -13,15 +12,14 @@
   --kh-shadow-card: 0 10px 22px rgba(0,0,0,.15);
 }
 
-/* ===== Página ===== */
 .adm-page{
   min-height: calc(100vh - var(--kh-footer-h));
-  background: #F5F5DC; /* bege do layout */
+  background: #F5F5DC;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 4.5rem 2rem;
-  padding-top: calc(var(--kh-header-h) + 1.5rem); /* não deixar o header cortar */
+  padding-top: calc(var(--kh-header-h) + 1.5rem);
 }
 
 .adm-wrapper{
@@ -29,7 +27,6 @@
   max-width: 1100px;
 }
 
-/* ===== Cabeçalho: título + ornamento ===== */
 .adm-header{
   text-align: center;
   margin-bottom: 1.25rem;
@@ -51,19 +48,17 @@
   height: auto;
 }
 
-/* ===== Painel principal ===== */
 .adm-panel{
   display: grid;
-  grid-template-columns: 290px 1px 1fr; /* sidebar | divisor | conteúdo */
+  grid-template-columns: 290px 1px 1fr;
   gap: 0;
-  background: #e0dccb; /* leve textura/bege dentro do cartão */
+  background: #e0dccb;
   border: 2px solid var(--kh-brown-900);
   border-radius: 12px;
   padding: 1.25rem;
   box-shadow: var(--kh-shadow-card);
 }
 
-/* ===== Sidebar com botões ===== */
 .adm-sidebar{
   display: flex;
   flex-direction: column;
@@ -79,7 +74,7 @@
   padding: .9rem 1.2rem;
   border-radius: 10px;
   background: var(--kh-brown-900);
-  color: #f8e9bf; /* levemente mais claro que o gold */
+  color: #f8e9bf;
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: .2px;
@@ -97,14 +92,12 @@
   box-shadow: 0 2px 0 rgba(0,0,0,.25), 0 6px 10px rgba(0,0,0,.14);
 }
 
-/* ===== Divisor vertical ===== */
 .adm-sep{
   width: 1px;
-  background: #2b1a0d88; /* marrom com transparência */
+  background: #2b1a0d88;
   margin: .25rem 1rem;
 }
 
-/* ===== Conteúdo à direita ===== */
 .adm-content{
   padding: .25rem .25rem .25rem 1rem;
   display: flex;
@@ -112,7 +105,6 @@
   gap: 1rem;
 }
 
-/* Barra de busca */
 .adm-search{
   display: flex;
   align-items: center;
@@ -143,16 +135,13 @@
   color: #7b6b58;
 }
 
-/* Espaço para render futuro (tabela/lista) */
 .adm-content-placeholder{
   min-height: 320px;
   border-radius: 10px;
-  /* apenas um fundo discreto */
   background: radial-gradient(1000px 300px at 85% -50%, rgba(71,35,4,.06), transparent 60%),
               radial-gradient(800px 300px at -20% 120%, rgba(212,160,23,.10), transparent 50%);
 }
 
-/* ===== Responsividade ===== */
 @media (max-width: 960px){
   .adm-panel{
     grid-template-columns: 1fr;
