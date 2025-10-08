@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { Link } from 'react-router-dom';
-import Footer from '../components/Footer';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Register.css';
 
@@ -133,6 +134,7 @@ const Register: React.FC = () => {
 
   return (
     <>
+      <Header />
       <div className="register-page">
         <div className="register-container">
           <div className="register-header">

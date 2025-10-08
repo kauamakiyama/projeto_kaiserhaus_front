@@ -1,6 +1,6 @@
 import "../styles/SobreNos.css";
-
-/* Reaproveitando imagens que vc já tem na pasta /assets/sobrenos */
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import hero from "../assets/sobrenos/sobrenosfundo.png";
 import background1 from "../assets/sobrenos/background1.png";
 import melhordesp from "../assets/sobrenos/melhordesp.png";
@@ -15,7 +15,7 @@ import delivery from "../assets/sobrenos/delivery.png";
 export default function SobreNos() {
   return (
     <>
-      {/* HERO */}
+      <Header />
       <section
         className="about-hero"
         style={{ backgroundImage: `url(${hero})` }}
@@ -23,16 +23,13 @@ export default function SobreNos() {
         <div className="about-hero__overlay" />
 
         <div className="about-hero__content container">
-          {/* Título + linha dourada como no Figma */}
           <h1 className="about-hero__title">Nossa História</h1>
 
-          {/* Subtítulo mais largo e legível */}
           <p className="about-hero__subtitle">
             Nosso compromisso é proporcionar uma vivência alemã completa no
             conforto do seu lar
           </p>
 
-          {/* Medalhas */}
           <ul className="about-pillars" role="list">
             <li className="about-pillars__item">
               <figure className="about-medal">
@@ -61,12 +58,10 @@ export default function SobreNos() {
         </div>
       </section>
 
-      {/* TRADIÇÃO + CULINÁRIA dentro de um mesmo fundo */}
       <section
         className="about-band"
-        style={{ ["--band-bg" as any]: `url(${background1})` }} // use a imagem que quiser
+        style={{ ["--band-bg" as any]: `url(${background1})` }}
       >
-        {/* TRADIÇÃO */}
         <section className="about-section in-band">
           <div className="container about-section__inner">
             <header className="about-section__header">
@@ -92,7 +87,6 @@ export default function SobreNos() {
           </div>
         </section>
 
-        {/* CULINÁRIA DE QUALIDADE */}
         <section className="about-section in-band alt">
           <div className="container about-section__inner">
             <header className="about-section__header">
@@ -119,7 +113,6 @@ export default function SobreNos() {
       </section>
 
 
-      {/* NOSSA EVOLUÇÃO (igual ao Figma) */}
       <section
         className="about-evolution"
         style={{ ["--evo-bg" as any]: `url(${background1})` }}
@@ -130,7 +123,6 @@ export default function SobreNos() {
             <span className="evo-divider" aria-hidden />
           </header>
 
-          {/* Linha 1: texto + foto cozinheiros */}
           <div className="evo-grid">
             <div className="evo-text">
               <p>
@@ -146,7 +138,6 @@ export default function SobreNos() {
             </figure>
           </div>
 
-          {/* Linha 2: pôster + texto */}
           <div className="evo-grid">
             <figure className="evo-media-melhordesp">
               <img src={melhordesp} alt="O Melhor de São Paulo — Gastronomia" loading="lazy" />
@@ -166,7 +157,6 @@ export default function SobreNos() {
       </section>
 
 
-      {/* ENTREGA / DELIVERY — igual ao Figma */}
       <section
         className="about-delivery"
         style={{ ["--delivery-bg" as any]: `url(${background1})` }}
@@ -195,7 +185,7 @@ export default function SobreNos() {
           </div>
         </div>
       </section>
-
+      <Footer />
     </>
   );
 }
