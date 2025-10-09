@@ -22,6 +22,11 @@
   font-size: clamp(2rem, 4.5vw, 2.75rem);
   color: #4a1f0e;
   font-weight: 700;
+  font-family: serif;
+}
+.usuario-divider { 
+  width: 10rem; 
+  opacity: .9; 
 }
 .usuario-divider { width: 10rem; opacity: .9; }
 
@@ -90,4 +95,7 @@
   }
   .usuario-logoff { justify-items: stretch; }
   .logoff-btn { justify-self: end; }
+  .usuario-header {
+    margin-bottom: 1.5rem;
+  }
 }

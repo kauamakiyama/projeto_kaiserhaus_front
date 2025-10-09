@@ -94,8 +94,9 @@
   margin: 0;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 700;
-  color: var(--kh-brown-900);
+  color: #472304;
   text-align: center;
+  font-family: serif;
 }
 
 .menu-divider {
@@ -332,6 +333,9 @@
   .product-list--grid {
     grid-template-columns: 1fr;
     gap: 0.25rem;
+  }
+  .menu-header {
+    margin-bottom: 1.5rem;
   }
 }
 

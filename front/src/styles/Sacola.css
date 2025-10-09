@@ -8,6 +8,12 @@
   gap: 2rem;
   max-width: 75rem;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
 }
 
 .progress-bar {
@@ -319,12 +325,16 @@
 
 @media (max-width: 48rem) {
   .sacola-page {
-    padding: 1rem 0.5rem;
+    padding: calc(var(--kh-header-h, 96px) + 20px) 1rem 1rem;
     gap: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .progress-bar {
-    gap: 0.5rem;
+    gap: 8px;
+    margin: 40px auto 24px;
+    width: 90%;
   }
   
   .step-icon {
@@ -343,7 +353,8 @@
   
   .cart-content {
     padding: 1.5rem;
-    margin: 0 0.5rem;
+    margin: 0 auto;
+    max-width: calc(100% - 1rem);
   }
   
   .cart-title {
@@ -379,6 +390,9 @@
   .progress-bar {
     flex-wrap: wrap;
     justify-content: center;
+    gap: 6px;
+    margin: 40px auto 20px;
+    width: 90%;
   }
   
   .progress-line {

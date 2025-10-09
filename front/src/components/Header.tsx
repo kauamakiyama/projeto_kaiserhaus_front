@@ -79,8 +79,25 @@ const Header: React.FC = () => {
               Log-in
             </Link>
           )}
+
+          {/* Carrinho como botão no menu mobile */}
+          <Link
+            to="/sacola"
+            className={`nav-link cart-mobile-link ${activeLink === 'sacola' ? 'active' : ''}`}
+            onClick={() => handleLinkClick('sacola')}
+            aria-label="Carrinho de compras"
+          >
+            <img 
+              src="/src/assets/header/shopping-cart.png" 
+              alt="Carrinho" 
+              className="cart-mobile-icon" 
+            />
+            {getTotalItems() > 0 && (
+              <span className="cart-mobile-badge">{getTotalItems()}</span>
+            )}
+          </Link>
           
-          {/* Carrinho de compras dentro da navegação */}
+          {/* Carrinho de compras dentro da navegação desktop */}
           <div className="cart-container">
             <Link to="/sacola" className="cart-button" aria-label="Carrinho de compras">
               <img 
