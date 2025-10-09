@@ -36,6 +36,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     setToken(null);
+    // Limpa o carrinho ao fazer logout
+    try {
+      localStorage.removeItem('kaizerhaus-cart');
+    } catch (error) {
+      console.error('Erro ao limpar carrinho no logout:', error);
+    }
   };
 
   const value = useMemo<AuthContextType>(() => ({

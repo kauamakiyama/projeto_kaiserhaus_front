@@ -1,3 +1,4 @@
+
 import React, { useEffect, useMemo, useState } from "react";
 import Header from "../../components/HeaderLogadoLoja";
 import Footer from "../../components/Footer";
@@ -351,3 +352,4 @@ const GerenciarFuncionarios: React.FC = () => {
 };
 
 export default GerenciarFuncionarios;
+

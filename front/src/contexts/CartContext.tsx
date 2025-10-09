@@ -7,6 +7,7 @@ export interface CartItem {
   quantity: number;
   image: string;
   category?: string;
+  observacoes?: string;
 }
 
 interface CartContextType {
@@ -14,6 +15,7 @@ interface CartContextType {
   addToCart: (item: Omit<CartItem, 'quantity'>) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updateObservacoes: (id: string, observacoes: string) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -103,6 +105,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   };
 
+  const updateObservacoes = (id: string, observacoes: string) => {
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.id === id ? { ...item, observacoes } : item
+      )
+    );
+  };
+
   const clearCart = () => {
     setCartItems([]);
     try {
@@ -136,6 +146,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     addToCart,
     removeFromCart,
     updateQuantity,
+    updateObservacoes,
     clearCart,
     getTotalItems,
     getTotalPrice,

@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../styles/PixPagamento.css';
 import { ProgressSteps } from '../components/ProgressSteps';
+import { apiGet } from '../services/api';
 
 const PixPagamento: React.FC = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   
-  // Código PIX simulado (em uma aplicação real, viria do backend)
-  const pixCode = "00020126580014BR.GOV.BCB.PIX0114+5511999999999520400005303986540510.005802BR5913KaiserHaus LTDA6009Sao Paulo62070503***63041D3D";
+  // Carrega dados do PIX gerados na etapa anterior
+  const pixData = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('kh-pix');
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as { copiaECola: string; qrcode: string };
+      console.log('PIX data loaded:', { hasQrcode: !!parsed.qrcode, hasCopiaECola: !!parsed.copiaECola });
+      return parsed;
+    } catch (e) {
+      console.error('Erro ao carregar dados PIX:', e);
+      return null;
+    }
+  }, []);
 
   const handleCopyPixCode = async () => {
     try {
-      await navigator.clipboard.writeText(pixCode);
+      await navigator.clipboard.writeText(pixData?.copiaECola || '');
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -44,6 +56,7 @@ const PixPagamento: React.FC = () => {
                   src="/src/assets/pagamento/qrcode.png" 
                   alt="QR Code PIX" 
                   className="qr-image"
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
                 />
               </div>
             </div>

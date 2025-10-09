@@ -11,6 +11,7 @@ import Entrega from './pages/Entrega'
 import Pagamento from './pages/Pagamento'
 import PixPagamento from './pages/PixPagamento'
 import Conclusao from './pages/Conclusao'
+import HistoricoPedidos from './pages/HistoricoPedidos'
 import Adm from './pages/Adm'
 import GerFunc from './pages/admin/GerenciarFuncionarios'
 import GerCateg from './pages/admin/GerenciarCategorias'
@@ -41,6 +42,7 @@ export default function App() {
 
                 <Route path="/usuario" element={<Usuario />} />
                 <Route path="/usuario/dados" element={<MeusDados />} />
+                <Route path="/historico-pedidos" element={<HistoricoPedidos />} />
 
                 <Route path="/admin" element={<Adm />} />
                 <Route path="/admin/funcionarios" element={<GerFunc />} />

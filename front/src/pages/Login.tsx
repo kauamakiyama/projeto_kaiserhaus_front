@@ -39,11 +39,16 @@ const Login: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('Login realizado com sucesso!');
-        const tokenGuess = (data as any).token || (data as any).access_token || (data as any).jwt || (data as any).authToken || 'session';
+        const tokenFromApi = (data as any)?.token as string | undefined;
+        if (!tokenFromApi) {
+          setError('API não retornou token no login.');
+          setIsLoading(false);
+          return;
+        }
         // persiste token e um snapshot do usuário retornado para uso em "Meus dados"
         try { localStorage.setItem('user', JSON.stringify((data as any).usuario || (data as any).user || data)); } catch {}
-        login(tokenGuess);
+        login(tokenFromApi);
+        setSuccess('Login realizado com sucesso!');
         const role = (data as any).hierarquia || (data as any).user?.hierarquia || (data as any).usuario?.hierarquia || 'usuario';
         if (role === 'usuario') {
           navigate('/', { replace: true });
