@@ -1,5 +1,4 @@
-<<<<<<< Updated upstream
-=======
+
 import React, { useEffect, useMemo, useState } from "react";
 import Header from "../../components/HeaderLogadoLoja";
 import Footer from "../../components/Footer";
@@ -159,6 +158,7 @@ const GerenciarFuncionarios: React.FC = () => {
           setLista((prev) => [novo, ...prev]);
         }
       } else {
+        // TODO back: POST/PUT
       }
       setModalAberto(false);
     } finally {
@@ -173,6 +173,7 @@ const GerenciarFuncionarios: React.FC = () => {
         prev.map((p) => (p.id === f.id ? { ...p, status: novo } : p))
       );
     } else {
+      // TODO back: PATCH status
     }
   };
 
@@ -181,6 +182,7 @@ const GerenciarFuncionarios: React.FC = () => {
     if (USE_MOCK) {
       setLista((prev) => prev.filter((p) => p.id !== id));
     } else {
+      // TODO back: DELETE
     }
   };
 
@@ -350,4 +352,4 @@ const GerenciarFuncionarios: React.FC = () => {
 };
 
 export default GerenciarFuncionarios;
->>>>>>> Stashed changes
+
