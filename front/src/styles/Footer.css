@@ -1,12 +1,12 @@
 .footer {
-  background-color: #472304; /* Marrom escuro personalizado */
-  border-top: 2px solid #5A2D04; /* Marrom mais claro para a borda */
+  background-color: #472304;
+  border-top: 0.125rem solid #5A2D04;
   padding: 0.75rem 0;
   margin-top: auto;
 }
 
 .footer-container {
-  max-width: 1200px;
+  max-width: 75rem;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -27,12 +27,12 @@
 }
 
 .section-title {
-  color: #E1C16E; /* Dourado personalizado */
+  color: #E1C16E;
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
   padding-bottom: 0.3rem;
-  border-bottom: 2px solid #E1C16E; /* Dourado personalizado */
+  border-bottom: 0.125rem solid #E1C16E;
   display: inline-block;
   width: fit-content;
 }
@@ -52,8 +52,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   background-color: rgba(225, 193, 110, 0.2);
   color: #E1C16E;
@@ -100,8 +100,7 @@
   color: #F5E6A8;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .footer {
     padding: 0.5rem 0;
   }
@@ -129,12 +128,12 @@
   
   .contact-icon,
   .social-icon {
-    width: 28px;
-    height: 28px;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30rem) {
   .footer {
     padding: 1rem 0;
   }
@@ -160,16 +159,15 @@
   
   .contact-icon,
   .social-icon {
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 
-/* Animações */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(1.25rem);
   }
   to {
     opacity: 1;

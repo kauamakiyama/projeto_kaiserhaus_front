@@ -1,26 +1,26 @@
 .usuario-page {
-  max-width: 1200px;
+  max-width: 75rem;
   margin: 0 auto;
-  padding: 28px 24px 8px; /* reduz espaço inferior */
-  background-color: #F5F5DC; /* mesmo fundo do login */
-  min-height: auto; /* evita empurrar o footer para baixo demais */
+  padding: 1.75rem 1.5rem 0.5rem;
+  background-color: #F5F5DC;
+  min-height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: calc(var(--kh-header-h, 96px) + 32px); /* mesmo espaçamento do login/cadastro */
+  padding-top: calc(var(--kh-header-h, 6rem) + 2rem);
 }
 
 .usuario-header {
   display: grid;
   justify-items: center;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 .usuario-title {
   margin: 0;
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  color: #472304;
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  color: #4a1f0e;
   font-weight: 700;
   font-family: serif;
 }
@@ -28,39 +28,39 @@
   width: 10rem; 
   opacity: .9; 
 }
+.usuario-divider { width: 10rem; opacity: .9; }
 
-/* Cartão central ampliado */
 .usuario-card {
-  width: clamp(720px, 80vw, 980px);
-  min-height: 460px;
-  margin: 40px auto 12px; /* desce a caixa e reduz espaço inferior */
-  background: #e3dfcc; /* tom claro com leve textura simulada */
-  border: 2px solid #b7b09a;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.15);
-  padding: 22px 22px 26px;
+  width: clamp(45rem, 80vw, 61.25rem);
+  min-height: 28.75rem;
+  margin: 2.5rem auto 0.75rem;
+  background: #e3dfcc;
+  border: 0.125rem solid #b7b09a;
+  border-radius: 0.625rem;
+  box-shadow: 0 0.625rem 1.875rem rgba(0,0,0,.15);
+  padding: 1.375rem 1.375rem 1.625rem;
   display: grid;
-  grid-template-columns: 1fr 240px; /* coluna para o logoff à direita */
-  column-gap: 18px;
+  grid-template-columns: 1fr 15rem;
+  column-gap: 1.125rem;
 }
 
 .usuario-actions {
   display: grid;
-  gap: 22px;
+  gap: 1.375rem;
   align-content: start;
-  padding-top: 4px;
+  padding-top: 0.25rem;
 }
 
 .usuario-btn {
-  height: 52px; /* menor, conforme pedido */
-  border-radius: 10px;
+  height: 3.25rem;
+  border-radius: 0.625rem;
   border: none;
   background: #5b2a15;
   color: #f5f3da;
   font-weight: 700;
-  font-size: 18px; /* um pouco menor */
-  padding: 0 20px;
-  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+  font-size: 1.125rem;
+  padding: 0 1.25rem;
+  box-shadow: 0 0.375rem 1rem rgba(0,0,0,.18);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -77,20 +77,20 @@
 .logoff-btn {
   background: #f5f3da;
   border: 1px solid #b7b09a;
-  border-radius: 10px;
-  padding: 12px 22px;
+  border-radius: 0.625rem;
+  padding: 0.75rem 1.375rem;
   font-weight: 700;
   color: #3a2a09;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,.12);
 }
 .logoff-btn:hover { filter: brightness(0.98); }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
   .usuario-card {
     width: 100%;
     grid-template-columns: 1fr;
-    row-gap: 16px;
+    row-gap: 1rem;
     min-height: auto;
   }
   .usuario-logoff { justify-items: stretch; }
@@ -99,5 +99,3 @@
     margin-bottom: 1.5rem;
   }
 }
-
-

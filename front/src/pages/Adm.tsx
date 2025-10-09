@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import Header from "../components/HeaderLogadoLoja.tsx";
 import Footer from "../components/Footer";
 import "../styles/Adm.css";
+import {Link} from "react-router-dom";
 import douradoImg from "../assets/login/dourado.png";
 
 const Adm: React.FC = () => {
   const [query, setQuery] = useState("");
-
-  const goHistorico = () => console.log("Ir para Histórico de pedidos");
-  const goAvaliacoes = () => console.log("Ir para Avaliações");
-  const goCardapio = () => console.log("Ir para Gerenciar Cardápio");
-  const goFuncionarios = () => console.log("Ir para Funcionários");
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,18 +30,18 @@ const Adm: React.FC = () => {
 
           <section className="adm-panel">
             <nav className="adm-sidebar" aria-label="Menu do administrador">
-              <button className="adm-nav-btn" onClick={goHistorico}>
+              <Link className="adm-nav-btn" to="/admin/historico">
                 Histórico de pedidos
-              </button>
-              <button className="adm-nav-btn" onClick={goAvaliacoes}>
+              </Link>
+              <Link className="adm-nav-btn" to="/admin/avaliacoes">
                 Avaliações
-              </button>
-              <button className="adm-nav-btn" onClick={goCardapio}>
+              </Link>
+              <Link className="adm-nav-btn" to="/admin/categorias">
                 Gerenciar Cardápio
-              </button>
-              <button className="adm-nav-btn" onClick={goFuncionarios}>
+              </Link>
+              <Link className="adm-nav-btn" to="/admin/funcionarios">
                 Funcionários
-              </button>
+              </Link>
             </nav>
 
             <div className="adm-sep" aria-hidden />
