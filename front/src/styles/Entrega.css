@@ -6,7 +6,7 @@
 
 .progress-bar{
   display:flex; align-items:center; justify-content:center; gap:14px;
-  max-width:980px; margin:0 auto 28px; color:#472304;
+  width:90%; margin:40px auto 20px; color:#472304;
 }
 .progress-step{display:grid; justify-items:center; gap:6px;}
 .progress-step .step-icon{width:54px; height:54px; border-radius:999px; background:#e6d8c2; box-shadow:inset 0 0 0 3px #b78f54;}
@@ -57,6 +57,26 @@
     padding: calc(var(--kh-header-h,96px) + 60px) 16px 24px;
   }
   
+  .progress-bar{
+    gap: 8px;
+    margin: 40px auto 24px;
+    width: 90%;
+  }
+  
+  .progress-step .step-icon{
+    width: 44px;
+    height: 44px;
+  }
+  
+  .step-text{
+    font-size: 12px;
+  }
+  
+  .progress-line{
+    width: 80px;
+    height: 4px;
+  }
+  
   .entrega-card{
     margin: 0 auto 20px;
     padding: 16px;
@@ -102,6 +122,26 @@
 @media (max-width: 600px){
   .entrega-page{
     padding: calc(var(--kh-header-h,96px) + 40px) 12px 20px;
+  }
+  
+  .progress-bar{
+    gap: 6px;
+    margin: 40px auto 20px;
+    width: 90%;
+  }
+  
+  .progress-step .step-icon{
+    width: 36px;
+    height: 36px;
+  }
+  
+  .step-text{
+    font-size: 10px;
+  }
+  
+  .progress-line{
+    width: 60px;
+    height: 3px;
   }
   
   .entrega-card{

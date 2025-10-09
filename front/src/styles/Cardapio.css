@@ -74,21 +74,20 @@
 
 /* ---------- Layout base ---------- */
 .menu-page {
-  padding: clamp(16px, 3vw, 24px);
-  padding-top: clamp(24px, 5vw, 40px);
-  max-width: 1100px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  max-width: 68.75rem;
   margin: 0 auto;
   scroll-padding-top: 120px; /* evita cabeçalho fixo sobrepor a âncora */
   margin-top: 0;
-  padding-top: calc(var(--kh-header-h, 112px) + env(safe-area-inset-top, 0px));
+  padding-top: calc(var(--kh-header-h, 7rem) + 2rem);
 }
 
 .menu-header {
   position: relative;
   display: grid;
   justify-items: center;
-  gap: 6px;
-  margin-bottom: 36px;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 /* Espaço extra inicial abaixo do topo do Cardápio */
@@ -98,14 +97,14 @@
   margin: 0;
   font-size: clamp(28px, 4vw, 40px);
   font-weight: 700;
-  color: var(--kh-brown-900);
+  color: #472304;
   text-align: center;
+  font-family: serif;
 }
 
 .menu-divider {
-  width: 140px;
-  height: auto;
-  opacity: 0.9;
+  width: 10rem;
+  opacity: .9;
 }
 
 /* Sacola (pill) */
@@ -357,10 +356,17 @@
   align-items: start;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
+  .menu-page {
+    padding-top: calc(var(--kh-header-h, 7rem) + 1.5rem);
+  }
+  
   .product-list--grid {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+  .menu-header {
+    margin-bottom: 1.5rem;
   }
 }
 

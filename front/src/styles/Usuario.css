@@ -14,16 +14,20 @@
 .usuario-header {
   display: grid;
   justify-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 }
 .usuario-title {
   margin: 0;
-  font-size: clamp(32px, 4.5vw, 44px);
-  color: #4a1f0e;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  color: #472304;
   font-weight: 700;
+  font-family: serif;
 }
-.usuario-divider { width: 160px; opacity: .9; }
+.usuario-divider { 
+  width: 10rem; 
+  opacity: .9; 
+}
 
 /* Cartão central ampliado */
 .usuario-card {
@@ -91,6 +95,9 @@
   }
   .usuario-logoff { justify-items: stretch; }
   .logoff-btn { justify-self: end; }
+  .usuario-header {
+    margin-bottom: 1.5rem;
+  }
 }
 
 

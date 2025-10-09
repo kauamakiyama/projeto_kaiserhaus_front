@@ -8,6 +8,12 @@
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
 }
 
 /* Progress Bar */
@@ -15,8 +21,8 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  max-width: 600px;
-  width: 100%;
+  width: 90%;
+  margin: 40px auto 20px;
 }
 
 .progress-step {
@@ -77,7 +83,9 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   max-width: 500px;
   width: 100%;
-  min-height: 400px;
+  min-height: 25rem;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .cart-title {
@@ -326,12 +334,16 @@
 /* Responsive */
 @media (max-width: 768px) {
   .sacola-page {
-    padding: 1rem 0.5rem;
+    padding: calc(var(--kh-header-h, 96px) + 20px) 1rem 1rem;
     gap: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .progress-bar {
-    gap: 0.5rem;
+    gap: 8px;
+    margin: 40px auto 24px;
+    width: 90%;
   }
   
   .step-icon {
@@ -350,7 +362,8 @@
   
   .cart-content {
     padding: 1.5rem;
-    margin: 0 0.5rem;
+    margin: 0 auto;
+    max-width: calc(100% - 1rem);
   }
   
   .cart-title {
@@ -382,10 +395,19 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30rem) {
+  .sacola-page {
+    padding: calc(var(--kh-header-h, 96px) + 15px) 1rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
   .progress-bar {
     flex-wrap: wrap;
     justify-content: center;
+    gap: 6px;
+    margin: 40px auto 20px;
+    width: 90%;
   }
   
   .progress-line {
@@ -393,8 +415,9 @@
   }
   
   .cart-content {
-    margin: 0;
-    border-radius: 12px;
+    margin: 0 auto;
+    border-radius: 0.75rem;
+    max-width: calc(100% - 1rem);
   }
   
   .cart-title {

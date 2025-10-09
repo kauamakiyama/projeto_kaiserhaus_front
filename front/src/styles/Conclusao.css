@@ -1,0 +1,159 @@
+.conclusao-page {
+  background: #F5F5DC;
+  min-height: calc(100vh - var(--kh-footer-h, 60px));
+  padding: calc(var(--kh-header-h, 96px) + 40px) 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 75rem;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.success-card {
+  background: #fff;
+  border: 1px solid #e6d8c2;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.checkmark-image {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.success-message {
+  text-align: center;
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #3b2a12;
+  margin: 0;
+  font-family: sans-serif;
+  line-height: 1.4;
+}
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 500px;
+  width: 100%;
+}
+
+.btn-track-order {
+  background: #4a2105;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-track-order:hover {
+  background: #5a2a15;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 33, 5, 0.3);
+}
+
+.btn-skip {
+  background: transparent;
+  color: #3b2a12;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.btn-skip:hover {
+  color: #5a2a15;
+}
+
+/* Responsividade */
+@media (max-width: 48rem) {
+  .conclusao-page {
+    padding: calc(var(--kh-header-h, 96px) + 20px) 1rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .success-card {
+    padding: 2rem 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .success-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .checkmark-image {
+    width: 35px;
+    height: 35px;
+  }
+
+  .success-title {
+    font-size: 1.25rem;
+  }
+
+  .btn-track-order {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .conclusao-page {
+    padding: calc(var(--kh-header-h, 96px) + 15px) 1rem 1rem;
+  }
+
+  .success-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .success-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .checkmark-image {
+    width: 30px;
+    height: 30px;
+  }
+
+  .success-title {
+    font-size: 1.1rem;
+  }
+}
