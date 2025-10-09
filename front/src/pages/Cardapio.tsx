@@ -60,8 +60,11 @@ const mapCategoryId = (categoriaId: string): CategoryKey => {
   return categoryMap[categoriaId] || "entradas";
 };
 
-const coerceId = (p: any): string =>
-  p?.id ?? p?._id?.$oid ?? p?._id ?? (typeof crypto !== "undefined" ? crypto.randomUUID() : String(Math.random()));
+// Usa apenas IDs provenientes do backend para evitar itens que não existem no banco
+const coerceId = (p: any): string => {
+  const candidate = p?._id?.$oid ?? p?._id ?? p?.produtoId ?? p?.id ?? p?.codigo ?? p?.sku;
+  return candidate ? String(candidate) : '';
+};
 
 const isLikelyBase64 = (s: any): boolean => {
   if (typeof s !== "string") return false;

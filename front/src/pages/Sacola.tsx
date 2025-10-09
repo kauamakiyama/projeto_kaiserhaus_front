@@ -8,11 +8,14 @@ import '../styles/Sacola.css';
 import { ProgressSteps } from '../components/ProgressSteps';
 
 const Sacola: React.FC = () => {
-  const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, updateObservacoes } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [showObservacoesModal, setShowObservacoesModal] = useState(false);
+  const [itemToObserve, setItemToObserve] = useState<string | null>(null);
+  const [observacoesText, setObservacoesText] = useState('');
 
   const deliveryFee = 10.99;
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -38,6 +41,27 @@ const Sacola: React.FC = () => {
   const cancelDelete = () => {
     setShowDeleteModal(false);
     setItemToDelete(null);
+  };
+
+  const handleObservacoes = (id: string, currentObservacoes?: string) => {
+    setItemToObserve(id);
+    setObservacoesText(currentObservacoes || '');
+    setShowObservacoesModal(true);
+  };
+
+  const saveObservacoes = () => {
+    if (itemToObserve) {
+      updateObservacoes(itemToObserve, observacoesText);
+    }
+    setShowObservacoesModal(false);
+    setItemToObserve(null);
+    setObservacoesText('');
+  };
+
+  const cancelObservacoes = () => {
+    setShowObservacoesModal(false);
+    setItemToObserve(null);
+    setObservacoesText('');
   };
 
   const handleContinue = () => {
@@ -76,21 +100,51 @@ const Sacola: React.FC = () => {
                   <p className="item-price">{formatPrice(item.price)}</p>
                 </div>
                 
-                <div className="quantity-selector">
+                <div className="item-actions">
                   <button 
-                    className="quantity-btn"
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                    className="observacoes-btn"
+                    onClick={() => handleObservacoes(item.id, item.observacoes)}
+                    title="Adicionar observações"
                   >
-                    -
+                    <img 
+                      src="/src/assets/sacola/edit.png" 
+                      alt="Observações" 
+                      className="edit-icon"
+                      style={{ 
+                        width: '20px', 
+                        height: '20px', 
+                        maxWidth: '20px', 
+                        maxHeight: '20px',
+                        minWidth: '20px',
+                        minHeight: '20px',
+                        objectFit: 'contain',
+                        flexShrink: 0
+                      }}
+                    />
                   </button>
-                  <span className="quantity">{item.quantity}</span>
-                  <button 
-                    className="quantity-btn"
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                  >
-                    +
-                  </button>
+                  
+                  <div className="quantity-selector">
+                    <button 
+                      className="quantity-btn"
+                      onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                    >
+                      -
+                    </button>
+                    <span className="quantity">{item.quantity}</span>
+                    <button 
+                      className="quantity-btn"
+                      onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+                
+                {item.observacoes && (
+                  <div className="item-observacoes">
+                    <strong>Observações:</strong> {item.observacoes}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -135,6 +189,39 @@ const Sacola: React.FC = () => {
                   onClick={confirmDelete}
                 >
                   Remover
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showObservacoesModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3 className="modal-title">Observações do produto</h3>
+              <p className="modal-message">
+                Adicione observações especiais para este produto (ex: sem cebola, bem temperado, etc.)
+              </p>
+              <textarea
+                className="observacoes-textarea"
+                value={observacoesText}
+                onChange={(e) => setObservacoesText(e.target.value)}
+                placeholder="Digite suas observações aqui..."
+                rows={4}
+                maxLength={200}
+              />
+              <div className="modal-buttons">
+                <button 
+                  className="modal-btn cancel-btn" 
+                  onClick={cancelObservacoes}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  className="modal-btn confirm-btn" 
+                  onClick={saveObservacoes}
+                >
+                  Salvar
                 </button>
               </div>
             </div>

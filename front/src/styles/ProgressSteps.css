@@ -1,4 +1,4 @@
-.kh-progress{display:flex; align-items:center; justify-content:center; gap:14px; width:90%; margin:0 auto 20px; color:#472304; margin-top:40px;}
+.kh-progress{display:flex; align-items:center; justify-content:center; gap:14px; width:90%; margin:0 auto 20px; color:#472304; margin-top:40px; position:relative; z-index:1;}
 .kh-progress__step{display:grid; justify-items:center; gap:6px;}
 .kh-progress__icon{width:54px; height:54px; border-radius:999px; background:#e6d8c2; box-shadow:inset 0 0 0 3px #b78f54; display:grid; place-items:center;}
 .kh-progress__icon img{width:28px; height:28px; display:block; object-fit:contain;}

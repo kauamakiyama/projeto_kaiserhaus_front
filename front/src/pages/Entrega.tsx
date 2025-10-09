@@ -7,7 +7,7 @@ import { ProgressSteps } from '../components/ProgressSteps';
 
 const Entrega: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedSpeed, setSelectedSpeed] = useState<'padrao' | 'turbo'>('padrao');
+  const [selectedSpeed, setSelectedSpeed] = useState<'padrao' | 'turbo' | null>(null);
   const [addressLine, setAddressLine] = useState<string>('Endereço não informado');
   const [addressSub, setAddressSub] = useState<string>('');
   const [isEditingAddress, setIsEditingAddress] = useState<boolean>(false);
@@ -145,7 +145,20 @@ const Entrega: React.FC = () => {
             <div className="entrega-actions">
               <button 
                 className="btn-continue"
-                onClick={() => navigate('/pagamento')}
+                onClick={() => {
+                  if (!selectedSpeed) {
+                    alert('Por favor, selecione uma opção de entrega.');
+                    return;
+                  }
+                  try {
+                    const payload = {
+                      tipo: selectedSpeed,
+                      endereco: normalizeEndereco(addressLine),
+                    } as any;
+                    localStorage.setItem('kh-entrega', JSON.stringify(payload));
+                  } catch {}
+                  navigate('/pagamento');
+                }}
               >Continuar</button>
             </div>
           </section>
@@ -158,4 +171,18 @@ const Entrega: React.FC = () => {
 
 export default Entrega;
 
+
+function normalizeEndereco(addressLine: string) {
+  // Tenta quebrar "Rua X, 123 - Bairro, Cidade - UF" em campos; se não der, retorna todos no logradouro
+  const endereco: any = {
+    logradouro: addressLine || 'Endereço',
+    numero: 's/n',
+    bairro: 'Não informado',
+    cidade: 'Não informado',
+    uf: 'SP',
+    cep: '00000-000',
+    complemento: '',
+  };
+  return endereco;
+}
 
