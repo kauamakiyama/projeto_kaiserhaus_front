@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Login.css';
 
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:8001';
+const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:8000';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -30,6 +30,7 @@ const Login: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           email,
           senha: password,
@@ -40,10 +41,8 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         setSuccess('Login realizado com sucesso!');
-        const tokenGuess = (data as any).token || (data as any).access_token || (data as any).jwt || (data as any).authToken || 'session';
-        // persiste token e um snapshot do usuário retornado para uso em "Meus dados"
         try { localStorage.setItem('user', JSON.stringify((data as any).usuario || (data as any).user || data)); } catch {}
-        login(tokenGuess);
+        login("cookie");
         const role = (data as any).hierarquia || (data as any).user?.hierarquia || (data as any).usuario?.hierarquia || 'usuario';
         if (role === 'usuario') {
           navigate('/', { replace: true });

@@ -7,7 +7,7 @@ import "../styles/Cardapio.css";
 import douradoImg from "../assets/login/dourado.png";
 
 const BASE_URL =
-  (import.meta.env.VITE_API_URL as string | undefined) || "http://127.0.0.1:8001";
+  (import.meta.env.VITE_API_URL as string | undefined) || "http://127.0.0.1:8000";
 
 type CategoryKey = "entradas" | "pratos" | "Sobremesas" | "bebidas";
 
