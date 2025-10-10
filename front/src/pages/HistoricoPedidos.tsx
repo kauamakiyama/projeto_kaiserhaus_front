@@ -184,7 +184,7 @@ const HistoricoPedidos: React.FC = () => {
   return (
     <>
       <Header />
-      <div className="usuario-page">
+      <div className="usuario-page historico-pedidos-page">
         <div className="usuario-header">
           <h1 className="usuario-title">Histórico de Pedidos</h1>
           <img src="/src/assets/login/dourado.png" alt="" className="usuario-divider" />
