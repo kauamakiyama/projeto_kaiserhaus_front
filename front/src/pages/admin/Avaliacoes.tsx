@@ -156,7 +156,7 @@ const Avaliacoes: React.FC = () => {
               value={ratingFilter}
               onChange={(e) =>
                 setRatingFilter(
-                  e.target.value === "all" ? "all" : Number(e.target.value) as RatingFilter
+                  e.target.value === "all" ? "all" : (parseInt(e.target.value, 10) || 0) as RatingFilter
                 )
               }
               title="Filtrar por nota"

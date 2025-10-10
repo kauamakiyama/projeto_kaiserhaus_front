@@ -35,6 +35,17 @@ export async function apiPost<T>(path: string, body: unknown, token?: string): P
   return res.json();
 }
 
+export async function apiPut<T>(path: string, body: unknown, token?: string): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'PUT',
+    headers: authHeaders(token),
+    body: JSON.stringify(body),
+    credentials: 'include',
+  });
+  if (!res.ok) throw await safeError(res);
+  return res.json();
+}
+
 async function safeError(res: Response) {
   try {
     const contentType = res.headers.get('content-type') || '';
