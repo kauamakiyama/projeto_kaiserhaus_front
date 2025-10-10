@@ -86,7 +86,6 @@ const resolveImageUrl = (product: any): string => {
 };
 
 const CardapioPage: React.FC = () => {
-  const [cartTotal] = useState<number>(0);
   const [selected, setSelected] = useState<CategoryKey | "todos">("todos");
   const [products, setProducts] = useState<Product[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -100,6 +99,7 @@ const CardapioPage: React.FC = () => {
     Sobremesas: null,
     bebidas: null,
   });
+  const bestScrollRef = useRef<HTMLDivElement>(null);
 
   const fetchProducts = async () => {
     try {
@@ -133,15 +133,62 @@ const CardapioPage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
   const bestSellers = useMemo(
     () =>
       (BEST_IDS.length ? products.filter((p) => BEST_IDS.includes(p.id)) : products).slice(0, 6),
     [products]
   );
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Auto scroll para o carrossel dos mais pedidos
+  useEffect(() => {
+    if (!bestScrollRef.current || bestSellers.length <= 3) return;
+
+    const scrollContainer = bestScrollRef.current;
+    let scrollPosition = 0;
+    let isPaused = false;
+    let intervalId: NodeJS.Timeout;
+    
+    // Pausar quando o usuário interagir
+    const handleMouseEnter = () => { isPaused = true; };
+    const handleMouseLeave = () => { isPaused = false; };
+    
+    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
+    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
+    
+    const autoScroll = () => {
+      if (isPaused) return;
+      
+      const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+      
+      // Só faz scroll se há conteúdo para rolar
+      if (scrollWidth <= 0) return;
+      
+      scrollPosition += 1;
+      
+      if (scrollPosition >= scrollWidth) {
+        scrollPosition = 0;
+        scrollContainer.scrollLeft = 0;
+      } else {
+        scrollContainer.scrollLeft = scrollPosition;
+      }
+    };
+
+    // Inicia o scroll após um delay
+    const timeout = setTimeout(() => {
+      intervalId = setInterval(autoScroll, 100);
+    }, 3000);
+    
+    return () => {
+      clearTimeout(timeout);
+      if (intervalId) clearInterval(intervalId);
+      scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
+      scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [bestSellers]);
 
   const byCategory: Record<CategoryKey, Product[]> = useMemo(() => {
     return {
@@ -228,7 +275,7 @@ const CardapioPage: React.FC = () => {
             Mais pedidos
           </h2>
 
-          <div className="best-scroll">
+          <div className="best-scroll" ref={bestScrollRef}>
             {bestSellers.map((p) => (
               <article key={p.id} className="best-card">
                 <img src={p.imageUrl} alt={p.name} className="best-thumb" />
