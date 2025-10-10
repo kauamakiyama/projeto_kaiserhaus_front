@@ -1,5 +1,16 @@
 /* Estilos para Histórico de Pedidos - Usando layout da página do usuário */
 
+/* CSS específico apenas para a página de histórico de pedidos */
+
+/* Sobrescrever layout do container principal para ocupar 100% da largura */
+.usuario-page .usuario-card {
+  display: block !important;
+  grid-template-columns: none !important;
+  column-gap: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
 /* Estados de carregamento e erro */
 .loading, .error {
   text-align: center;
@@ -57,16 +68,15 @@
 
 /* Lista de pedidos linear */
 .pedidos-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: calc(100% + 2.75rem); /* Estende além do padding do pai */
-  margin-left: -1.375rem; /* Compensa o padding esquerdo do pai */
-  margin-right: -1.375rem; /* Compensa o padding direito do pai */
-  max-height: 400px; /* Altura máxima para scroll quando necessário */
-  overflow-y: auto; /* Scroll vertical */
-  padding-right: 0.875rem; /* Espaço para a scrollbar */
-  box-sizing: border-box; /* Inclui padding no cálculo da largura */
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.3rem !important; /* Gap muito menor para diminuir altura */
+  width: 100% !important; /* Ocupa toda a largura disponível */
+  max-height: 280px !important; /* Altura máxima menor para scroll quando necessário */
+  overflow-y: auto !important; /* Scroll vertical */
+  padding-right: 0.875rem !important; /* Espaço para a scrollbar */
+  box-sizing: border-box !important; /* Inclui padding no cálculo da largura */
+  position: relative !important; /* Para garantir posicionamento */
 }
 
 /* Scrollbar customizada */
@@ -89,16 +99,18 @@
 }
 
 .pedido-linear {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1.375rem; /* Padding para compensar as margens negativas */
-  background-color: #fff;
-  border: 1px solid #d4c2a8;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  width: 100%; /* Ocupa toda a largura */
-  box-sizing: border-box; /* Inclui padding e border no cálculo da largura */
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0.5rem 1rem !important; /* Padding normal */
+  background-color: #fff !important;
+  border: 1px solid #d4c2a8 !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important; /* Ocupa toda a largura */
+  box-sizing: border-box !important; /* Inclui padding e border no cálculo da largura */
+  min-height: auto !important; /* Remove altura mínima */
+  margin: 0 !important; /* Remove qualquer margem */
 }
 
 .pedido-linear:hover {
@@ -183,17 +195,16 @@
 /* Responsividade para pedidos lineares */
 @media (max-width: 48rem) { /* Mesmo breakpoint da sacola */
   .pedidos-list {
-    max-height: 300px; /* Altura máxima menor em mobile */
-    width: calc(100% + 2.75rem); /* Compensa o padding do usuario-card */
-    margin-left: -1.375rem;
-    margin-right: -1.375rem;
+    max-height: 220px !important; /* Altura máxima menor em mobile */
+    width: 100% !important; /* Ocupa toda a largura */
+    gap: 0.25rem !important; /* Gap menor em mobile */
   }
 
   .pedido-linear {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.75rem 1.375rem; /* Padding para compensar as margens negativas */
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem !important; /* Gap menor */
+    padding: 0.5rem 1rem !important; /* Padding normal */
   }
 
   .pedido-info {
