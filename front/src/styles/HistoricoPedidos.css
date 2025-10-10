@@ -2,15 +2,6 @@
 
 /* CSS específico apenas para a página de histórico de pedidos */
 
-/* Sobrescrever layout do container principal para ocupar 100% da largura */
-.usuario-page .usuario-card {
-  display: block !important;
-  grid-template-columns: none !important;
-  column-gap: 0 !important;
-  width: 100% !important;
-  max-width: none !important;
-}
-
 /* Estados de carregamento e erro */
 .loading, .error {
   text-align: center;
@@ -71,7 +62,9 @@
   display: flex !important;
   flex-direction: column !important;
   gap: 0.3rem !important; /* Gap muito menor para diminuir altura */
-  width: 100% !important; /* Ocupa toda a largura disponível */
+  width: calc(100% + 2.75rem) !important; /* Estende além do padding do pai (1.375rem * 2) */
+  margin-left: -1.375rem !important; /* Compensa o padding esquerdo do pai */
+  margin-right: -1.375rem !important; /* Compensa o padding direito do pai */
   max-height: 280px !important; /* Altura máxima menor para scroll quando necessário */
   overflow-y: auto !important; /* Scroll vertical */
   padding-right: 0.875rem !important; /* Espaço para a scrollbar */
@@ -102,7 +95,7 @@
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  padding: 0.5rem 1rem !important; /* Padding normal */
+  padding: 0.25rem 1.375rem !important; /* Padding compensa as margens negativas */
   background-color: #fff !important;
   border: 1px solid #d4c2a8 !important;
   border-radius: 6px !important;
@@ -131,22 +124,22 @@
 }
 
 .item-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.1rem !important; /* Gap muito menor entre produto e observação */
 }
 
 .item-linear {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #3b2a12;
 }
 
 .item-obs {
   color: #666;
   font-style: italic;
-  font-size: 0.8rem;
-  margin-left: 1rem;
-  padding-left: 0.5rem;
+  font-size: 0.75rem;
+  margin-left: 0.75rem;
+  padding-left: 0.4rem;
   border-left: 2px solid #b78f54;
 }
 
@@ -156,38 +149,38 @@
 }
 
 .pedido-detalhes {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-  min-width: 120px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 0.05rem !important; /* Gap mínimo entre elementos */
+  min-width: 110px !important;
 }
 
 .pedido-data {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #666;
 }
 
 .pedido-preco {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #b78f54;
 }
 
 .pedido-pagamento {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #666;
   text-transform: capitalize;
 }
 
 .pedido-status-badge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: capitalize;
   color: white;
   background-color: #666;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
   white-space: nowrap;
 }
 
@@ -196,7 +189,9 @@
 @media (max-width: 48rem) { /* Mesmo breakpoint da sacola */
   .pedidos-list {
     max-height: 220px !important; /* Altura máxima menor em mobile */
-    width: 100% !important; /* Ocupa toda a largura */
+    width: calc(100% + 2.75rem) !important; /* Estende além do padding do pai */
+    margin-left: -1.375rem !important; /* Compensa o padding esquerdo do pai */
+    margin-right: -1.375rem !important; /* Compensa o padding direito do pai */
     gap: 0.25rem !important; /* Gap menor em mobile */
   }
 
@@ -204,7 +199,7 @@
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 0.25rem !important; /* Gap menor */
-    padding: 0.5rem 1rem !important; /* Padding normal */
+    padding: 0.25rem 1.375rem !important; /* Padding compensa margens negativas */
   }
 
   .pedido-info {
@@ -233,12 +228,12 @@
   .pedido-data,
   .pedido-preco,
   .pedido-pagamento {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .pedido-status-badge {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.6rem;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
   }
 
   .pedido-preco {

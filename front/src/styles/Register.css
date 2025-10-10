@@ -1,5 +1,5 @@
 .register-page {
-  min-height: calc(100vh - 18.75rem);
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
