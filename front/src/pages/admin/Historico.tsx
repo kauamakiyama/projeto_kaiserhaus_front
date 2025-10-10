@@ -73,7 +73,7 @@ const Historico: React.FC = () => {
 
     if (range === "todos") return base;
 
-    const dias = Number(range);
+    const dias = parseInt(String(range), 10) || 0;
     const limite = new Date();
     limite.setDate(limite.getDate() - dias);
 

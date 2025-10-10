@@ -12,6 +12,10 @@ import Pagamento from './pages/Pagamento'
 import PixPagamento from './pages/PixPagamento'
 import Conclusao from './pages/Conclusao'
 import HistoricoPedidos from './pages/HistoricoPedidos'
+import Funcionario from './pages/Funcionario'
+import FuncionarioGuard from './components/FuncionarioGuard'
+import RoleRedirect from './components/RoleRedirect'
+import ErrorBoundary from './components/ErrorBoundary'
 import Adm from './pages/Adm'
 import GerFunc from './pages/admin/GerenciarFuncionarios'
 import GerCateg from './pages/admin/GerenciarCategorias'
@@ -27,8 +31,9 @@ export default function App() {
       <CartProvider>
         <Router>
           <div className="app">
-            <main className="main-content">
-              <Routes>
+            <RoleRedirect>
+              <main className="main-content">
+                <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -44,14 +49,23 @@ export default function App() {
                 <Route path="/usuario/dados" element={<MeusDados />} />
                 <Route path="/historico-pedidos" element={<HistoricoPedidos />} />
 
+                <Route path="/funcionario" element={
+                  <ErrorBoundary>
+                    <FuncionarioGuard>
+                      <Funcionario />
+                    </FuncionarioGuard>
+                  </ErrorBoundary>
+                } />
+
                 <Route path="/admin" element={<Adm />} />
                 <Route path="/admin/funcionarios" element={<GerFunc />} />
                 <Route path="/admin/categorias" element={<GerCateg />} />
                 <Route path="/admin/avaliacoes" element={<Avaliacoes />} />
                 <Route path="/admin/historico" element={<Historico />} />
 
-              </Routes>
-            </main>
+                </Routes>
+              </main>
+            </RoleRedirect>
           </div>
         </Router>
       </CartProvider>

@@ -119,7 +119,7 @@ const CardapioPage: React.FC = () => {
         id: coerceId(product),
         name: product.titulo ?? product.nome ?? product.name ?? "Produto",
         description: product.descricao ?? product.description ?? "",
-        price: Number(product.preco ?? product.price ?? 0),
+        price: parseFloat(String(product.preco ?? product.price ?? 0)) || 0,
         imageUrl: resolveImageUrl(product),
         category: mapCategoryId(product.categoria_id),
       }));

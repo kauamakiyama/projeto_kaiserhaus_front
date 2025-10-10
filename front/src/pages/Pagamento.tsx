@@ -185,9 +185,10 @@ const Pagamento: React.FC = () => {
     const entregaParsed = entregaRaw ? JSON.parse(entregaRaw) : null;
     const itens = cartItems.map((i) => {
       const isNumericId = /^\d+$/.test(String(i.id));
+      const quantidade = parseInt(String(i.quantity), 10);
       const item = {
-        produtoId: isNumericId ? Number(i.id) : String(i.id),
-        quantidade: Number(i.quantity),
+        produtoId: isNumericId ? parseInt(String(i.id), 10) : String(i.id),
+        quantidade: isNaN(quantidade) ? 1 : quantidade,
         observacoes: i.observacoes || null,
       };
       return item;
@@ -195,7 +196,7 @@ const Pagamento: React.FC = () => {
 
     const pagamento =
       selectedPayment === 'cartao'
-        ? { metodo: 'cartao', cartaoId: selectedCard ? Number(selectedCard.id) : null, trocoPara: null }
+        ? { metodo: 'cartao', cartaoId: selectedCard ? parseInt(String(selectedCard.id), 10) : null, trocoPara: null }
         : selectedPayment === 'dinheiro'
         ? { metodo: 'dinheiro', cartaoId: null, trocoPara: null }
         : selectedPayment === 'pix'

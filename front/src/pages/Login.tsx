@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Login.css';
@@ -16,7 +16,6 @@ const Login: React.FC = () => {
   const [success, setSuccess] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,13 +44,20 @@ const Login: React.FC = () => {
           setIsLoading(false);
           return;
         }
-        // persiste token e um snapshot do usuário retornado para uso em "Meus dados"
-        try { localStorage.setItem('user', JSON.stringify((data as any).usuario || (data as any).user || data)); } catch {}
-        login(tokenFromApi);
+        // Extrai dados do usuário da resposta
+        const userData = (data as any).usuario || (data as any).user || data;
+        const role = userData?.hierarquia || 'usuario';
+        
+        // persiste token e dados do usuário
+        try { localStorage.setItem('user', JSON.stringify(userData)); } catch {}
+        login(tokenFromApi, userData);
         setSuccess('Login realizado com sucesso!');
-        const role = (data as any).hierarquia || (data as any).user?.hierarquia || (data as any).usuario?.hierarquia || 'usuario';
-        if (role === 'usuario') {
-          navigate('/', { replace: true });
+        
+        // Redireciona baseado na hierarquia
+        if (role === 'funcionario') {
+          navigate('/funcionario', { replace: true });
+        } else if (role === 'admin') {
+          navigate('/admin', { replace: true });
         } else {
           navigate('/', { replace: true });
         }

@@ -1,9 +1,18 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 
+interface User {
+  id?: string;
+  nome?: string;
+  email?: string;
+  hierarquia?: string;
+  [key: string]: any;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
-  login: (token: string) => void;
+  user: User | null;
+  login: (token: string, userData?: User) => void;
   logout: () => void;
 }
 
@@ -13,6 +22,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [token, setToken] = useState<string | null>(() => {
     try {
       return localStorage.getItem('token');
+    } catch {
+      return null;
+    }
+  });
+
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const userData = localStorage.getItem('user');
+      return userData ? JSON.parse(userData) : null;
     } catch {
       return null;
     }
@@ -30,12 +48,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [token]);
 
-  const login = (newToken: string) => {
+  useEffect(() => {
+    try {
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('user');
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [user]);
+
+  const login = (newToken: string, userData?: User) => {
     setToken(newToken);
+    if (userData) {
+      setUser(userData);
+    }
   };
 
   const logout = () => {
     setToken(null);
+    setUser(null);
     // Limpa o carrinho ao fazer logout
     try {
       localStorage.removeItem('kaizerhaus-cart');
@@ -47,9 +81,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const value = useMemo<AuthContextType>(() => ({
     isAuthenticated: Boolean(token),
     token,
+    user,
     login,
     logout,
-  }), [token]);
+  }), [token, user]);
 
   return (
     <AuthContext.Provider value={value}>
