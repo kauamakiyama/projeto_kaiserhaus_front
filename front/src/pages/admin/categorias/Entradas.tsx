@@ -19,7 +19,6 @@ type Produto = {
   imagem?: string;
 };
 
-// === helper robusto para normalizar qualquer forma de ObjectId para string-hex (24 chars, lowercase)
 const toIdStr = (v: any): string | undefined => {
   if (!v) return undefined;
 
@@ -29,11 +28,11 @@ const toIdStr = (v: any): string | undefined => {
   }
 
   if (typeof v === "object") {
-    if (v.$oid) return String(v.$oid).toLowerCase();          // { $oid: "..." }
-    if (v._id)  return toIdStr(v._id);                         // documento completo
-    if (v.id)   return toIdStr(v.id);                          // variações "id"
+    if (v.$oid) return String(v.$oid).toLowerCase();
+    if (v._id)  return toIdStr(v._id);
+    if (v.id)   return toIdStr(v.id);
     if (typeof (v as any).toHexString === "function") {
-      return (v as any).toHexString().toLowerCase();           // ObjectId real
+      return (v as any).toHexString().toLowerCase();
     }
     const s = String(v);
     const hex = s.match(/[0-9a-fA-F]{24}/)?.[0];
@@ -43,7 +42,7 @@ const toIdStr = (v: any): string | undefined => {
   return String(v).toLowerCase();
 };
 
-const Pratos: React.FC = () => {
+const Entradas: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
 
@@ -64,23 +63,20 @@ const Pratos: React.FC = () => {
           apiGet<any[]>("/categorias/", token || undefined),
         ]);
 
-        // 1) Descobrir quais IDs correspondem à categoria "Pratos"
-        //    (aceita nome, label ou slug em diferentes capitalizações)
-        const isPrato = (c: any) => {
+        const isEntrada = (c: any) => {
           const nome = (c.nome || c.label || "").toString().trim().toLowerCase();
           const slug = (c.slug || "").toString().trim().toLowerCase();
-          return nome === "pratos" || slug === "pratos";
+          return nome === "entradas" || slug === "entradas";
         };
 
-        const pratoIds = new Set<string>();
+        const entradaIds = new Set<string>();
         for (const cat of categoriasApi) {
-          if (isPrato(cat)) {
+          if (isEntrada(cat)) {
             const id = toIdStr(cat._id) ?? toIdStr(cat.id);
-            if (id) pratoIds.add(id);
+            if (id) entradaIds.add(id);
           }
         }
 
-        // mapa id->nome (ajuda a escrever o nome bonito na tela)
         const categoriasMap = new Map<string, string>();
         for (const cat of categoriasApi) {
           const key = toIdStr(cat._id) ?? toIdStr(cat.id);
@@ -88,12 +84,7 @@ const Pratos: React.FC = () => {
           categoriasMap.set(key, cat.nome || cat.label || cat.titulo || "Sem nome");
         }
 
-        // 2) Filtrar produtos que são "Pratos"
-        //    critérios:
-        //    a) categoria_id do produto pertence aos pratoIds
-        //    b) OU o produto já vem com categoria.nome 'Pratos'
-        //    c) OU campo legado categoria_nome 'Pratos'
-        const ehPratoProduto = (p: any) => {
+        const ehEntradaProduto = (p: any) => {
           const catIdStr =
             toIdStr(p.categoria_id) ??
             toIdStr(p.categoria?._id) ??
@@ -104,15 +95,14 @@ const Pratos: React.FC = () => {
           const nomeEmb = (p.categoria?.nome || p.categoria_nome || "").toString().trim().toLowerCase();
 
           return (
-            (catIdStr && pratoIds.has(catIdStr)) ||
-            nomeEmb === "pratos"
+            (catIdStr && entradaIds.has(catIdStr)) ||
+            nomeEmb === "entradas"
           );
         };
 
-        const somentePratos = produtosApi.filter(ehPratoProduto);
+        const somenteEntradas = produtosApi.filter(ehEntradaProduto);
 
-        // 3) Formatar produtos
-        const produtosFormatados: Produto[] = somentePratos.map((prod: any) => {
+        const produtosFormatados: Produto[] = somenteEntradas.map((prod: any) => {
           const catIdStr =
             toIdStr(prod.categoria_id) ??
             toIdStr(prod.categoria?._id) ??
@@ -124,7 +114,7 @@ const Pratos: React.FC = () => {
             (catIdStr && categoriasMap.get(catIdStr)) ||
             prod.categoria?.nome ||
             prod.categoria_nome ||
-            "Pratos"; // aqui podemos forçar "Pratos" porque a lista já é filtrada
+            "Entradas";
 
           return {
             id: prod._id || prod.id,
@@ -141,8 +131,8 @@ const Pratos: React.FC = () => {
 
         setProdutos(produtosFormatados);
       } catch (e: any) {
-        console.error("Erro ao carregar pratos:", e);
-        setErro("Não foi possível carregar os pratos da API.");
+        console.error("Erro ao carregar entradas:", e);
+        setErro("Não foi possível carregar as entradas da API.");
       } finally {
         setLoading(false);
       }
@@ -151,7 +141,6 @@ const Pratos: React.FC = () => {
     carregar();
   }, [token]);
 
-  // filtros locais (busca + ativo/inativo)
   const produtosFiltrados = produtos.filter((produto) => {
     const q = busca.toLowerCase();
     const matchBusca =
@@ -174,7 +163,6 @@ const Pratos: React.FC = () => {
 
   const handleEditarProduto = (produtoId: string) => {
     console.log("Editar produto:", produtoId);
-    // TODO: Navegar para tela de edição
   };
 
   const handleToggleStatus = async (produtoId: string) => {
@@ -182,7 +170,6 @@ const Pratos: React.FC = () => {
       setProdutos((prev) =>
         prev.map((p) => (p.id === produtoId ? { ...p, ativo: !p.ativo } : p))
       );
-      // TODO: chamada à API para persistir
       console.log("Toggle status do produto:", produtoId);
     } catch (error) {
       console.error("Erro ao alterar status:", error);
@@ -211,7 +198,7 @@ const Pratos: React.FC = () => {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
             </button>
-            <h1 className="pratos-title">Pratos</h1>
+            <h1 className="pratos-title">Entradas</h1>
           </div>
           <img src={douradoImg} alt="" aria-hidden className="pratos-divider-img" />
         </header>
@@ -236,8 +223,8 @@ const Pratos: React.FC = () => {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar pratos..."
-                aria-label="Buscar pratos por nome ou descrição"
+                placeholder="Buscar entradas..."
+                aria-label="Buscar entradas por nome ou descrição"
                 className="pratos-search-input"
               />
             </div>
@@ -247,21 +234,21 @@ const Pratos: React.FC = () => {
               onChange={(e) => setFiltroAtivo(e.target.value as any)}
               className="pratos-filter-select"
             >
-              <option value="todos">Todos os pratos</option>
-              <option value="ativos">Apenas ativos</option>
-              <option value="inativos">Apenas inativos</option>
+              <option value="todos">Todas as entradas</option>
+              <option value="ativos">Apenas ativas</option>
+              <option value="inativos">Apenas inativas</option>
             </select>
           </div>
 
           {loading ? (
-            <div className="pratos-loading">Carregando pratos...</div>
+            <div className="pratos-loading">Carregando entradas...</div>
           ) : (
             <div className="pratos-grid">
               {produtosFiltrados.length === 0 ? (
                 <div className="pratos-empty">
                   {busca || filtroAtivo !== "todos"
-                    ? "Nenhum prato encontrado com os filtros atuais."
-                    : "Nenhum prato cadastrado."}
+                    ? "Nenhuma entrada encontrada com os filtros atuais."
+                    : "Nenhuma entrada cadastrada."}
                 </div>
               ) : (
                 produtosFiltrados.map((produto) => (
@@ -329,4 +316,4 @@ const Pratos: React.FC = () => {
   );
 };
 
-export default Pratos;
+export default Entradas;

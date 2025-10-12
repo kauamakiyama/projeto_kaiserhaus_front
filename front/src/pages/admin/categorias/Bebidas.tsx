@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/HeaderLogadoLoja";
 import Footer from "../../../components/Footer";
-import "../../../styles/admin/categorias/Pratos.css";
+import "../../../styles/admin/categorias/Pratos.css"; // reutilizando os mesmos estilos
 import douradoImg from "../../../assets/login/dourado.png";
 import { apiGet } from "../../../services/api";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -43,7 +43,7 @@ const toIdStr = (v: any): string | undefined => {
   return String(v).toLowerCase();
 };
 
-const Pratos: React.FC = () => {
+const Bebidas: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
 
@@ -64,19 +64,19 @@ const Pratos: React.FC = () => {
           apiGet<any[]>("/categorias/", token || undefined),
         ]);
 
-        // 1) Descobrir quais IDs correspondem à categoria "Pratos"
+        // 1) Descobrir quais IDs correspondem à categoria "Bebidas"
         //    (aceita nome, label ou slug em diferentes capitalizações)
-        const isPrato = (c: any) => {
+        const isBebida = (c: any) => {
           const nome = (c.nome || c.label || "").toString().trim().toLowerCase();
           const slug = (c.slug || "").toString().trim().toLowerCase();
-          return nome === "pratos" || slug === "pratos";
+          return nome === "bebidas" || slug === "bebidas";
         };
 
-        const pratoIds = new Set<string>();
+        const bebidaIds = new Set<string>();
         for (const cat of categoriasApi) {
-          if (isPrato(cat)) {
+          if (isBebida(cat)) {
             const id = toIdStr(cat._id) ?? toIdStr(cat.id);
-            if (id) pratoIds.add(id);
+            if (id) bebidaIds.add(id);
           }
         }
 
@@ -88,12 +88,12 @@ const Pratos: React.FC = () => {
           categoriasMap.set(key, cat.nome || cat.label || cat.titulo || "Sem nome");
         }
 
-        // 2) Filtrar produtos que são "Pratos"
+        // 2) Filtrar produtos que são "Bebidas"
         //    critérios:
-        //    a) categoria_id do produto pertence aos pratoIds
-        //    b) OU o produto já vem com categoria.nome 'Pratos'
-        //    c) OU campo legado categoria_nome 'Pratos'
-        const ehPratoProduto = (p: any) => {
+        //    a) categoria_id do produto pertence aos bebidaIds
+        //    b) OU o produto já vem com categoria.nome 'Bebidas'
+        //    c) OU campo legado categoria_nome 'Bebidas'
+        const ehBebidaProduto = (p: any) => {
           const catIdStr =
             toIdStr(p.categoria_id) ??
             toIdStr(p.categoria?._id) ??
@@ -104,15 +104,15 @@ const Pratos: React.FC = () => {
           const nomeEmb = (p.categoria?.nome || p.categoria_nome || "").toString().trim().toLowerCase();
 
           return (
-            (catIdStr && pratoIds.has(catIdStr)) ||
-            nomeEmb === "pratos"
+            (catIdStr && bebidaIds.has(catIdStr)) ||
+            nomeEmb === "bebidas"
           );
         };
 
-        const somentePratos = produtosApi.filter(ehPratoProduto);
+        const somenteBebidas = produtosApi.filter(ehBebidaProduto);
 
         // 3) Formatar produtos
-        const produtosFormatados: Produto[] = somentePratos.map((prod: any) => {
+        const produtosFormatados: Produto[] = somenteBebidas.map((prod: any) => {
           const catIdStr =
             toIdStr(prod.categoria_id) ??
             toIdStr(prod.categoria?._id) ??
@@ -124,7 +124,7 @@ const Pratos: React.FC = () => {
             (catIdStr && categoriasMap.get(catIdStr)) ||
             prod.categoria?.nome ||
             prod.categoria_nome ||
-            "Pratos"; // aqui podemos forçar "Pratos" porque a lista já é filtrada
+            "Bebidas"; // aqui podemos forçar "Bebidas" porque a lista já é filtrada
 
           return {
             id: prod._id || prod.id,
@@ -141,8 +141,8 @@ const Pratos: React.FC = () => {
 
         setProdutos(produtosFormatados);
       } catch (e: any) {
-        console.error("Erro ao carregar pratos:", e);
-        setErro("Não foi possível carregar os pratos da API.");
+        console.error("Erro ao carregar bebidas:", e);
+        setErro("Não foi possível carregar as bebidas da API.");
       } finally {
         setLoading(false);
       }
@@ -211,7 +211,7 @@ const Pratos: React.FC = () => {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
             </button>
-            <h1 className="pratos-title">Pratos</h1>
+            <h1 className="pratos-title">Bebidas</h1>
           </div>
           <img src={douradoImg} alt="" aria-hidden className="pratos-divider-img" />
         </header>
@@ -236,8 +236,8 @@ const Pratos: React.FC = () => {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar pratos..."
-                aria-label="Buscar pratos por nome ou descrição"
+                placeholder="Buscar bebidas..."
+                aria-label="Buscar bebidas por nome ou descrição"
                 className="pratos-search-input"
               />
             </div>
@@ -247,21 +247,21 @@ const Pratos: React.FC = () => {
               onChange={(e) => setFiltroAtivo(e.target.value as any)}
               className="pratos-filter-select"
             >
-              <option value="todos">Todos os pratos</option>
-              <option value="ativos">Apenas ativos</option>
-              <option value="inativos">Apenas inativos</option>
+              <option value="todos">Todas as bebidas</option>
+              <option value="ativos">Apenas ativas</option>
+              <option value="inativos">Apenas inativas</option>
             </select>
           </div>
 
           {loading ? (
-            <div className="pratos-loading">Carregando pratos...</div>
+            <div className="pratos-loading">Carregando bebidas...</div>
           ) : (
             <div className="pratos-grid">
               {produtosFiltrados.length === 0 ? (
                 <div className="pratos-empty">
                   {busca || filtroAtivo !== "todos"
-                    ? "Nenhum prato encontrado com os filtros atuais."
-                    : "Nenhum prato cadastrado."}
+                    ? "Nenhuma bebida encontrada com os filtros atuais."
+                    : "Nenhuma bebida cadastrada."}
                 </div>
               ) : (
                 produtosFiltrados.map((produto) => (
@@ -329,4 +329,4 @@ const Pratos: React.FC = () => {
   );
 };
 
-export default Pratos;
+export default Bebidas;
