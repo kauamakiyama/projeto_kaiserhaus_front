@@ -32,13 +32,7 @@ interface Pedido {
   itens: ItemPedido[];
 }
 
-interface ApiResponse {
-  pedidos: Pedido[];
-  total: number;
-  page: number;
-  pagesize: number;
-  totalPages: number;
-}
+// Removido interface ApiResponse não utilizada
 
 const Funcionario: React.FC = () => {
   const { token } = useAuth();
@@ -57,6 +51,45 @@ const Funcionario: React.FC = () => {
   
   // Opção para forçar uso de dados mock (para debug)
   const FORCE_MOCK_DATA = false;
+  
+  // Função para calcular contadores de status
+  const calculateStatusCounts = (pedidosList: Pedido[]) => {
+    const counts = {
+      pendente: 0,
+      em_preparacao: 0,
+      saiu_para_entrega: 0,
+      concluido: 0,
+      total: pedidosList.length
+    };
+    
+    pedidosList.forEach(pedido => {
+      switch (pedido.status) {
+        case 'pendente':
+          counts.pendente++;
+          break;
+        case 'em_preparacao':
+          counts.em_preparacao++;
+          break;
+        case 'saiu_para_entrega':
+          counts.saiu_para_entrega++;
+          break;
+        case 'concluido':
+          counts.concluido++;
+          break;
+      }
+    });
+    
+    return counts;
+  };
+  
+  // Estados para contadores de status
+  const [statusCounts, setStatusCounts] = useState({
+    pendente: 0,
+    em_preparacao: 0,
+    saiu_para_entrega: 0,
+    concluido: 0,
+    total: 0
+  });
 
   // Dados mock para teste
   const mockPedidos: Pedido[] = [
@@ -116,6 +149,40 @@ const Funcionario: React.FC = () => {
     }
   ];
 
+  // Função para testar endpoints manualmente
+  const testEndpoints = async () => {
+    const endpoints = [
+      '/pedidos/funcionario',
+      '/pedidos/',
+      '/pedidos/admin',
+      '/pedidos?all=true',
+      '/pedidos?limit=100'
+    ];
+    
+    console.log('🧪 Testando todos os endpoints...');
+    
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`\n📍 Testando: ${endpoint}`);
+        const response = await apiGet(endpoint, token || undefined);
+        console.log(`✅ ${endpoint} funcionou:`, response);
+        
+        if (Array.isArray(response) && response.length > 0) {
+          console.log(`🎉 ${endpoint} retornou ${response.length} pedidos!`);
+          return response;
+        } else if (response && (response as any).pedidos && Array.isArray((response as any).pedidos) && (response as any).pedidos.length > 0) {
+          console.log(`🎉 ${endpoint} retornou ${(response as any).pedidos.length} pedidos!`);
+          return (response as any).pedidos;
+        }
+      } catch (error) {
+        console.log(`❌ ${endpoint} falhou:`, error);
+      }
+    }
+    
+    console.log('❌ Nenhum endpoint retornou pedidos');
+    return [];
+  };
+
   const loadPedidos = async () => {
     try {
       setLoading(true);
@@ -125,6 +192,7 @@ const Funcionario: React.FC = () => {
       if (FORCE_MOCK_DATA) {
         console.log('Usando dados mock forçados para debug');
         setPedidos(mockPedidos);
+        setStatusCounts(calculateStatusCounts(mockPedidos));
         setUseMockData(true);
         setLoading(false);
         return;
@@ -137,16 +205,26 @@ const Funcionario: React.FC = () => {
       console.log('Fazendo requisição para /pedidos/ com token:', token ? 'presente' : 'ausente');
       console.log('URL base:', import.meta.env.VITE_API_URL || 'http://localhost:8001');
       
-      // Tentar diferentes endpoints possíveis para funcionários
-      let response: ApiResponse | Pedido[];
+      // Usar endpoints corretos criados no backend
+      let response: any;
+      
       try {
-        // Primeiro, tentar endpoint específico para funcionários/admin (retorna array direto)
-        response = await apiGet<Pedido[]>('/pedidos/admin', token);
-        console.log('Endpoint /pedidos/admin funcionou');
+        // Tentar endpoint específico para funcionários
+        console.log('Tentando endpoint /pedidos/funcionario...');
+        response = await apiGet('/pedidos/funcionario', token);
+        console.log('✅ Endpoint /pedidos/funcionario funcionou:', response);
       } catch (err) {
-        console.log('Endpoint /pedidos/admin falhou, tentando /pedidos/ com parâmetros');
-        // Se falhar, tentar o endpoint normal com parâmetros para todos os pedidos
-        response = await apiGet<ApiResponse>('/pedidos/?all=true&limit=100', token);
+        console.log('❌ Endpoint /pedidos/funcionario falhou:', err);
+        
+        try {
+          // Fallback para endpoint geral de pedidos
+          console.log('Tentando endpoint /pedidos/...');
+          response = await apiGet('/pedidos/', token);
+          console.log('✅ Endpoint /pedidos/ funcionou:', response);
+        } catch (err2) {
+          console.log('❌ Endpoint /pedidos/ também falhou:', err2);
+          throw new Error('Todos os endpoints de pedidos falharam');
+        }
       }
       
       console.log('Resposta da API:', response);
@@ -162,63 +240,54 @@ const Funcionario: React.FC = () => {
         }
       }
       
-      // Verificar diferentes formatos possíveis da resposta
+      // Processar resposta do backend de forma simplificada
       let pedidosData: Pedido[] = [];
       
-      if (response && Array.isArray(response)) {
-        // Formato real da API admin: array direto
+      console.log('🔍 Analisando resposta do backend...');
+      console.log('Tipo:', typeof response);
+      console.log('É array:', Array.isArray(response));
+      console.log('Chaves:', response ? Object.keys(response) : 'N/A');
+      
+      if (Array.isArray(response)) {
+        // Resposta é um array direto de pedidos
         pedidosData = response;
+        console.log(`✅ Array direto: ${pedidosData.length} pedidos`);
         setPaginationInfo({
           total: response.length,
           page: 1,
           pagesize: response.length,
           totalPages: 1
         });
-        console.log(`API retornou ${pedidosData.length} pedidos (array direto)`);
       } else if (response && response.pedidos && Array.isArray(response.pedidos)) {
-        // Formato com wrapper: { pedidos: [...], total: 0, page: 1, ... }
+        // Resposta tem estrutura { pedidos: [...], ... }
         pedidosData = response.pedidos;
+        console.log(`✅ Wrapper com pedidos: ${pedidosData.length} pedidos`);
         setPaginationInfo({
-          total: response.total || 0,
+          total: response.total || pedidosData.length,
           page: response.page || 1,
           pagesize: response.pagesize || 10,
-          totalPages: response.totalPages || 0
+          totalPages: response.totalPages || 1
         });
-        console.log(`API retornou ${pedidosData.length} pedidos de ${response.total} total`);
-      } else if (response && (response as any).data && Array.isArray((response as any).data)) {
-        // Formato: { data: [...] }
-        pedidosData = (response as any).data;
-      } else if (response && (response as any).success && (response as any).data && Array.isArray((response as any).data)) {
-        // Formato: { success: true, data: [...] }
-        pedidosData = (response as any).data;
-      } else if (typeof response === 'string') {
-        // Se a resposta é uma string, tentar fazer parse
-        try {
-          const parsed = JSON.parse(response);
-          if (Array.isArray(parsed)) {
-            pedidosData = parsed;
-          } else if (parsed.data && Array.isArray(parsed.data)) {
-            pedidosData = parsed.data;
-          } else {
-            throw new Error('String parseada não contém array de pedidos');
-          }
-        } catch (parseErr) {
-          console.error('Erro ao fazer parse da resposta string:', parseErr);
-          throw new Error('Resposta da API é uma string inválida');
-        }
+      } else if (response && response.data && Array.isArray(response.data)) {
+        // Resposta tem estrutura { data: [...] }
+        pedidosData = response.data;
+        console.log(`✅ Wrapper com data: ${pedidosData.length} pedidos`);
       } else {
-        console.error('Formato de resposta não reconhecido:', response);
-        console.error('Chaves da resposta:', response ? Object.keys(response) : 'N/A');
-        throw new Error(`Formato de resposta inesperado da API. Tipo: ${typeof response}, É array: ${Array.isArray(response)}`);
+        console.error('❌ Formato de resposta não reconhecido:', response);
+        throw new Error(`Formato de resposta inesperado. Recebido: ${typeof response}`);
       }
+      
+      console.log(`📊 Total de pedidos encontrados: ${pedidosData.length}`);
       
       if (pedidosData.length > 0) {
         setPedidos(pedidosData);
+        setStatusCounts(calculateStatusCounts(pedidosData));
         setUseMockData(false);
         console.log(`Carregados ${pedidosData.length} pedidos da API`);
       } else {
         console.log('Nenhum pedido encontrado na API');
         setPedidos([]);
+        setStatusCounts(calculateStatusCounts([]));
         setUseMockData(false);
       }
     } catch (err) {
@@ -228,6 +297,7 @@ const Funcionario: React.FC = () => {
       // Fallback para dados mock em caso de erro
       console.log('Usando dados mock como fallback');
       setPedidos(mockPedidos);
+      setStatusCounts(calculateStatusCounts(mockPedidos));
       setUseMockData(true);
       setError(`Erro na API: ${err instanceof Error ? err.message : 'Erro desconhecido'}. Usando dados de exemplo.`);
     } finally {
@@ -245,13 +315,19 @@ const Funcionario: React.FC = () => {
       setUpdatingStatus(pedidoId);
       console.log(`Atualizando pedido ${pedidoId} para status: ${novoStatus}`);
       
-      // Sempre tentar salvar no banco de dados, independente do useMockData
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8001'}/pedidos/${pedidoId}/status?novo_status=${novoStatus}`, {
+      // Usar endpoint correto para atualizar status do pedido
+      const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+      console.log(`🔄 Atualizando status do pedido ${pedidoId} para ${novoStatus}`);
+      
+      const response = await fetch(`${BASE_URL}/pedidos/${pedidoId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          status: novoStatus
+        }),
       });
 
       if (!response.ok) {
@@ -263,13 +339,16 @@ const Funcionario: React.FC = () => {
       console.log('Status atualizado com sucesso no banco:', result);
 
       // Atualizar o pedido na lista local APÓS sucesso no banco
-      setPedidos(prevPedidos => 
-        prevPedidos.map(pedido => 
+      setPedidos(prevPedidos => {
+        const updatedPedidos = prevPedidos.map(pedido => 
           pedido.id === pedidoId 
             ? { ...pedido, status: novoStatus as any }
             : pedido
-        )
-      );
+        );
+        // Atualizar contadores após mudança de status
+        setStatusCounts(calculateStatusCounts(updatedPedidos));
+        return updatedPedidos;
+      });
 
       // Não recarregar automaticamente - a atualização local já é suficiente
 
@@ -338,6 +417,16 @@ const Funcionario: React.FC = () => {
 
   useEffect(() => {
     loadPedidos();
+    
+    // Recarregar pedidos a cada 30 segundos para manter dados atualizados
+    const interval = setInterval(() => {
+      if (token && !loading) {
+        console.log('Recarregando pedidos automaticamente...');
+        loadPedidos();
+      }
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, [token]);
 
   if (loading) {
@@ -395,17 +484,32 @@ const Funcionario: React.FC = () => {
               📊 Total: {paginationInfo.total} pedidos | Página {paginationInfo.page} de {paginationInfo.totalPages}
             </div>
           )}
+          
+          {!useMockData && pedidos.length > 0 && (
+            <div style={{ 
+              background: '#d4edda', 
+              border: '1px solid #c3e6cb',
+              color: '#155724',
+              padding: '0.5rem',
+              borderRadius: '0.375rem',
+              marginBottom: '1rem',
+              fontSize: '0.8rem',
+              textAlign: 'center'
+            }}>
+              ✅ Conectado ao banco de dados | Última atualização: {new Date().toLocaleTimeString('pt-BR')}
+            </div>
+          )}
           <div className="funcionario-stats">
             <div className="stat-item">
-              <span className="stat-number">{pedidos.filter(p => p.status === 'pendente').length}</span>
+              <span className="stat-number">{statusCounts.pendente}</span>
               <span className="stat-label">Pendentes</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number">{pedidos.filter(p => p.status === 'em_preparacao').length}</span>
+              <span className="stat-number">{statusCounts.em_preparacao}</span>
               <span className="stat-label">Em Preparação</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number">{pedidos.filter(p => p.status === 'saiu_para_entrega').length}</span>
+              <span className="stat-number">{statusCounts.saiu_para_entrega}</span>
               <span className="stat-label">Saiu para Entrega</span>
             </div>
           </div>
@@ -422,26 +526,62 @@ const Funcionario: React.FC = () => {
             className={`filtro-btn ${filtroStatus === 'pendente' ? 'ativo' : ''}`}
             onClick={() => setFiltroStatus('pendente')}
           >
-            Pendentes ({pedidos.filter(p => p.status === 'pendente').length})
+            Pendentes ({statusCounts.pendente})
           </button>
           <button 
             className={`filtro-btn ${filtroStatus === 'em_preparacao' ? 'ativo' : ''}`}
             onClick={() => setFiltroStatus('em_preparacao')}
           >
-            Em Preparação ({pedidos.filter(p => p.status === 'em_preparacao').length})
+            Em Preparação ({statusCounts.em_preparacao})
           </button>
           <button 
             className={`filtro-btn ${filtroStatus === 'saiu_para_entrega' ? 'ativo' : ''}`}
             onClick={() => setFiltroStatus('saiu_para_entrega')}
           >
-            Saiu para Entrega ({pedidos.filter(p => p.status === 'saiu_para_entrega').length})
+            Saiu para Entrega ({statusCounts.saiu_para_entrega})
           </button>
         </div>
 
         <div className="pedidos-grid">
           {!pedidos || pedidos.length === 0 ? (
             <div className="sem-pedidos">
-              <p>Nenhum pedido encontrado</p>
+              <p>
+                {useMockData 
+                  ? "Usando dados de exemplo - API não disponível" 
+                  : "Nenhum pedido encontrado no sistema"
+                }
+              </p>
+              {!useMockData && (
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                  <button 
+                    className="retry-button" 
+                    onClick={loadPedidos}
+                  >
+                    🔄 Atualizar Lista
+                  </button>
+                  <button 
+                    className="retry-button" 
+                    onClick={async () => {
+                      console.log('🔍 Debug: Testando endpoints...');
+                      console.log('Token:', token ? 'presente' : 'ausente');
+                      console.log('URL base:', import.meta.env.VITE_API_URL || 'http://localhost:8001');
+                      
+                      const pedidos = await testEndpoints();
+                      if (pedidos.length > 0) {
+                        console.log('🎉 Encontrados pedidos via teste! Carregando...');
+                        setPedidos(pedidos);
+                        setStatusCounts(calculateStatusCounts(pedidos));
+                        setUseMockData(false);
+                      } else {
+                        console.log('❌ Nenhum pedido encontrado em nenhum endpoint');
+                      }
+                    }}
+                    style={{ background: '#6c757d' }}
+                  >
+                    🐛 Testar Endpoints
+                  </button>
+                </div>
+              )}
             </div>
           ) : pedidosFiltrados.length === 0 ? (
             <div className="sem-pedidos">
