@@ -60,9 +60,15 @@ const GerenciarCategorias: React.FC = () => {
   const handleAbrirCategoria = (cat: Categoria) => {
     console.log("Abrir categoria:", cat.slug);
     
-    // Se for a categoria "Pratos", navegar para a página específica
+    // Navegar para páginas específicas baseado na categoria
     if (cat.label.toLowerCase().includes('prato') || cat.slug === 'pratos') {
       navigate('/admin/categorias/pratos');
+    } else if (cat.label.toLowerCase().includes('entrada') || cat.slug === 'entradas') {
+      navigate('/admin/categorias/entradas');
+    } else if (cat.label.toLowerCase().includes('sobremesa') || cat.slug === 'sobremesas') {
+      navigate('/admin/categorias/sobremesas');
+    } else if (cat.label.toLowerCase().includes('bebida') || cat.slug === 'bebidas') {
+      navigate('/admin/categorias/bebidas');
     } else {
       // Para outras categorias, apenas log por enquanto
       console.log("Categoria não implementada ainda:", cat.label);
