@@ -48,17 +48,23 @@ const Login: React.FC = () => {
         const userData = (data as any).usuario || (data as any).user || data;
         const role = userData?.hierarquia || 'usuario';
         
+        console.log('Dados do usuário recebidos:', userData);
+        console.log('Hierarquia detectada:', role);
+        
         // persiste token e dados do usuário
         try { localStorage.setItem('user', JSON.stringify(userData)); } catch {}
         login(tokenFromApi, userData);
         setSuccess('Login realizado com sucesso!');
         
         // Redireciona baseado na hierarquia
-        if (role === 'funcionario') {
+        if (role === 'funcionario' || role === 'colaborador') {
+          console.log('Redirecionando para página de funcionário');
           navigate('/funcionario', { replace: true });
         } else if (role === 'admin') {
+          console.log('Redirecionando para página de admin');
           navigate('/admin', { replace: true });
         } else {
+          console.log('Redirecionando para página inicial');
           navigate('/', { replace: true });
         }
       } else {

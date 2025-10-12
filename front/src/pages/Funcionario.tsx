@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Funcionario.css';
 import { useAuth } from '../contexts/AuthContext';
-import { apiGet, apiPut } from '../services/api';
+import { apiGet } from '../services/api';
+import HeaderLogadoColaborador from '../components/HeaderLogadoColaborador';
 
 interface ItemPedido {
   id: string;
@@ -184,12 +185,12 @@ const Funcionario: React.FC = () => {
           totalPages: response.totalPages || 0
         });
         console.log(`API retornou ${pedidosData.length} pedidos de ${response.total} total`);
-      } else if (response && response.data && Array.isArray(response.data)) {
+      } else if (response && (response as any).data && Array.isArray((response as any).data)) {
         // Formato: { data: [...] }
-        pedidosData = response.data;
-      } else if (response && response.success && response.data && Array.isArray(response.data)) {
+        pedidosData = (response as any).data;
+      } else if (response && (response as any).success && (response as any).data && Array.isArray((response as any).data)) {
         // Formato: { success: true, data: [...] }
-        pedidosData = response.data;
+        pedidosData = (response as any).data;
       } else if (typeof response === 'string') {
         // Se a resposta é uma string, tentar fazer parse
         try {
@@ -361,8 +362,10 @@ const Funcionario: React.FC = () => {
   }
 
   return (
-    <div className="funcionario-page">
-      <div className="funcionario-container">
+    <>
+      <HeaderLogadoColaborador />
+      <div className="funcionario-page">
+        <div className="funcionario-container">
         <div className="funcionario-header">
           <h1 className="funcionario-title">Painel de Pedidos</h1>
           {useMockData && (
@@ -544,8 +547,9 @@ const Funcionario: React.FC = () => {
               })
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

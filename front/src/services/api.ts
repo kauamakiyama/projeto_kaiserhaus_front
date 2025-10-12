@@ -46,6 +46,16 @@ export async function apiPut<T>(path: string, body: unknown, token?: string): Pr
   return res.json();
 }
 
+export async function apiDelete<T>(path: string, token?: string): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+    credentials: 'include',
+  });
+  if (!res.ok) throw await safeError(res);
+  return res.json();
+}
+
 async function safeError(res: Response) {
   try {
     const contentType = res.headers.get('content-type') || '';

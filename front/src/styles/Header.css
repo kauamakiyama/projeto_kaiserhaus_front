@@ -328,3 +328,70 @@
   background: linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,0));
   filter: blur(0.0125rem);
 }
+
+/* Estilos para header de colaborador */
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.user-name {
+  color: #f9f5df;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+}
+
+.logoff-button {
+  background: #f9f5df;
+  color: #472304;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-family: "Georgia", "Times New Roman", serif;
+}
+
+.logoff-button:hover {
+  background: #e6ddc4;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.logoff-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logoff-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsividade para header de colaborador */
+@media (max-width: 768px) {
+  .user-info {
+    display: none;
+  }
+  
+  .logoff-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .logoff-button span {
+    display: none;
+  }
+  
+  .logoff-button svg {
+    width: 18px;
+    height: 18px;
+  }
+}
