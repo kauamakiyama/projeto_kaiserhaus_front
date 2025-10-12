@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Header from "../../components/HeaderLogadoLoja";
 import Footer from "../../components/Footer";
 import "../../styles/admin/Historico.css";
 import douradoImg from "../../assets/login/dourado.png";
+import { apiGet } from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Item = { name: string; qty: number };
 type Order = {
@@ -16,45 +18,6 @@ type Order = {
 };
 
 
-const MOCK_ORDERS: Order[] = [
-  {
-    id: "1",
-    number: "73281",
-    dateISO: "2025-09-07",
-    items: [
-      { name: "Brezel", qty: 3 },
-      { name: "Strudel", qty: 1 },
-      { name: "Coca Cola", qty: 1 },
-    ],
-    customerName: "Caique Bezerra",
-    payment: "Pix",
-    total: 129.97,
-  },
-  {
-    id: "2",
-    number: "32457",
-    dateISO: "2025-08-04",
-    items: [
-      { name: "Schnitzel", qty: 4 },
-      { name: "Coca Cola", qty: 1 },
-    ],
-    customerName: "Enzo Nogueira",
-    payment: "Cartão",
-    total: 189.97,
-  },
-  {
-    id: "3",
-    number: "19899",
-    dateISO: "2025-09-30",
-    items: [
-      { name: "Apfelstrudel", qty: 1 },
-      { name: "Água", qty: 1 },
-    ],
-    customerName: "Theo Blade",
-    payment: "Pix",
-    total: 39.9,
-  },
-];
 
 const fmtDate = (iso: string) => {
   const d = new Date(iso + "T00:00:00");
@@ -65,9 +28,98 @@ const fmtMoney = (n: number) =>
 
 const Historico: React.FC = () => {
   const [range, setRange] = useState<"todos" | "30" | "60" | "90">("todos");
+  const [pedidosOriginais, setPedidosOriginais] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState("");
+  const { token } = useAuth();
+
+  // Função para carregar pedidos
+  const carregarPedidos = async () => {
+    setLoading(true);
+    setErro("");
+    try {
+      // Buscar pedidos do endpoint admin (todos os pedidos do sistema)
+      const pedidosApi = await apiGet<any[]>('/pedidos/admin', token || undefined);
+        
+      // Converter dados da API para o formato esperado
+      const pedidosFormatados = pedidosApi.map((pedido: any) => {
+        // Mapear itens do pedido
+        let items: Item[] = [];
+        if (pedido.itens && Array.isArray(pedido.itens)) {
+          items = pedido.itens.map((item: any) => ({
+            name: item.produto?.nome || item.nome_produto || item.nome || 'Produto',
+            qty: item.quantidade || item.qty || 1
+          }));
+        }
+        
+        // Mapear data
+        let dateISO = new Date().toISOString().split('T')[0];
+        if (pedido.data_criacao) {
+          dateISO = new Date(pedido.data_criacao).toISOString().split('T')[0];
+        } else if (pedido.createdAt) {
+          dateISO = new Date(pedido.createdAt).toISOString().split('T')[0];
+        } else if (pedido.data) {
+          dateISO = new Date(pedido.data).toISOString().split('T')[0];
+        }
+        
+        // Mapear método de pagamento
+        let payment = 'Pix';
+        if (pedido.metodo_pagamento) {
+          const metodo = pedido.metodo_pagamento.toLowerCase();
+          if (metodo.includes('cartao') || metodo.includes('cartão')) {
+            payment = 'Cartão';
+          } else if (metodo.includes('dinheiro')) {
+            payment = 'Dinheiro';
+          } else if (metodo.includes('pix')) {
+            payment = 'Pix';
+          }
+        } else if (pedido.pagamento) {
+          const pag = pedido.pagamento.toLowerCase();
+          if (pag.includes('cartao') || pag.includes('cartão')) {
+            payment = 'Cartão';
+          } else if (pag.includes('dinheiro')) {
+            payment = 'Dinheiro';
+          } else if (pag.includes('pix')) {
+            payment = 'Pix';
+          }
+        }
+        
+        return {
+          id: pedido._id || pedido.id || Math.random().toString(),
+          number: pedido.numero_pedido || pedido.numero || pedido.id?.toString() || Math.random().toString().slice(-5),
+          dateISO,
+          items,
+          customerName: pedido.usuario?.nome || pedido.cliente?.nome || pedido.nome_cliente || 'Cliente',
+          payment: payment as "Pix" | "Cartão" | "Dinheiro",
+          total: Number(pedido.total) || Number(pedido.valor_total) || Number(pedido.total_produtos) || 0
+        };
+      });
+        
+      setPedidosOriginais(pedidosFormatados);
+    } catch (e: any) {
+      console.error('Erro ao carregar pedidos:', e);
+      
+      // Verificar se é erro de memória do MongoDB
+      if (e.message && e.message.includes('memory limit')) {
+        setErro("⚠️ Banco de dados temporariamente indisponível (limite de memória). Exibindo dados de exemplo. O problema será resolvido em breve.");
+      } else {
+        setErro("Não foi possível carregar pedidos da API. Exibindo dados de exemplo.");
+      }
+      
+      // Se não conseguir carregar dados da API, usar array vazio
+      setPedidosOriginais([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carregar pedidos na inicialização
+  useEffect(() => {
+    carregarPedidos();
+  }, [token]);
 
   const pedidos = useMemo(() => {
-    const base = [...MOCK_ORDERS].sort(
+    const base = [...pedidosOriginais].sort(
       (a, b) => +new Date(b.dateISO) - +new Date(a.dateISO)
     );
 
@@ -78,7 +130,7 @@ const Historico: React.FC = () => {
     limite.setDate(limite.getDate() - dias);
 
     return base.filter((p) => new Date(p.dateISO) >= limite);
-  }, [range]);
+  }, [pedidosOriginais, range]);
 
   return (
     <>
@@ -90,6 +142,19 @@ const Historico: React.FC = () => {
         </header>
 
         <section className="historico-panel">
+          {erro && (
+            <div className="historico-error-section">
+              <div className="historico-alert">{erro}</div>
+              <button 
+                className="historico-retry-btn"
+                onClick={carregarPedidos}
+                disabled={loading}
+              >
+                {loading ? 'Carregando...' : 'Tentar novamente'}
+              </button>
+            </div>
+          )}
+          
           <div className="historico-toolbar">
             <label className="sr-only" htmlFor="range">
               Filtrar por período
@@ -107,12 +172,15 @@ const Historico: React.FC = () => {
             </select>
           </div>
 
-          <ul className="pedidos-list">
-            {pedidos.length === 0 && (
-              <li className="empty">Nenhum pedido nesse período.</li>
-            )}
+          {loading ? (
+            <div className="historico-loading">Carregando pedidos...</div>
+          ) : (
+            <ul className="pedidos-list">
+              {pedidos.length === 0 && (
+                <li className="empty">Nenhum pedido nesse período.</li>
+              )}
 
-            {pedidos.map((p) => (
+              {pedidos.map((p) => (
               <li key={p.id} className="pedido-card">
                 <div className="pedido-left">
                   <p className="pedido-items">
@@ -145,8 +213,9 @@ const Historico: React.FC = () => {
                   </p>
                 </div>
               </li>
-            ))}
-          </ul>
+              ))}
+            </ul>
+          )}
         </section>
       </main>
       <Footer />

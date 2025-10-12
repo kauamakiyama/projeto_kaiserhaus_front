@@ -1,0 +1,479 @@
+:root{
+  --kh-container: 75rem;
+  --kh-cream-10: var(--cream-10, #f9f5df);
+  --kh-cream-25: var(--cream-25, #fbf9ec);
+  --kh-cream-40: var(--cream-40, #f4e9cf);
+  --kh-brown-950: var(--brown-950, #3b160a);
+  --kh-brown-900: var(--brown-900, #4a1f0e);
+  --kh-brown-800: var(--brown-800, #5b2a15);
+  --kh-gold-500: var(--gold-500, #d4a017);
+  --kh-text: var(--text, #2a241f);
+  --kh-radius-lg: 1.125rem;
+  --kh-radius-xl: 1.5rem;
+  --kh-shadow-soft: 0 0.625rem 1.625rem rgba(0,0,0,.14);
+  --kh-shadow-card: 0 0.75rem 1.75rem rgba(0,0,0,.16);
+  --kh-header-h: 4.5rem;
+}
+
+/* Página de Pratos */
+.pratos-page {
+  min-height: 100dvh;
+  background: var(--kh-cream-25);
+  padding: calc(var(--kh-header-h) + 2rem) 1.5rem 2.5rem;
+  display: grid;
+  place-items: start center;
+}
+
+/* Header */
+.pratos-header {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.125rem;
+}
+
+.pratos-title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+  color: var(--kh-brown-900);
+  font-weight: 700;
+}
+
+.pratos-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  position: relative;
+}
+
+.pratos-voltar-btn {
+  background: var(--kh-brown-900);
+  border: 2px solid var(--kh-brown-900);
+  color: var(--kh-cream-25);
+  padding: 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+}
+
+.pratos-voltar-btn:hover {
+  background: var(--kh-brown-800);
+  border-color: var(--kh-brown-800);
+  transform: translateY(-2px);
+}
+
+.pratos-divider-img {
+  width: 10rem;
+  opacity: .9;
+}
+
+/* Panel */
+.pratos-panel {
+  width: clamp(45rem, 80vw, 61.25rem);
+  min-height: 28.75rem;
+  margin: 1rem auto 1.5rem;
+  padding: 1.375rem 1.125rem 1.75rem;
+  border: 0.125rem solid #b7b09a;
+  border-radius: var(--kh-radius-xl);
+  background: repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,.45) 0 0.1875rem,
+      rgba(255,255,255,.35) 0.1875rem 0.375rem
+    ),
+    var(--kh-cream-40);
+  box-shadow: var(--kh-shadow-soft);
+}
+
+/* Alert */
+.pratos-alert {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 0.75rem 1rem;
+  border-radius: var(--kh-radius-lg);
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Filtros */
+.pratos-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.pratos-search {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+}
+
+.pratos-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.pratos-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border: 2px solid #d1d5db;
+  border-radius: var(--kh-radius-lg);
+  font-size: 1rem;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.pratos-search-input:focus {
+  outline: none;
+  border-color: var(--kh-brown-900);
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+.pratos-filter-select {
+  padding: 0.75rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: var(--kh-radius-lg);
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 180px;
+}
+
+.pratos-filter-select:focus {
+  outline: none;
+  border-color: var(--kh-brown-900);
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+/* Loading */
+.pratos-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/* Grid */
+.pratos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card do Prato */
+.prato-card {
+  background: white;
+  border-radius: var(--kh-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--kh-shadow-card);
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.prato-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--kh-shadow-soft);
+}
+
+/* Imagem do Prato */
+.prato-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prato-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prato-image-placeholder {
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Conteúdo do Card */
+.prato-content {
+  padding: 1.5rem;
+}
+
+.prato-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.prato-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--kh-brown-900);
+  margin: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.prato-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.prato-status.ativo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.prato-status.inativo {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.prato-desc {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.prato-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prato-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--kh-brown-900);
+}
+
+.prato-category {
+  font-size: 0.875rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--kh-radius-lg);
+  align-self: flex-start;
+}
+
+.prato-stock {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Ações */
+.prato-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.prato-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--kh-radius-lg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prato-btn.ativar {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.prato-btn.ativar:hover {
+  background: #bbf7d0;
+}
+
+.prato-btn.desativar {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.prato-btn.desativar:hover {
+  background: #fecaca;
+}
+
+.prato-btn.editar {
+  background: var(--kh-brown-900);
+  color: var(--kh-cream-50);
+  border: 1px solid var(--kh-brown-900);
+}
+
+.prato-btn.editar:hover {
+  background: var(--kh-brown-800);
+  transform: translateY(-1px);
+}
+
+/* Empty State */
+.pratos-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+  background: white;
+  border-radius: var(--kh-radius-xl);
+  border: 2px dashed #d1d5db;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .pratos-page {
+    padding: calc(var(--kh-header-h) + 1rem) 1rem 1.5rem;
+  }
+  
+  .pratos-panel {
+    width: 100%;
+    padding: 1rem 0.75rem;
+  }
+  
+  .pratos-title-section {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .pratos-voltar-btn {
+    position: relative;
+    left: auto;
+  }
+  
+  .pratos-filters {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .pratos-search {
+    min-width: auto;
+  }
+  
+  .pratos-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .prato-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .prato-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .pratos-panel {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .prato-content {
+    padding: 1rem;
+  }
+  
+  .prato-title {
+    font-size: 1.125rem;
+  }
+  
+  .prato-price {
+    font-size: 1.125rem;
+  }
+}
+
+/* --- Header --- */
+.pratos-title-section{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    gap: 1rem;
+  }
+  
+  /* botão posicionado à esquerda sem sobrepor */
+  .pratos-voltar-btn{
+    position: absolute;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--kh-brown-900);
+    border: 2px solid var(--kh-brown-900);
+    color: var(--kh-cream-25);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .pratos-voltar-btn:hover {
+    background: var(--kh-brown-800);
+    border-color: var(--kh-brown-800);
+    transform: translateY(-2px);
+  }
+  
+  /* título centralizado com espaço para o botão */
+  .pratos-title{
+    margin-left: 60px; /* espaço para o botão */
+  }
+  
+  /* responsivo */
+  @media (max-width: 768px){
+    .pratos-title-section{
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .pratos-voltar-btn{
+      position: relative;
+      left: auto;
+      margin-left: 0;
+    }
+    
+    .pratos-title{
+      margin-left: 0;
+    }
+  }
+  
