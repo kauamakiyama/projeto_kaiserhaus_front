@@ -680,6 +680,45 @@
 }
 
 /* Responsivo para modal */
+/* Botão Adicionar Prato */
+.pratos-filters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.pratos-search {
+  flex: 1;
+}
+
+.pratos-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--kh-brown-900);
+  color: var(--kh-cream-25);
+  border: 2px solid var(--kh-brown-900);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pratos-add-btn:hover {
+  background: var(--kh-brown-800);
+  border-color: var(--kh-brown-800);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+.pratos-add-btn svg {
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .modal-content {
     max-width: 95%;
@@ -700,6 +739,17 @@
 
   .btn-primary,
   .btn-secondary {
+    width: 100%;
+  }
+
+  .pratos-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .pratos-add-btn {
+    justify-content: center;
     width: 100%;
   }
 }
