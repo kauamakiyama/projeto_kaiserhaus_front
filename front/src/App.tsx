@@ -12,10 +12,9 @@ import Pagamento from './pages/Pagamento'
 import PixPagamento from './pages/PixPagamento'
 import Conclusao from './pages/Conclusao'
 import HistoricoPedidos from './pages/HistoricoPedidos'
+import AcompanharPedido from './pages/AcompanharPedido'
 import Funcionario from './pages/Funcionario'
-import FuncionarioGuard from './components/FuncionarioGuard'
 import RoleRedirect from './components/RoleRedirect'
-import ErrorBoundary from './components/ErrorBoundary'
 import Adm from './pages/Adm'
 import GerFunc from './pages/admin/GerenciarFuncionarios'
 import GerCateg from './pages/admin/GerenciarCategorias'
@@ -52,6 +51,7 @@ export default function App() {
                 <Route path="/usuario" element={<Usuario />} />
                 <Route path="/usuario/dados" element={<MeusDados />} />
                 <Route path="/historico-pedidos" element={<HistoricoPedidos />} />
+                <Route path="/acompanhar-pedido/:pedidoId" element={<AcompanharPedido />} />
 
                 <Route path="/funcionario" element={
                       <Funcionario />

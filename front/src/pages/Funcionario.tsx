@@ -41,28 +41,26 @@ const Funcionario: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filtroStatus, setFiltroStatus] = useState<string>('todos');
   const [useMockData, setUseMockData] = useState(false);
-  const [paginationInfo, setPaginationInfo] = useState({
-    total: 0,
-    page: 1,
-    pagesize: 10,
-    totalPages: 0
-  });
+  // Removido paginationInfo não utilizado
   const [updatingStatus, setUpdatingStatus] = useState<number | null>(null);
   
   // Opção para forçar uso de dados mock (para debug)
   const FORCE_MOCK_DATA = false;
   
-  // Função para calcular contadores de status
+  // Função para calcular contadores de status (excluindo pedidos concluídos)
   const calculateStatusCounts = (pedidosList: Pedido[]) => {
+    // Filtrar apenas pedidos que não estão concluídos
+    const pedidosAtivos = pedidosList.filter(pedido => pedido.status !== 'concluido');
+    
     const counts = {
       pendente: 0,
       em_preparacao: 0,
       saiu_para_entrega: 0,
       concluido: 0,
-      total: pedidosList.length
+      total: pedidosAtivos.length // Total de pedidos ativos (não concluídos)
     };
     
-    pedidosList.forEach(pedido => {
+    pedidosAtivos.forEach(pedido => {
       switch (pedido.status) {
         case 'pendente':
           counts.pendente++;
@@ -149,39 +147,6 @@ const Funcionario: React.FC = () => {
     }
   ];
 
-  // Função para testar endpoints manualmente
-  const testEndpoints = async () => {
-    const endpoints = [
-      '/pedidos/funcionario',
-      '/pedidos/',
-      '/pedidos/admin',
-      '/pedidos?all=true',
-      '/pedidos?limit=100'
-    ];
-    
-    console.log('🧪 Testando todos os endpoints...');
-    
-    for (const endpoint of endpoints) {
-      try {
-        console.log(`\n📍 Testando: ${endpoint}`);
-        const response = await apiGet(endpoint, token || undefined);
-        console.log(`✅ ${endpoint} funcionou:`, response);
-        
-        if (Array.isArray(response) && response.length > 0) {
-          console.log(`🎉 ${endpoint} retornou ${response.length} pedidos!`);
-          return response;
-        } else if (response && (response as any).pedidos && Array.isArray((response as any).pedidos) && (response as any).pedidos.length > 0) {
-          console.log(`🎉 ${endpoint} retornou ${(response as any).pedidos.length} pedidos!`);
-          return (response as any).pedidos;
-        }
-      } catch (error) {
-        console.log(`❌ ${endpoint} falhou:`, error);
-      }
-    }
-    
-    console.log('❌ Nenhum endpoint retornou pedidos');
-    return [];
-  };
 
   const loadPedidos = async () => {
     try {
@@ -252,22 +217,10 @@ const Funcionario: React.FC = () => {
         // Resposta é um array direto de pedidos
         pedidosData = response;
         console.log(`✅ Array direto: ${pedidosData.length} pedidos`);
-        setPaginationInfo({
-          total: response.length,
-          page: 1,
-          pagesize: response.length,
-          totalPages: 1
-        });
       } else if (response && response.pedidos && Array.isArray(response.pedidos)) {
         // Resposta tem estrutura { pedidos: [...], ... }
         pedidosData = response.pedidos;
         console.log(`✅ Wrapper com pedidos: ${pedidosData.length} pedidos`);
-        setPaginationInfo({
-          total: response.total || pedidosData.length,
-          page: response.page || 1,
-          pagesize: response.pagesize || 10,
-          totalPages: response.totalPages || 1
-        });
       } else if (response && response.data && Array.isArray(response.data)) {
         // Resposta tem estrutura { data: [...] }
         pedidosData = response.data;
@@ -411,9 +364,12 @@ const Funcionario: React.FC = () => {
     }
   };
 
+  // Filtrar pedidos excluindo os concluídos
+  const pedidosAtivos = pedidos.filter(pedido => pedido.status !== 'concluido');
+  
   const pedidosFiltrados = filtroStatus === 'todos' 
-    ? pedidos 
-    : pedidos.filter(pedido => pedido.status === filtroStatus);
+    ? pedidosAtivos 
+    : pedidosAtivos.filter(pedido => pedido.status === filtroStatus);
 
   useEffect(() => {
     loadPedidos();
@@ -470,35 +426,6 @@ const Funcionario: React.FC = () => {
               ⚠️ Usando dados de exemplo. Verifique a conexão com a API.
             </div>
           )}
-          {!useMockData && paginationInfo.total > 0 && (
-            <div style={{ 
-              background: '#d1ecf1', 
-              border: '1px solid #bee5eb', 
-              borderRadius: '8px', 
-              padding: '8px', 
-              marginBottom: '1rem',
-              color: '#0c5460',
-              textAlign: 'center',
-              fontSize: '0.9rem'
-            }}>
-              📊 Total: {paginationInfo.total} pedidos | Página {paginationInfo.page} de {paginationInfo.totalPages}
-            </div>
-          )}
-          
-          {!useMockData && pedidos.length > 0 && (
-            <div style={{ 
-              background: '#d4edda', 
-              border: '1px solid #c3e6cb',
-              color: '#155724',
-              padding: '0.5rem',
-              borderRadius: '0.375rem',
-              marginBottom: '1rem',
-              fontSize: '0.8rem',
-              textAlign: 'center'
-            }}>
-              ✅ Conectado ao banco de dados | Última atualização: {new Date().toLocaleTimeString('pt-BR')}
-            </div>
-          )}
           <div className="funcionario-stats">
             <div className="stat-item">
               <span className="stat-number">{statusCounts.pendente}</span>
@@ -520,7 +447,7 @@ const Funcionario: React.FC = () => {
             className={`filtro-btn ${filtroStatus === 'todos' ? 'ativo' : ''}`}
             onClick={() => setFiltroStatus('todos')}
           >
-            Todos ({pedidos.length})
+            Todos ({pedidosAtivos.length})
           </button>
           <button 
             className={`filtro-btn ${filtroStatus === 'pendente' ? 'ativo' : ''}`}
@@ -543,46 +470,9 @@ const Funcionario: React.FC = () => {
         </div>
 
         <div className="pedidos-grid">
-          {!pedidos || pedidos.length === 0 ? (
-            <div className="sem-pedidos">
-              <p>
-                {useMockData 
-                  ? "Usando dados de exemplo - API não disponível" 
-                  : "Nenhum pedido encontrado no sistema"
-                }
-              </p>
-              {!useMockData && (
-                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                  <button 
-                    className="retry-button" 
-                    onClick={loadPedidos}
-                  >
-                    🔄 Atualizar Lista
-                  </button>
-                  <button 
-                    className="retry-button" 
-                    onClick={async () => {
-                      console.log('🔍 Debug: Testando endpoints...');
-                      console.log('Token:', token ? 'presente' : 'ausente');
-                      console.log('URL base:', import.meta.env.VITE_API_URL || 'http://localhost:8001');
-                      
-                      const pedidos = await testEndpoints();
-                      if (pedidos.length > 0) {
-                        console.log('🎉 Encontrados pedidos via teste! Carregando...');
-                        setPedidos(pedidos);
-                        setStatusCounts(calculateStatusCounts(pedidos));
-                        setUseMockData(false);
-                      } else {
-                        console.log('❌ Nenhum pedido encontrado em nenhum endpoint');
-                      }
-                    }}
-                    style={{ background: '#6c757d' }}
-                  >
-                    🐛 Testar Endpoints
-                  </button>
-                </div>
-              )}
-            </div>
+          {pedidosAtivos.length === 0 ? (
+            // Quando não há nenhum pedido ativo, não mostrar nada
+            null
           ) : pedidosFiltrados.length === 0 ? (
             <div className="sem-pedidos">
               <p>Nenhum pedido encontrado para o filtro selecionado</p>

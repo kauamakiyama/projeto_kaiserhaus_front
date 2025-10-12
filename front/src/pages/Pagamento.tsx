@@ -34,7 +34,7 @@ const Pagamento: React.FC = () => {
   const [isLoadingCards, setIsLoadingCards] = useState(false);
   const [isSavingCard, setIsSavingCard] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // Estado para o formulário de novo cartão
   const [newCard, setNewCard] = useState<NewCard>({
     numero: '',
@@ -43,7 +43,7 @@ const Pagamento: React.FC = () => {
     cvv: '',
     nome: ''
   });
-  
+
   // Lista de cartões do usuário
   const [userCards, setUserCards] = useState<Card[]>([]);
 
@@ -71,7 +71,7 @@ const Pagamento: React.FC = () => {
   // Função para carregar cartões do usuário
   const loadUserCards = async () => {
     if (!token) return;
-    
+
     setIsLoadingCards(true);
     try {
       const cards = await apiGet<Card[]>('/cartoes/', token);
@@ -91,7 +91,7 @@ const Pagamento: React.FC = () => {
 
   const handleCardSelect = (card: Card) => {
     setSelectedCard(card);
-    // Removido: setShowCardDropdown(false); - mantém o dropdown aberto
+    // Mantém o dropdown aberto para o usuário confirmar/visualizar
   };
 
   const handleAddNewCard = () => {
@@ -124,7 +124,6 @@ const Pagamento: React.FC = () => {
     return formatted.slice(0, 19); // Máximo 16 dígitos + 3 espaços
   };
 
-
   const handleSaveCard = async () => {
     if (!token) {
       alert('Você precisa estar logado para salvar um cartão.');
@@ -150,20 +149,20 @@ const Pagamento: React.FC = () => {
         ano: newCard.ano,
         cvv: newCard.cvv,
         nome: newCard.nome
-        // Removido: bandeira - deixar o backend detectar
+        // Bandeira detectada no backend
       };
 
       const savedCard = await apiPost<Card>('/cartoes/', cardData, token);
-      
+
       // Atualiza a lista de cartões
       setUserCards(prev => [...prev, savedCard]);
-      
+
       // Seleciona o cartão recém-criado
       setSelectedCard(savedCard);
-      
+
       // Fecha o modal
       handleCloseModal();
-      
+
       alert('Cartão salvo com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar cartão:', error);
@@ -214,17 +213,21 @@ const Pagamento: React.FC = () => {
       pagamento,
     } as any;
 
-
     try {
       if (!token) {
         throw new Error('Você precisa estar logado para finalizar o pedido.');
       }
 
+      // Cria o pedido
       const pedido = await apiPost<{ pedidoId: number; total: number }>(
         '/pedidos/',
         body,
         token
       );
+
+      // Salva o ID real para fallback em Conclusao/PixPagamento
+      sessionStorage.setItem('ultimoPedidoId', String(pedido.pedidoId));
+      localStorage.setItem('kh-pedido-id', String(pedido.pedidoId)); // se você usa em outros lugares
 
       if (selectedPayment === 'pix') {
         const pix = await apiPost<{ pedidoId: number; qrcode: string; copiaECola: string; expiraEm: number }>(
@@ -232,15 +235,15 @@ const Pagamento: React.FC = () => {
           { pedidoId: pedido.pedidoId, valor: pedido.total },
           token
         );
-        localStorage.setItem('kh-pedido-id', String(pedido.pedidoId));
+
         localStorage.setItem('kh-pix', JSON.stringify(pix));
-        navigate('/pix-pagamento');
+
+        navigate('/pix-pagamento'); // Tela vai carregar dados do localStorage e levar pedidoId adiante
         return;
       }
 
-      // Cartão ou dinheiro: seguir para conclusão (backend pode marcar como pago)
-      localStorage.setItem('kh-pedido-id', String(pedido.pedidoId));
-      navigate('/conclusao');
+      // Cartão ou dinheiro: seguir para conclusão com o ID real
+      navigate('/conclusao', { state: { pedidoId: pedido.pedidoId } });
     } catch (err) {
       console.error(err);
       alert((err as Error).message || 'Erro ao criar pedido');
@@ -308,13 +311,16 @@ const Pagamento: React.FC = () => {
               {/* Dropdown de Seleção de Cartão */}
               {showCardDropdown && (
                 <div className="card-dropdown">
-
                   <div className="card-options">
                     {isLoadingCards ? (
                       <div className="loading-cards">Carregando cartões...</div>
                     ) : userCards.length > 0 ? (
                       userCards.map((card) => (
-                        <div key={card.id} className={`card-option ${selectedCard?.id === card.id ? 'selected' : ''}`} onClick={() => handleCardSelect(card)}>
+                        <div
+                          key={card.id}
+                          className={`card-option ${selectedCard?.id === card.id ? 'selected' : ''}`}
+                          onClick={() => handleCardSelect(card)}
+                        >
                           <div className={`card-radio ${selectedCard?.id === card.id ? 'selected' : ''}`}></div>
                           <div className="card-info">
                             <div className="card-brand-logo">
@@ -366,7 +372,7 @@ const Pagamento: React.FC = () => {
           </div>
 
           <div className="pagamento-actions">
-            <button 
+            <button
               className="btn-continue"
               onClick={handleContinue}
             >Continuar</button>
@@ -382,7 +388,7 @@ const Pagamento: React.FC = () => {
               <h3>Informação de pagamento:</h3>
               <button className="modal-close" onClick={handleCloseModal}>×</button>
             </div>
-            
+
             <div className="modal-body">
               <div className="form-group">
                 <label htmlFor="card-number">Número do cartão</label>
@@ -424,14 +430,14 @@ const Pagamento: React.FC = () => {
 
                 <div className="form-group">
                   <label htmlFor="cvv">Código de segurança</label>
-                    <input
-                      type="text"
-                      id="cvv"
-                      value={newCard.cvv}
-                      onChange={(e) => handleInputChange('cvv', e.target.value.replace(/\D/g, '').slice(0, 3))}
-                      placeholder="CVV"
-                      maxLength={3}
-                    />
+                  <input
+                    type="text"
+                    id="cvv"
+                    value={newCard.cvv}
+                    onChange={(e) => handleInputChange('cvv', e.target.value.replace(/\D/g, '').slice(0, 3))}
+                    placeholder="CVV"
+                    maxLength={3}
+                  />
                 </div>
               </div>
 
@@ -448,15 +454,15 @@ const Pagamento: React.FC = () => {
             </div>
 
             <div className="modal-footer">
-              <button 
-                className="btn-cancel" 
+              <button
+                className="btn-cancel"
                 onClick={handleCloseModal}
                 disabled={isSavingCard}
               >
                 Cancelar
               </button>
-              <button 
-                className="btn-save" 
+              <button
+                className="btn-save"
                 onClick={handleSaveCard}
                 disabled={isSavingCard}
               >
