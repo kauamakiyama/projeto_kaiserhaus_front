@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/HeaderLogadoLoja";
 import Footer from "../../../components/Footer";
@@ -8,7 +8,7 @@ import { apiGet } from "../../../services/api";
 import { useAuth } from "../../../contexts/AuthContext";
 
 type Produto = {
-  id: string;
+  id: string;               // id “preferido” para UI (pode ser normalizado)
   titulo: string;
   descricao: string;
   preco: number;
@@ -17,9 +17,17 @@ type Produto = {
   ativo: boolean;
   quantidade: number;
   imagem?: string;
+
+  // campos internos p/ resolver ID correto no backend
+  __candidates?: string[];  // possíveis ids que vieram da API
 };
 
-// === helper robusto para normalizar qualquer forma de ObjectId para string-hex (24 chars, lowercase)
+const BASE_URL: string =
+  (import.meta.env.VITE_API_URL as string) || "http://localhost:8001";
+
+/* =================== Helpers =================== */
+
+// Normaliza qualquer forma de ObjectId para string-hex (24 chars, lowercase)
 const toIdStr = (v: any): string | undefined => {
   if (!v) return undefined;
 
@@ -29,11 +37,11 @@ const toIdStr = (v: any): string | undefined => {
   }
 
   if (typeof v === "object") {
-    if (v.$oid) return String(v.$oid).toLowerCase();          // { $oid: "..." }
-    if (v._id)  return toIdStr(v._id);                         // documento completo
-    if (v.id)   return toIdStr(v.id);                          // variações "id"
+    if ((v as any).$oid) return String((v as any).$oid).toLowerCase();
+    if ((v as any)._id) return toIdStr((v as any)._id);
+    if ((v as any).id) return toIdStr((v as any).id);
     if (typeof (v as any).toHexString === "function") {
-      return (v as any).toHexString().toLowerCase();           // ObjectId real
+      return (v as any).toHexString().toLowerCase();
     }
     const s = String(v);
     const hex = s.match(/[0-9a-fA-F]{24}/)?.[0];
@@ -43,6 +51,40 @@ const toIdStr = (v: any): string | undefined => {
   return String(v).toLowerCase();
 };
 
+// Monta lista de candidatos de id (em várias formas) sem duplicar
+const buildIdCandidates = (raw: any): string[] => {
+  const cands = new Set<string>();
+
+  // possíveis campos que podem ter vindo do backend
+  const brut: any[] = [
+    raw?._id?.$oid,
+    raw?._id,
+    raw?.id,
+    raw,
+    String(raw?._id || ""),
+    String(raw?.id || ""),
+  ].filter(Boolean);
+
+  for (const b of brut) {
+    const norm = toIdStr(b);
+    if (norm) cands.add(norm);
+    // também guarda a forma bruta (se não for “[object Object]”)
+    const s = typeof b === "string" ? b : "";
+    if (s && s !== "[object Object]") cands.add(s);
+  }
+
+  // Prioriza os com 24 chars (provável ObjectId)
+  const list = Array.from(cands);
+  list.sort((a, b) => {
+    const a24 = a.length === 24 ? 0 : 1;
+    const b24 = b.length === 24 ? 0 : 1;
+    return a24 - b24;
+  });
+  return list;
+};
+
+/* ================ Componente ================= */
+
 const Pratos: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -51,68 +93,78 @@ const Pratos: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
   const [busca, setBusca] = useState("");
-  const [filtroAtivo, setFiltroAtivo] = useState<"todos" | "ativos" | "inativos">("todos");
+
+  // cache local: produto.id (chave da UI) -> id realmente aceito pelo backend
+  const [resolvedIds, setResolvedIds] = useState<Map<string, string>>(new Map());
+
+  // Modal de edição
+  const [modalAberto, setModalAberto] = useState(false);
+  const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
+  const [formData, setFormData] = useState({
+    titulo: "",
+    descricao: "",
+    preco: 0,
+    quantidade: 0,
+    imagem: "",
+    ativo: true,
+  });
 
   useEffect(() => {
-    const carregar = async () => {
-      setLoading(true);
-      setErro("");
+    carregarProdutos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
-      try {
-        const [produtosApi, categoriasApi] = await Promise.all([
-          apiGet<any[]>("/produtos/", token || undefined),
-          apiGet<any[]>("/categorias/", token || undefined),
-        ]);
+  const carregarProdutos = async () => {
+    setLoading(true);
+    setErro("");
 
-        // 1) Descobrir quais IDs correspondem à categoria "Pratos"
-        //    (aceita nome, label ou slug em diferentes capitalizações)
-        const isPrato = (c: any) => {
-          const nome = (c.nome || c.label || "").toString().trim().toLowerCase();
-          const slug = (c.slug || "").toString().trim().toLowerCase();
-          return nome === "pratos" || slug === "pratos";
-        };
+    try {
+      const [produtosApi, categoriasApi] = await Promise.all([
+        apiGet<any[]>("/produtos/", token || undefined),
+        apiGet<any[]>("/categorias/", token || undefined),
+      ]);
 
-        const pratoIds = new Set<string>();
-        for (const cat of categoriasApi) {
-          if (isPrato(cat)) {
-            const id = toIdStr(cat._id) ?? toIdStr(cat.id);
-            if (id) pratoIds.add(id);
-          }
+      const isPrato = (c: any) => {
+        const nome = (c.nome || c.label || "").toString().trim().toLowerCase();
+        const slug = (c.slug || "").toString().trim().toLowerCase();
+        return nome === "pratos" || slug === "pratos";
+      };
+
+      const pratoIds = new Set<string>();
+      for (const cat of categoriasApi) {
+        if (isPrato(cat)) {
+          const id = toIdStr(cat._id) ?? toIdStr(cat.id);
+          if (id) pratoIds.add(id);
         }
+      }
 
-        // mapa id->nome (ajuda a escrever o nome bonito na tela)
-        const categoriasMap = new Map<string, string>();
-        for (const cat of categoriasApi) {
-          const key = toIdStr(cat._id) ?? toIdStr(cat.id);
-          if (!key) continue;
-          categoriasMap.set(key, cat.nome || cat.label || cat.titulo || "Sem nome");
-        }
+      const categoriasMap = new Map<string, string>();
+      for (const cat of categoriasApi) {
+        const key = toIdStr(cat._id) ?? toIdStr(cat.id);
+        if (!key) continue;
+        categoriasMap.set(key, cat.nome || cat.label || cat.titulo || "Sem nome");
+      }
 
-        // 2) Filtrar produtos que são "Pratos"
-        //    critérios:
-        //    a) categoria_id do produto pertence aos pratoIds
-        //    b) OU o produto já vem com categoria.nome 'Pratos'
-        //    c) OU campo legado categoria_nome 'Pratos'
-        const ehPratoProduto = (p: any) => {
-          const catIdStr =
-            toIdStr(p.categoria_id) ??
-            toIdStr(p.categoria?._id) ??
-            toIdStr(p.categoria) ??
-            toIdStr(p.categoriaId) ??
-            toIdStr(p.categoriaID);
+      const ehPratoProduto = (p: any) => {
+        const catIdStr =
+          toIdStr(p.categoria_id) ??
+          toIdStr(p.categoria?._id) ??
+          toIdStr(p.categoria) ??
+          toIdStr(p.categoriaId) ??
+          toIdStr(p.categoriaID);
 
-          const nomeEmb = (p.categoria?.nome || p.categoria_nome || "").toString().trim().toLowerCase();
+        const nomeEmb = (p.categoria?.nome || p.categoria_nome || "")
+          .toString()
+          .trim()
+          .toLowerCase();
 
-          return (
-            (catIdStr && pratoIds.has(catIdStr)) ||
-            nomeEmb === "pratos"
-          );
-        };
+        return (catIdStr && pratoIds.has(catIdStr)) || nomeEmb === "pratos";
+      };
 
-        const somentePratos = produtosApi.filter(ehPratoProduto);
+      const somentePratos = produtosApi.filter(ehPratoProduto);
 
-        // 3) Formatar produtos
-        const produtosFormatados: Produto[] = somentePratos.map((prod: any) => {
+      const produtosFormatados: Produto[] = somentePratos
+        .map((prod: any) => {
           const catIdStr =
             toIdStr(prod.categoria_id) ??
             toIdStr(prod.categoria?._id) ??
@@ -124,10 +176,16 @@ const Pratos: React.FC = () => {
             (catIdStr && categoriasMap.get(catIdStr)) ||
             prod.categoria?.nome ||
             prod.categoria_nome ||
-            "Pratos"; // aqui podemos forçar "Pratos" porque a lista já é filtrada
+            "Pratos";
+
+          // candidatos de ID vindos da API
+          const candidates = buildIdCandidates(prod?._id ?? prod?.id ?? prod);
+
+          // escolhe um para exibir na UI (o 1º candidato)
+          const displayId = candidates[0] || "";
 
           return {
-            id: prod._id || prod.id,
+            id: displayId,
             titulo: prod.titulo || prod.nome || "Produto sem nome",
             descricao: prod.descricao || "Sem descrição",
             preco: Number(prod.preco) || 0,
@@ -136,58 +194,225 @@ const Pratos: React.FC = () => {
             ativo: prod.ativo !== false,
             quantidade: Number(prod.quantidade) || 0,
             imagem: prod.imagem || prod.imagemProduto,
-          };
-        });
+            __candidates: candidates,
+          } as Produto;
+        })
+        .filter((p: Produto) => !!p.id);
 
-        setProdutos(produtosFormatados);
-      } catch (e: any) {
-        console.error("Erro ao carregar pratos:", e);
-        setErro("Não foi possível carregar os pratos da API.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      setProdutos(produtosFormatados);
+    } catch (e: any) {
+      console.error("Erro ao carregar pratos:", e);
+      setErro("Não foi possível carregar os pratos da API.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    carregar();
-  }, [token]);
-
-  // filtros locais (busca + ativo/inativo)
-  const produtosFiltrados = produtos.filter((produto) => {
+  // Busca simples
+  const produtosFiltrados = useMemo(() => {
     const q = busca.toLowerCase();
-    const matchBusca =
-      produto.titulo.toLowerCase().includes(q) ||
-      produto.descricao.toLowerCase().includes(q) ||
-      (produto.categoria_nome ?? "").toLowerCase().includes(q);
-
-    const matchFiltro =
-      filtroAtivo === "todos" ||
-      (filtroAtivo === "ativos" && produto.ativo) ||
-      (filtroAtivo === "inativos" && !produto.ativo);
-
-    return matchBusca && matchFiltro;
-  });
+    return produtos.filter(
+      (produto) =>
+        produto.titulo.toLowerCase().includes(q) ||
+        produto.descricao.toLowerCase().includes(q) ||
+        (produto.categoria_nome ?? "").toLowerCase().includes(q)
+    );
+  }, [busca, produtos]);
 
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   const handleVoltar = () => navigate("/admin/categorias");
 
-  const handleEditarProduto = (produtoId: string) => {
-    console.log("Editar produto:", produtoId);
-    // TODO: Navegar para tela de edição
+  /* =================== Resolver ID no backend =================== */
+
+  // Faz GET /produtos/{id} para validar se o backend reconhece esse id
+  const checkIdExists = async (id: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/produtos/${id}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (res.ok) return true;
+      if (res.status === 404) return false;
+      // outros erros não significam “não existe”
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Descobre (e cacheia) o id válido para um produto
+  const resolveApiId = async (p: Produto): Promise<string> => {
+    // cache hit
+    const cached = resolvedIds.get(p.id);
+    if (cached) return cached;
+
+    const candidates = (p.__candidates && p.__candidates.length > 0)
+      ? p.__candidates
+      : buildIdCandidates(p.id);
+
+    // tenta candidatos em ordem
+    for (const cand of candidates) {
+      const ok = await checkIdExists(cand);
+      if (ok) {
+        setResolvedIds((prev) => {
+          const m = new Map(prev);
+          m.set(p.id, cand);
+          return m;
+        });
+        return cand;
+      }
+    }
+
+    // fallback: usa o primeiro mesmo assim
+    const fallback = candidates[0] || p.id;
+    setResolvedIds((prev) => {
+      const m = new Map(prev);
+      m.set(p.id, fallback);
+      return m;
+    });
+    return fallback;
+  };
+
+  /* ======================= Ações ======================= */
+
+  const handleEditarProduto = (produto: Produto) => {
+    setProdutoEditando(produto);
+    setFormData({
+      titulo: produto.titulo,
+      descricao: produto.descricao,
+      preco: produto.preco,
+      quantidade: produto.quantidade,
+      imagem: produto.imagem || "",
+      ativo: produto.ativo,
+    });
+    setModalAberto(true);
+  };
+
+  const handleFecharModal = () => {
+    setModalAberto(false);
+    setProdutoEditando(null);
+    setFormData({
+      titulo: "",
+      descricao: "",
+      preco: 0,
+      quantidade: 0,
+      imagem: "",
+      ativo: true,
+    });
+  };
+
+  const handleSalvarEdicao = async () => {
+    if (!produtoEditando) return;
+
+    try {
+      const apiId = await resolveApiId(produtoEditando);
+
+      const response = await fetch(`${BASE_URL}/produtos/${apiId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          titulo: formData.titulo,
+          descricao: formData.descricao,
+          preco: formData.preco,
+          quantidade: formData.quantidade,
+          imagem: formData.imagem || null,
+          ativo: formData.ativo,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Erro ao atualizar produto");
+      }
+
+      // Atualiza localmente
+      setProdutos((prev) =>
+        prev.map((p) =>
+          p.id === produtoEditando.id ? { ...p, ...formData } : p
+        )
+      );
+
+      alert("Produto atualizado com sucesso!");
+      handleFecharModal();
+    } catch (error) {
+      console.error("Erro ao salvar edição:", error);
+      alert("Erro ao salvar as alterações. Tente novamente.");
+    }
+  };
+
+  const handleExcluirProduto = async (produto: Produto) => {
+    const confirmacao = window.confirm(
+      `Tem certeza que deseja excluir o produto "${produto.titulo}"?\n\nEsta ação não pode ser desfeita.`
+    );
+    if (!confirmacao) return;
+
+    try {
+      const apiId = await resolveApiId(produto);
+
+      const response = await fetch(`${BASE_URL}/produtos/${apiId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Erro ao excluir produto");
+      }
+
+      setProdutos((prev) => prev.filter((p) => p.id !== produto.id));
+      alert("Produto excluído com sucesso!");
+    } catch (error) {
+      console.error("Erro ao excluir produto:", error);
+      alert("Erro ao excluir o produto. Tente novamente.");
+    }
   };
 
   const handleToggleStatus = async (produtoId: string) => {
     try {
+      const produto = produtos.find((p) => p.id === produtoId);
+      if (!produto) {
+        alert("Produto não encontrado.");
+        return;
+      }
+
+      const apiId = await resolveApiId(produto);
+
+      const response = await fetch(`${BASE_URL}/produtos/${apiId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ativo: !produto.ativo }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Erro da API:", errorText);
+        throw new Error(`Erro ${response.status}: ${errorText}`);
+      }
+
       setProdutos((prev) =>
         prev.map((p) => (p.id === produtoId ? { ...p, ativo: !p.ativo } : p))
       );
-      // TODO: chamada à API para persistir
-      console.log("Toggle status do produto:", produtoId);
-    } catch (error) {
+
+      alert("Status alterado com sucesso!");
+    } catch (error: any) {
       console.error("Erro ao alterar status:", error);
+      alert(`Erro ao alterar o status: ${error.message || "Erro desconhecido"}`);
     }
   };
+
+  /* =================== Render =================== */
 
   return (
     <>
@@ -219,38 +444,26 @@ const Pratos: React.FC = () => {
         <section className="pratos-panel">
           {erro && <div className="pratos-alert">{erro}</div>}
 
-          <div className="pratos-filters">
-            <div className="pratos-search">
-              <span className="pratos-search-icon" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-                  <path
-                    d="M20 20L16.65 16.65"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-              <input
-                type="text"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar pratos..."
-                aria-label="Buscar pratos por nome ou descrição"
-                className="pratos-search-input"
-              />
-            </div>
-
-            <select
-              value={filtroAtivo}
-              onChange={(e) => setFiltroAtivo(e.target.value as any)}
-              className="pratos-filter-select"
-            >
-              <option value="todos">Todos os pratos</option>
-              <option value="ativos">Apenas ativos</option>
-              <option value="inativos">Apenas inativos</option>
-            </select>
+          <div className="pratos-search">
+            <span className="pratos-search-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                <path
+                  d="M20 20L16.65 16.65"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar pratos..."
+              aria-label="Buscar pratos por nome ou descrição"
+              className="pratos-search-input"
+            />
           </div>
 
           {loading ? (
@@ -259,7 +472,7 @@ const Pratos: React.FC = () => {
             <div className="pratos-grid">
               {produtosFiltrados.length === 0 ? (
                 <div className="pratos-empty">
-                  {busca || filtroAtivo !== "todos"
+                  {busca
                     ? "Nenhum prato encontrado com os filtros atuais."
                     : "Nenhum prato cadastrado."}
                 </div>
@@ -311,9 +524,15 @@ const Pratos: React.FC = () => {
                         </button>
                         <button
                           className="prato-btn editar"
-                          onClick={() => handleEditarProduto(produto.id)}
+                          onClick={() => handleEditarProduto(produto)}
                         >
                           Editar
+                        </button>
+                        <button
+                          className="prato-btn excluir"
+                          onClick={() => handleExcluirProduto(produto)}
+                        >
+                          Excluir
                         </button>
                       </div>
                     </div>
@@ -324,6 +543,111 @@ const Pratos: React.FC = () => {
           )}
         </section>
       </main>
+
+      {/* Modal de Edição */}
+      {modalAberto && (
+        <div className="modal-overlay" onClick={handleFecharModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Editar Produto</h2>
+              <button className="modal-close" onClick={handleFecharModal}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="titulo">Título *</label>
+                <input
+                  id="titulo"
+                  type="text"
+                  value={formData.titulo}
+                  onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                  placeholder="Nome do prato"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="descricao">Descrição *</label>
+                <textarea
+                  id="descricao"
+                  value={formData.descricao}
+                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                  placeholder="Descrição do prato"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="preco">Preço (R$) *</label>
+                  <input
+                    id="preco"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.preco}
+                    onChange={(e) =>
+                      setFormData({ ...formData, preco: parseFloat(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="quantidade">Quantidade em Estoque *</label>
+                  <input
+                    id="quantidade"
+                    type="number"
+                    min="0"
+                    value={formData.quantidade}
+                    onChange={(e) =>
+                      setFormData({ ...formData, quantidade: parseInt(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="imagem">URL da Imagem</label>
+                <input
+                  id="imagem"
+                  type="url"
+                  value={formData.imagem}
+                  onChange={(e) => setFormData({ ...formData, imagem: e.target.value })}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
+
+              <div className="form-group checkbox-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.ativo}
+                    onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                  />
+                  <span>Produto ativo</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={handleFecharModal}>
+                Cancelar
+              </button>
+              <button className="btn-primary" onClick={handleSalvarEdicao}>
+                Salvar Alterações
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );
