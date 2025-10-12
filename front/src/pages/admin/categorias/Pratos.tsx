@@ -8,7 +8,7 @@ import { apiGet } from "../../../services/api";
 import { useAuth } from "../../../contexts/AuthContext";
 
 type Produto = {
-  id: string;               // id “preferido” para UI (pode ser normalizado)
+  id: string;
   titulo: string;
   descricao: string;
   preco: number;
@@ -18,16 +18,12 @@ type Produto = {
   quantidade: number;
   imagem?: string;
 
-  // campos internos p/ resolver ID correto no backend
-  __candidates?: string[];  // possíveis ids que vieram da API
+  __candidates?: string[];
 };
 
 const BASE_URL: string =
   (import.meta.env.VITE_API_URL as string) || "http://localhost:8001";
 
-/* =================== Helpers =================== */
-
-// Normaliza qualquer forma de ObjectId para string-hex (24 chars, lowercase)
 const toIdStr = (v: any): string | undefined => {
   if (!v) return undefined;
 
@@ -68,12 +64,10 @@ const buildIdCandidates = (raw: any): string[] => {
   for (const b of brut) {
     const norm = toIdStr(b);
     if (norm) cands.add(norm);
-    // também guarda a forma bruta (se não for “[object Object]”)
     const s = typeof b === "string" ? b : "";
     if (s && s !== "[object Object]") cands.add(s);
   }
 
-  // Prioriza os com 24 chars (provável ObjectId)
   const list = Array.from(cands);
   list.sort((a, b) => {
     const a24 = a.length === 24 ? 0 : 1;
@@ -82,8 +76,6 @@ const buildIdCandidates = (raw: any): string[] => {
   });
   return list;
 };
-
-/* ================ Componente ================= */
 
 const Pratos: React.FC = () => {
   const navigate = useNavigate();
@@ -94,10 +86,8 @@ const Pratos: React.FC = () => {
   const [erro, setErro] = useState("");
   const [busca, setBusca] = useState("");
 
-  // cache local: produto.id (chave da UI) -> id realmente aceito pelo backend
   const [resolvedIds, setResolvedIds] = useState<Map<string, string>>(new Map());
 
-  // Modal de edição
   const [modalAberto, setModalAberto] = useState(false);
   const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
   const [formData, setFormData] = useState({
@@ -109,7 +99,6 @@ const Pratos: React.FC = () => {
     ativo: true,
   });
 
-  // Modal de adicionar novo prato
   const [modalAdicionarAberto, setModalAdicionarAberto] = useState(false);
   const [novoProdutoData, setNovoProdutoData] = useState({
     titulo: "",
@@ -122,7 +111,6 @@ const Pratos: React.FC = () => {
 
   useEffect(() => {
     carregarProdutos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const carregarProdutos = async () => {
@@ -189,10 +177,8 @@ const Pratos: React.FC = () => {
             prod.categoria_nome ||
             "Pratos";
 
-          // candidatos de ID vindos da API
           const candidates = buildIdCandidates(prod?._id ?? prod?.id ?? prod);
 
-          // escolhe um para exibir na UI (o 1º candidato)
           const displayId = candidates[0] || "";
 
           return {
@@ -219,7 +205,6 @@ const Pratos: React.FC = () => {
     }
   };
 
-  // Busca simples
   const produtosFiltrados = useMemo(() => {
     const q = busca.toLowerCase();
     return produtos.filter(
@@ -234,10 +219,7 @@ const Pratos: React.FC = () => {
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   const handleVoltar = () => navigate("/admin/categorias");
-
-  /* =================== Resolver ID no backend =================== */
-
-  // Faz GET /produtos/{id} para validar se o backend reconhece esse id
+    
   const checkIdExists = async (id: string) => {
     try {
       const res = await fetch(`${BASE_URL}/produtos/${id}`, {
@@ -248,14 +230,12 @@ const Pratos: React.FC = () => {
       });
       if (res.ok) return true;
       if (res.status === 404) return false;
-      // outros erros não significam “não existe”
       return true;
     } catch {
       return false;
     }
   };
 
-  // Descobre (e cacheia) o id válido para um produto
   const resolveApiId = async (p: Produto): Promise<string> => {
     // cache hit
     const cached = resolvedIds.get(p.id);
@@ -265,7 +245,6 @@ const Pratos: React.FC = () => {
       ? p.__candidates
       : buildIdCandidates(p.id);
 
-    // tenta candidatos em ordem
     for (const cand of candidates) {
       const ok = await checkIdExists(cand);
       if (ok) {
@@ -278,7 +257,6 @@ const Pratos: React.FC = () => {
       }
     }
 
-    // fallback: usa o primeiro mesmo assim
     const fallback = candidates[0] || p.id;
     setResolvedIds((prev) => {
       const m = new Map(prev);
@@ -288,7 +266,6 @@ const Pratos: React.FC = () => {
     return fallback;
   };
 
-  /* ======================= Ações ======================= */
 
   const handleEditarProduto = (produto: Produto) => {
     setProdutoEditando(produto);
@@ -367,7 +344,6 @@ const Pratos: React.FC = () => {
         throw new Error(text || "Erro ao atualizar produto");
       }
 
-      // Atualiza localmente
       setProdutos((prev) =>
         prev.map((p) =>
           p.id === produtoEditando.id ? { ...p, ...formData } : p
@@ -384,7 +360,6 @@ const Pratos: React.FC = () => {
 
   const handleSalvarNovoProduto = async () => {
     try {
-      // Buscar categoria "Pratos" para associar o novo produto
       const categoriasApi = await apiGet<any[]>("/categorias/", token || undefined);
       const categoriaPratos = categoriasApi.find((cat: any) => {
         const nome = (cat.nome || cat.label || "").toString().trim().toLowerCase();
@@ -421,7 +396,6 @@ const Pratos: React.FC = () => {
 
       await response.json();
 
-      // Recarregar a lista de produtos
       await carregarProdutos();
 
       alert("Produto adicionado com sucesso!");
@@ -497,7 +471,6 @@ const Pratos: React.FC = () => {
     }
   };
 
-  /* =================== Render =================== */
 
   return (
     <>
@@ -642,7 +615,6 @@ const Pratos: React.FC = () => {
         </section>
       </main>
 
-      {/* Modal de Edição */}
       {modalAberto && (
         <div className="modal-overlay" onClick={handleFecharModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -746,7 +718,6 @@ const Pratos: React.FC = () => {
         </div>
       )}
 
-      {/* Modal de Adicionar Novo Produto */}
       {modalAdicionarAberto && (
         <div className="modal-overlay" onClick={handleFecharModalAdicionar}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

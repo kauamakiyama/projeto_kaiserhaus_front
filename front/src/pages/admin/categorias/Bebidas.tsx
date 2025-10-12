@@ -82,7 +82,6 @@ const Bebidas: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
   const [busca, setBusca] = useState("");
-  const [filtroAtivo, setFiltroAtivo] = useState<"todos" | "ativos" | "inativos">("todos");
 
   const [resolvedIds, setResolvedIds] = useState<Map<string, string>>(new Map());
 
@@ -211,14 +210,10 @@ const Bebidas: React.FC = () => {
         produto.descricao.toLowerCase().includes(q) ||
         (produto.categoria_nome ?? "").toLowerCase().includes(q);
 
-      const matchFiltro =
-        filtroAtivo === "todos" ||
-        (filtroAtivo === "ativos" && produto.ativo) ||
-        (filtroAtivo === "inativos" && !produto.ativo);
 
-      return matchBusca && matchFiltro;
+      return matchBusca;
     });
-  }, [busca, filtroAtivo, produtos]);
+  }, [busca, produtos]);
 
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -545,7 +540,7 @@ const Bebidas: React.FC = () => {
             <div className="pratos-grid">
               {produtosFiltrados.length === 0 ? (
                 <div className="pratos-empty">
-                  {busca || filtroAtivo !== "todos"
+                  {busca !== "todos"
                     ? "Nenhuma bebida encontrada com os filtros atuais."
                     : "Nenhuma bebida cadastrada."}
                 </div>
