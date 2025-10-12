@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/HeaderLogadoLoja";
 import Footer from "../../../components/Footer";
@@ -17,7 +17,12 @@ type Produto = {
   ativo: boolean;
   quantidade: number;
   imagem?: string;
+
+  __candidates?: string[];
 };
+
+const BASE_URL: string =
+  (import.meta.env.VITE_API_URL as string) || "http://localhost:8001";
 
 const toIdStr = (v: any): string | undefined => {
   if (!v) return undefined;
@@ -28,9 +33,9 @@ const toIdStr = (v: any): string | undefined => {
   }
 
   if (typeof v === "object") {
-    if (v.$oid) return String(v.$oid).toLowerCase();
-    if (v._id)  return toIdStr(v._id);
-    if (v.id)   return toIdStr(v.id);
+    if ((v as any).$oid) return String((v as any).$oid).toLowerCase();
+    if ((v as any)._id) return toIdStr((v as any)._id);
+    if ((v as any).id) return toIdStr((v as any).id);
     if (typeof (v as any).toHexString === "function") {
       return (v as any).toHexString().toLowerCase();
     }
@@ -40,6 +45,33 @@ const toIdStr = (v: any): string | undefined => {
   }
 
   return String(v).toLowerCase();
+};
+
+const buildIdCandidates = (raw: any): string[] => {
+  const cands = new Set<string>();
+  const brut: any[] = [
+    raw?._id?.$oid,
+    raw?._id,
+    raw?.id,
+    raw,
+    String(raw?._id || ""),
+    String(raw?.id || ""),
+  ].filter(Boolean);
+
+  for (const b of brut) {
+    const norm = toIdStr(b);
+    if (norm) cands.add(norm);
+    const s = typeof b === "string" ? b : "";
+    if (s && s !== "[object Object]") cands.add(s);
+  }
+
+  const list = Array.from(cands);
+  list.sort((a, b) => {
+    const a24 = a.length === 24 ? 0 : 1;
+    const b24 = b.length === 24 ? 0 : 1;
+    return a24 - b24;
+  });
+  return list;
 };
 
 const Entradas: React.FC = () => {
@@ -52,57 +84,84 @@ const Entradas: React.FC = () => {
   const [busca, setBusca] = useState("");
   const [filtroAtivo, setFiltroAtivo] = useState<"todos" | "ativos" | "inativos">("todos");
 
+  const [resolvedIds, setResolvedIds] = useState<Map<string, string>>(new Map());
+
+  const [modalAberto, setModalAberto] = useState(false);
+  const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
+  const [formData, setFormData] = useState({
+    titulo: "",
+    descricao: "",
+    preco: 0,
+    quantidade: 0,
+    imagem: "",
+    ativo: true,
+  });
+
+  const [modalAdicionarAberto, setModalAdicionarAberto] = useState(false);
+  const [novoProdutoData, setNovoProdutoData] = useState({
+    titulo: "",
+    descricao: "",
+    preco: 0,
+    quantidade: 0,
+    imagem: "",
+    ativo: true,
+  });
+
   useEffect(() => {
-    const carregar = async () => {
-      setLoading(true);
-      setErro("");
+    carregar();
+  }, [token]);
 
-      try {
-        const [produtosApi, categoriasApi] = await Promise.all([
-          apiGet<any[]>("/produtos/", token || undefined),
-          apiGet<any[]>("/categorias/", token || undefined),
-        ]);
+  const carregar = async () => {
+    setLoading(true);
+    setErro("");
 
-        const isEntrada = (c: any) => {
-          const nome = (c.nome || c.label || "").toString().trim().toLowerCase();
-          const slug = (c.slug || "").toString().trim().toLowerCase();
-          return nome === "entradas" || slug === "entradas";
-        };
+    try {
+      const [produtosApi, categoriasApi] = await Promise.all([
+        apiGet<any[]>("/produtos/", token || undefined),
+        apiGet<any[]>("/categorias/", token || undefined),
+      ]);
 
-        const entradaIds = new Set<string>();
-        for (const cat of categoriasApi) {
-          if (isEntrada(cat)) {
-            const id = toIdStr(cat._id) ?? toIdStr(cat.id);
-            if (id) entradaIds.add(id);
-          }
+      const isEntrada = (c: any) => {
+        const nome = (c.nome || c.label || "").toString().trim().toLowerCase();
+        const slug = (c.slug || "").toString().trim().toLowerCase();
+        return nome === "entradas" || slug === "entradas";
+      };
+
+      const entradaIds = new Set<string>();
+      for (const cat of categoriasApi) {
+        if (isEntrada(cat)) {
+          const id = toIdStr(cat._id) ?? toIdStr(cat.id);
+          if (id) entradaIds.add(id);
         }
+      }
 
-        const categoriasMap = new Map<string, string>();
-        for (const cat of categoriasApi) {
-          const key = toIdStr(cat._id) ?? toIdStr(cat.id);
-          if (!key) continue;
-          categoriasMap.set(key, cat.nome || cat.label || cat.titulo || "Sem nome");
-        }
+      const categoriasMap = new Map<string, string>();
+      for (const cat of categoriasApi) {
+        const key = toIdStr(cat._id) ?? toIdStr(cat.id);
+        if (!key) continue;
+        categoriasMap.set(key, cat.nome || cat.label || cat.titulo || "Sem nome");
+      }
 
-        const ehEntradaProduto = (p: any) => {
-          const catIdStr =
-            toIdStr(p.categoria_id) ??
-            toIdStr(p.categoria?._id) ??
-            toIdStr(p.categoria) ??
-            toIdStr(p.categoriaId) ??
-            toIdStr(p.categoriaID);
+      const ehEntradaProduto = (p: any) => {
+        const catIdStr =
+          toIdStr(p.categoria_id) ??
+          toIdStr(p.categoria?._id) ??
+          toIdStr(p.categoria) ??
+          toIdStr(p.categoriaId) ??
+          toIdStr(p.categoriaID);
 
-          const nomeEmb = (p.categoria?.nome || p.categoria_nome || "").toString().trim().toLowerCase();
+        const nomeEmb = (p.categoria?.nome || p.categoria_nome || "")
+          .toString()
+          .trim()
+          .toLowerCase();
 
-          return (
-            (catIdStr && entradaIds.has(catIdStr)) ||
-            nomeEmb === "entradas"
-          );
-        };
+        return (catIdStr && entradaIds.has(catIdStr)) || nomeEmb === "entradas";
+      };
 
-        const somenteEntradas = produtosApi.filter(ehEntradaProduto);
+      const somenteEntradas = produtosApi.filter(ehEntradaProduto);
 
-        const produtosFormatados: Produto[] = somenteEntradas.map((prod: any) => {
+      const produtosFormatados: Produto[] = somenteEntradas
+        .map((prod: any) => {
           const catIdStr =
             toIdStr(prod.categoria_id) ??
             toIdStr(prod.categoria?._id) ??
@@ -116,8 +175,11 @@ const Entradas: React.FC = () => {
             prod.categoria_nome ||
             "Entradas";
 
+          const candidates = buildIdCandidates(prod?._id ?? prod?.id ?? prod);
+          const displayId = candidates[0] || "";
+
           return {
-            id: prod._id || prod.id,
+            id: displayId,
             titulo: prod.titulo || prod.nome || "Produto sem nome",
             descricao: prod.descricao || "Sem descrição",
             preco: Number(prod.preco) || 0,
@@ -126,53 +188,288 @@ const Entradas: React.FC = () => {
             ativo: prod.ativo !== false,
             quantidade: Number(prod.quantidade) || 0,
             imagem: prod.imagem || prod.imagemProduto,
-          };
-        });
+            __candidates: candidates,
+          } as Produto;
+        })
+        .filter((p: Produto) => !!p.id);
 
-        setProdutos(produtosFormatados);
-      } catch (e: any) {
-        console.error("Erro ao carregar entradas:", e);
-        setErro("Não foi possível carregar as entradas da API.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      setProdutos(produtosFormatados);
+    } catch (e: any) {
+      console.error("Erro ao carregar entradas:", e);
+      setErro("Não foi possível carregar as entradas da API.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    carregar();
-  }, [token]);
-
-  const produtosFiltrados = produtos.filter((produto) => {
+  const produtosFiltrados = useMemo(() => {
     const q = busca.toLowerCase();
-    const matchBusca =
-      produto.titulo.toLowerCase().includes(q) ||
-      produto.descricao.toLowerCase().includes(q) ||
-      (produto.categoria_nome ?? "").toLowerCase().includes(q);
 
-    const matchFiltro =
-      filtroAtivo === "todos" ||
-      (filtroAtivo === "ativos" && produto.ativo) ||
-      (filtroAtivo === "inativos" && !produto.ativo);
+    return produtos.filter((produto) => {
+      const matchBusca =
+        produto.titulo.toLowerCase().includes(q) ||
+        produto.descricao.toLowerCase().includes(q) ||
+        (produto.categoria_nome ?? "").toLowerCase().includes(q);
 
-    return matchBusca && matchFiltro;
-  });
+      const matchFiltro =
+        filtroAtivo === "todos" ||
+        (filtroAtivo === "ativos" && produto.ativo) ||
+        (filtroAtivo === "inativos" && !produto.ativo);
+
+      return matchBusca && matchFiltro;
+    });
+  }, [busca, filtroAtivo, produtos]);
 
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   const handleVoltar = () => navigate("/admin/categorias");
 
-  const handleEditarProduto = (produtoId: string) => {
-    console.log("Editar produto:", produtoId);
+  const checkIdExists = async (id: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/produtos/${id}`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      if (res.ok) return true;
+      if (res.status === 404) return false;
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const resolveApiId = async (p: Produto): Promise<string> => {
+    const cached = resolvedIds.get(p.id);
+    if (cached) return cached;
+
+    const candidates = (p.__candidates && p.__candidates.length > 0)
+      ? p.__candidates
+      : buildIdCandidates(p.id);
+
+    for (const cand of candidates) {
+      const ok = await checkIdExists(cand);
+      if (ok) {
+        setResolvedIds((prev) => {
+          const m = new Map(prev);
+          m.set(p.id, cand);
+          return m;
+        });
+        return cand;
+      }
+    }
+
+    const fallback = candidates[0] || p.id;
+    setResolvedIds((prev) => {
+      const m = new Map(prev);
+      m.set(p.id, fallback);
+      return m;
+    });
+    return fallback;
+  };
+
+  const handleEditarProduto = (produto: Produto) => {
+    setProdutoEditando(produto);
+    setFormData({
+      titulo: produto.titulo,
+      descricao: produto.descricao,
+      preco: produto.preco,
+      quantidade: produto.quantidade,
+      imagem: produto.imagem || "",
+      ativo: produto.ativo,
+    });
+    setModalAberto(true);
+  };
+
+  const handleFecharModal = () => {
+    setModalAberto(false);
+    setProdutoEditando(null);
+    setFormData({
+      titulo: "",
+      descricao: "",
+      preco: 0,
+      quantidade: 0,
+      imagem: "",
+      ativo: true,
+    });
+  };
+
+  const handleSalvarEdicao = async () => {
+    if (!produtoEditando) return;
+
+    try {
+      const apiId = await resolveApiId(produtoEditando);
+
+      const response = await fetch(`${BASE_URL}/produtos/${apiId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          titulo: formData.titulo,
+          descricao: formData.descricao,
+          preco: formData.preco,
+          quantidade: formData.quantidade,
+          imagem: formData.imagem || null,
+          ativo: formData.ativo,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Erro ao atualizar produto");
+      }
+
+      setProdutos((prev) =>
+        prev.map((p) => (p.id === produtoEditando.id ? { ...p, ...formData } : p))
+      );
+
+      alert("Produto atualizado com sucesso!");
+      handleFecharModal();
+    } catch (error) {
+      console.error("Erro ao salvar edição:", error);
+      alert("Erro ao salvar as alterações. Tente novamente.");
+    }
+  };
+
+  const handleAbrirModalAdicionar = () => {
+    setNovoProdutoData({
+      titulo: "",
+      descricao: "",
+      preco: 0,
+      quantidade: 0,
+      imagem: "",
+      ativo: true,
+    });
+    setModalAdicionarAberto(true);
+  };
+
+  const handleFecharModalAdicionar = () => {
+    setModalAdicionarAberto(false);
+    setNovoProdutoData({
+      titulo: "",
+      descricao: "",
+      preco: 0,
+      quantidade: 0,
+      imagem: "",
+      ativo: true,
+    });
+  };
+
+  const handleSalvarNovoProduto = async () => {
+    try {
+      const categoriasApi = await apiGet<any[]>("/categorias/", token || undefined);
+      const catEntradas = categoriasApi.find((cat: any) => {
+        const nome = (cat.nome || cat.label || "").toString().trim().toLowerCase();
+        const slug = (cat.slug || "").toString().trim().toLowerCase();
+        return nome === "entradas" || slug === "entradas";
+      });
+
+      if (!catEntradas) {
+        alert("Categoria 'Entradas' não encontrada.");
+        return;
+      }
+
+      const categoria_id =
+        toIdStr(catEntradas._id) ??
+        toIdStr(catEntradas.id) ??
+        catEntradas._id ??
+        catEntradas.id;
+
+      const response = await fetch(`${BASE_URL}/produtos/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          titulo: novoProdutoData.titulo,
+          descricao: novoProdutoData.descricao,
+          preco: novoProdutoData.preco,
+          quantidade: novoProdutoData.quantidade,
+          imagem: novoProdutoData.imagem || null,
+          ativo: novoProdutoData.ativo,
+          categoria_id,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Erro ao criar produto");
+      }
+
+      await response.json();
+      await carregar();
+
+      alert("Entrada adicionada com sucesso!");
+      handleFecharModalAdicionar();
+    } catch (error) {
+      console.error("Erro ao adicionar produto:", error);
+      alert("Erro ao adicionar o produto. Tente novamente.");
+    }
+  };
+
+  const handleExcluirProduto = async (produto: Produto) => {
+    const confirmacao = window.confirm(
+      `Tem certeza que deseja excluir "${produto.titulo}"?\n\nEsta ação não pode ser desfeita.`
+    );
+    if (!confirmacao) return;
+
+    try {
+      const apiId = await resolveApiId(produto);
+
+      const response = await fetch(`${BASE_URL}/produtos/${apiId}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Erro ao excluir produto");
+      }
+
+      setProdutos((prev) => prev.filter((p) => p.id !== produto.id));
+      alert("Entrada excluída com sucesso!");
+    } catch (error) {
+      console.error("Erro ao excluir produto:", error);
+      alert("Erro ao excluir o produto. Tente novamente.");
+    }
   };
 
   const handleToggleStatus = async (produtoId: string) => {
     try {
+      const produto = produtos.find((p) => p.id === produtoId);
+      if (!produto) {
+        alert("Produto não encontrado.");
+        return;
+      }
+
+      const apiId = await resolveApiId(produto);
+
+      const response = await fetch(`${BASE_URL}/produtos/${apiId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ativo: !produto.ativo }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Erro da API:", errorText);
+        throw new Error(`Erro ${response.status}: ${errorText}`);
+      }
+
       setProdutos((prev) =>
         prev.map((p) => (p.id === produtoId ? { ...p, ativo: !p.ativo } : p))
       );
-      console.log("Toggle status do produto:", produtoId);
-    } catch (error) {
+
+      alert("Status alterado com sucesso!");
+    } catch (error: any) {
       console.error("Erro ao alterar status:", error);
+      alert(`Erro ao alterar o status: ${error.message || "Erro desconhecido"}`);
     }
   };
 
@@ -229,15 +526,17 @@ const Entradas: React.FC = () => {
               />
             </div>
 
-            <select
-              value={filtroAtivo}
-              onChange={(e) => setFiltroAtivo(e.target.value as any)}
-              className="pratos-filter-select"
+
+            <button
+              className="pratos-add-btn"
+              onClick={handleAbrirModalAdicionar}
+              title="Adicionar nova entrada"
             >
-              <option value="todos">Todas as entradas</option>
-              <option value="ativos">Apenas ativas</option>
-              <option value="inativos">Apenas inativas</option>
-            </select>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Adicionar Entrada
+            </button>
           </div>
 
           {loading ? (
@@ -298,9 +597,15 @@ const Entradas: React.FC = () => {
                         </button>
                         <button
                           className="prato-btn editar"
-                          onClick={() => handleEditarProduto(produto.id)}
+                          onClick={() => handleEditarProduto(produto)}
                         >
                           Editar
+                        </button>
+                        <button
+                          className="prato-btn excluir"
+                          onClick={() => handleExcluirProduto(produto)}
+                        >
+                          Excluir
                         </button>
                       </div>
                     </div>
@@ -311,6 +616,213 @@ const Entradas: React.FC = () => {
           )}
         </section>
       </main>
+
+      {modalAberto && (
+        <div className="modal-overlay" onClick={handleFecharModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Editar Entrada</h2>
+              <button className="modal-close" onClick={handleFecharModal}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="titulo">Título *</label>
+                <input
+                  id="titulo"
+                  type="text"
+                  value={formData.titulo}
+                  onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                  placeholder="Nome da entrada"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="descricao">Descrição *</label>
+                <textarea
+                  id="descricao"
+                  value={formData.descricao}
+                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                  placeholder="Descrição da entrada"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="preco">Preço (R$) *</label>
+                  <input
+                    id="preco"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.preco}
+                    onChange={(e) =>
+                      setFormData({ ...formData, preco: parseFloat(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="quantidade">Quantidade em Estoque *</label>
+                  <input
+                    id="quantidade"
+                    type="number"
+                    min="0"
+                    value={formData.quantidade}
+                    onChange={(e) =>
+                      setFormData({ ...formData, quantidade: parseInt(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="imagem">URL da Imagem</label>
+                <input
+                  id="imagem"
+                  type="url"
+                  value={formData.imagem}
+                  onChange={(e) => setFormData({ ...formData, imagem: e.target.value })}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
+
+              <div className="form-group checkbox-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.ativo}
+                    onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                  />
+                  <span>Produto ativo</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={handleFecharModal}>
+                Cancelar
+              </button>
+              <button className="btn-primary" onClick={handleSalvarEdicao}>
+                Salvar Alterações
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalAdicionarAberto && (
+        <div className="modal-overlay" onClick={handleFecharModalAdicionar}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Adicionar Nova Entrada</h2>
+              <button className="modal-close" onClick={handleFecharModalAdicionar}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="novo-titulo">Título *</label>
+                <input
+                  id="novo-titulo"
+                  type="text"
+                  value={novoProdutoData.titulo}
+                  onChange={(e) => setNovoProdutoData({ ...novoProdutoData, titulo: e.target.value })}
+                  placeholder="Nome da entrada"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="novo-descricao">Descrição *</label>
+                <textarea
+                  id="novo-descricao"
+                  value={novoProdutoData.descricao}
+                  onChange={(e) => setNovoProdutoData({ ...novoProdutoData, descricao: e.target.value })}
+                  placeholder="Descrição da entrada"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="novo-preco">Preço (R$) *</label>
+                  <input
+                    id="novo-preco"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={novoProdutoData.preco}
+                    onChange={(e) =>
+                      setNovoProdutoData({ ...novoProdutoData, preco: parseFloat(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="novo-quantidade">Quantidade em Estoque *</label>
+                  <input
+                    id="novo-quantidade"
+                    type="number"
+                    min="0"
+                    value={novoProdutoData.quantidade}
+                    onChange={(e) =>
+                      setNovoProdutoData({ ...novoProdutoData, quantidade: parseInt(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="novo-imagem">URL da Imagem</label>
+                <input
+                  id="novo-imagem"
+                  type="url"
+                  value={novoProdutoData.imagem}
+                  onChange={(e) => setNovoProdutoData({ ...novoProdutoData, imagem: e.target.value })}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
+
+              <div className="form-group checkbox-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={novoProdutoData.ativo}
+                    onChange={(e) => setNovoProdutoData({ ...novoProdutoData, ativo: e.target.checked })}
+                  />
+                  <span>Produto ativo</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={handleFecharModalAdicionar}>
+                Cancelar
+              </button>
+              <button className="btn-primary" onClick={handleSalvarNovoProduto}>
+                Adicionar Entrada
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );
