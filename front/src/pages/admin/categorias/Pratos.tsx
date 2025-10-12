@@ -109,6 +109,17 @@ const Pratos: React.FC = () => {
     ativo: true,
   });
 
+  // Modal de adicionar novo prato
+  const [modalAdicionarAberto, setModalAdicionarAberto] = useState(false);
+  const [novoProdutoData, setNovoProdutoData] = useState({
+    titulo: "",
+    descricao: "",
+    preco: 0,
+    quantidade: 0,
+    imagem: "",
+    ativo: true,
+  });
+
   useEffect(() => {
     carregarProdutos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -305,6 +316,30 @@ const Pratos: React.FC = () => {
     });
   };
 
+  const handleAbrirModalAdicionar = () => {
+    setNovoProdutoData({
+      titulo: "",
+      descricao: "",
+      preco: 0,
+      quantidade: 0,
+      imagem: "",
+      ativo: true,
+    });
+    setModalAdicionarAberto(true);
+  };
+
+  const handleFecharModalAdicionar = () => {
+    setModalAdicionarAberto(false);
+    setNovoProdutoData({
+      titulo: "",
+      descricao: "",
+      preco: 0,
+      quantidade: 0,
+      imagem: "",
+      ativo: true,
+    });
+  };
+
   const handleSalvarEdicao = async () => {
     if (!produtoEditando) return;
 
@@ -344,6 +379,56 @@ const Pratos: React.FC = () => {
     } catch (error) {
       console.error("Erro ao salvar edição:", error);
       alert("Erro ao salvar as alterações. Tente novamente.");
+    }
+  };
+
+  const handleSalvarNovoProduto = async () => {
+    try {
+      // Buscar categoria "Pratos" para associar o novo produto
+      const categoriasApi = await apiGet<any[]>("/categorias/", token || undefined);
+      const categoriaPratos = categoriasApi.find((cat: any) => {
+        const nome = (cat.nome || cat.label || "").toString().trim().toLowerCase();
+        const slug = (cat.slug || "").toString().trim().toLowerCase();
+        return nome === "pratos" || slug === "pratos";
+      });
+
+      if (!categoriaPratos) {
+        alert("Categoria 'Pratos' não encontrada. Não é possível adicionar o produto.");
+        return;
+      }
+
+      const response = await fetch(`${BASE_URL}/produtos/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          titulo: novoProdutoData.titulo,
+          descricao: novoProdutoData.descricao,
+          preco: novoProdutoData.preco,
+          quantidade: novoProdutoData.quantidade,
+          imagem: novoProdutoData.imagem || null,
+          ativo: novoProdutoData.ativo,
+          categoria_id: categoriaPratos._id || categoriaPratos.id,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Erro ao criar produto");
+      }
+
+      await response.json();
+
+      // Recarregar a lista de produtos
+      await carregarProdutos();
+
+      alert("Produto adicionado com sucesso!");
+      handleFecharModalAdicionar();
+    } catch (error) {
+      console.error("Erro ao adicionar produto:", error);
+      alert("Erro ao adicionar o produto. Tente novamente.");
     }
   };
 
@@ -444,26 +529,39 @@ const Pratos: React.FC = () => {
         <section className="pratos-panel">
           {erro && <div className="pratos-alert">{erro}</div>}
 
-          <div className="pratos-search">
-            <span className="pratos-search-icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-                <path
-                  d="M20 20L16.65 16.65"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
+          <div className="pratos-filters">
+            <div className="pratos-search">
+              <span className="pratos-search-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                  <path
+                    d="M20 20L16.65 16.65"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+              <input
+                type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar pratos..."
+                aria-label="Buscar pratos por nome ou descrição"
+                className="pratos-search-input"
+              />
+            </div>
+
+            <button
+              className="pratos-add-btn"
+              onClick={handleAbrirModalAdicionar}
+              title="Adicionar novo prato"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12h14" />
               </svg>
-            </span>
-            <input
-              type="text"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar pratos..."
-              aria-label="Buscar pratos por nome ou descrição"
-              className="pratos-search-input"
-            />
+              Adicionar Prato
+            </button>
           </div>
 
           {loading ? (
@@ -642,6 +740,110 @@ const Pratos: React.FC = () => {
               </button>
               <button className="btn-primary" onClick={handleSalvarEdicao}>
                 Salvar Alterações
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Adicionar Novo Produto */}
+      {modalAdicionarAberto && (
+        <div className="modal-overlay" onClick={handleFecharModalAdicionar}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Adicionar Novo Prato</h2>
+              <button className="modal-close" onClick={handleFecharModalAdicionar}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="novo-titulo">Título *</label>
+                <input
+                  id="novo-titulo"
+                  type="text"
+                  value={novoProdutoData.titulo}
+                  onChange={(e) => setNovoProdutoData({ ...novoProdutoData, titulo: e.target.value })}
+                  placeholder="Nome do prato"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="novo-descricao">Descrição *</label>
+                <textarea
+                  id="novo-descricao"
+                  value={novoProdutoData.descricao}
+                  onChange={(e) => setNovoProdutoData({ ...novoProdutoData, descricao: e.target.value })}
+                  placeholder="Descrição do prato"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="novo-preco">Preço (R$) *</label>
+                  <input
+                    id="novo-preco"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={novoProdutoData.preco}
+                    onChange={(e) =>
+                      setNovoProdutoData({ ...novoProdutoData, preco: parseFloat(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="novo-quantidade">Quantidade em Estoque *</label>
+                  <input
+                    id="novo-quantidade"
+                    type="number"
+                    min="0"
+                    value={novoProdutoData.quantidade}
+                    onChange={(e) =>
+                      setNovoProdutoData({ ...novoProdutoData, quantidade: parseInt(e.target.value) || 0 })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="novo-imagem">URL da Imagem</label>
+                <input
+                  id="novo-imagem"
+                  type="url"
+                  value={novoProdutoData.imagem}
+                  onChange={(e) => setNovoProdutoData({ ...novoProdutoData, imagem: e.target.value })}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
+
+              <div className="form-group checkbox-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={novoProdutoData.ativo}
+                    onChange={(e) => setNovoProdutoData({ ...novoProdutoData, ativo: e.target.checked })}
+                  />
+                  <span>Produto ativo</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={handleFecharModalAdicionar}>
+                Cancelar
+              </button>
+              <button className="btn-primary" onClick={handleSalvarNovoProduto}>
+                Adicionar Prato
               </button>
             </div>
           </div>
