@@ -140,6 +140,29 @@
   font-weight: 700;
 }
 
+
+/* Estados de alerta e loading */
+.gc-alert {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.gc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
 @media (max-width: 40rem){
   .gc-grid{
     grid-template-columns: 1fr;

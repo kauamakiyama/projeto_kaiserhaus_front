@@ -21,6 +21,7 @@ import GerFunc from './pages/admin/GerenciarFuncionarios'
 import GerCateg from './pages/admin/GerenciarCategorias'
 import Avaliacoes from './pages/admin/Avaliacoes'
 import Historico from './pages/admin/Historico';
+import Pratos from './pages/admin/categorias/Pratos';
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import './App.css'
@@ -60,6 +61,7 @@ export default function App() {
                 <Route path="/admin" element={<Adm />} />
                 <Route path="/admin/funcionarios" element={<GerFunc />} />
                 <Route path="/admin/categorias" element={<GerCateg />} />
+                <Route path="/admin/categorias/pratos" element={<Pratos />} />
                 <Route path="/admin/avaliacoes" element={<Avaliacoes />} />
                 <Route path="/admin/historico" element={<Historico />} />
 

@@ -28,8 +28,19 @@
 }
 
 .adm-header{
-  text-align: center;
   margin-bottom: 1.25rem;
+}
+
+.adm-header-content{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.adm-title-section{
+  text-align: center;
+  flex: 1;
 }
 
 .adm-title{
@@ -46,6 +57,64 @@
   width: 10rem;
   margin: .5rem auto 0 auto;
   height: auto;
+}
+
+.adm-user-section{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.adm-user-info{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.adm-welcome{
+  font-size: 0.9rem;
+  color: var(--kh-brown-700);
+  font-weight: 500;
+}
+
+.adm-role{
+  font-size: 0.8rem;
+  color: var(--kh-brown-700);
+  text-transform: capitalize;
+  opacity: 0.8;
+}
+
+.adm-logout-btn{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--kh-brown-900);
+  color: var(--kh-cream-50);
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: var(--kh-radius-lg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adm-logout-btn:hover{
+  background: var(--kh-brown-800);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.adm-logout-btn:active{
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adm-logout-btn svg{
+  flex-shrink: 0;
 }
 
 .adm-panel{
@@ -162,10 +231,50 @@
   }
 }
 
+@media (max-width: 768px) {
+  .adm-header-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .adm-user-section {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .adm-user-info {
+    align-items: center;
+  }
+  
+  .adm-logout-btn {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8rem;
+  }
+}
+
 @media (max-width: 37.5rem){
   :root{ --kh-header-h: 5rem; }
   .adm-page{ padding: 2.5rem .75rem; padding-top: calc(var(--kh-header-h) + 1rem); }
   .adm-title{ font-size: 2rem; }
   .adm-divider-img{ width: 8.75rem; }
   .adm-search{ max-width: 100%; }
+  
+  .adm-welcome {
+    font-size: 0.8rem;
+  }
+  
+  .adm-role {
+    font-size: 0.75rem;
+  }
+  
+  .adm-logout-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .adm-logout-btn svg {
+    width: 16px;
+    height: 16px;
+  }
 }
