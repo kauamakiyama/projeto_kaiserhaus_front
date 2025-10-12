@@ -9,7 +9,7 @@ import { apiGet } from '../services/api';
 const PixPagamento: React.FC = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
-  
+
   // Carrega dados do PIX gerados na etapa anterior
   const pixData = useMemo(() => {
     try {
@@ -24,6 +24,12 @@ const PixPagamento: React.FC = () => {
     }
   }, []);
 
+  // ID do pedido salvo ao criar o pedido
+  const pedidoId = useMemo(() => {
+    const raw = localStorage.getItem('kh-pedido-id');
+    return raw ? String(raw) : null;
+  }, []);
+
   const handleCopyPixCode = async () => {
     try {
       await navigator.clipboard.writeText(pixData?.copiaECola || '');
@@ -31,6 +37,16 @@ const PixPagamento: React.FC = () => {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Erro ao copiar código PIX:', err);
+    }
+  };
+
+  const handleContinuar = () => {
+    if (pedidoId) {
+      // deixa um fallback para a tela de Conclusão
+      sessionStorage.setItem('ultimoPedidoId', pedidoId);
+      navigate('/conclusao', { state: { pedidoId } });
+    } else {
+      navigate('/conclusao');
     }
   };
 
@@ -52,9 +68,9 @@ const PixPagamento: React.FC = () => {
 
             <div className="qr-code-container">
               <div className="qr-code">
-                <img 
-                  src="/src/assets/pagamento/qrcode.png" 
-                  alt="QR Code PIX" 
+                <img
+                  src="/src/assets/pagamento/qrcode.png"
+                  alt="QR Code PIX"
                   className="qr-image"
                   style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
                 />
@@ -62,16 +78,16 @@ const PixPagamento: React.FC = () => {
             </div>
 
             <div className="pix-actions">
-              <button 
+              <button
                 className={`btn-copy-pix ${copied ? 'copied' : ''}`}
                 onClick={handleCopyPixCode}
               >
                 {copied ? 'Código copiado!' : 'Copiar código Pix'}
               </button>
-              
-              <button 
+
+              <button
                 className="btn-continue"
-                onClick={() => navigate('/conclusao')}
+                onClick={handleContinuar}
               >
                 Continuar
               </button>
