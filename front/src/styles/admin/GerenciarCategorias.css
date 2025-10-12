@@ -163,9 +163,57 @@
   font-weight: 500;
 }
 
+/* Container para card com botão de exclusão */
+.gc-card-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botão de exclusão */
+.gc-delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dc3545;
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.gc-card-container:hover .gc-delete-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.gc-delete-btn:hover {
+  background: #c82333;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.gc-delete-btn svg {
+  pointer-events: none;
+}
+
 @media (max-width: 40rem){
   .gc-grid{
     grid-template-columns: 1fr;
     width: 100%;
+  }
+  
+  .gc-delete-btn {
+    opacity: 1;
+    transform: scale(1);
   }
 }

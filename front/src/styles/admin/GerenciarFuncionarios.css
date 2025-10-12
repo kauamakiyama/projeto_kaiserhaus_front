@@ -272,12 +272,15 @@
   z-index: 2000;
 }
 .gf-modal-box{
-  width: min(45rem, 96vw);
+  width: min(50rem, 95vw);
+  max-width: 95vw;
   background: var(--kh-cream-25);
   border: 0.125rem solid #00000012;
   border-radius: 1.125rem;
   box-shadow: var(--kh-shadow-soft);
   overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 .gf-modal-head{
   display: flex;
@@ -305,10 +308,61 @@
   padding: 1rem 1.1rem;
   display: grid;
   gap: .9rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .gf-modal-body{
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem .9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gf-modal-body{
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem .9rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .gf-modal-box {
+    width: 95vw;
+    max-width: 95vw;
+    margin: 0.5rem;
+  }
+  
+  .gf-modal-body {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .gf-modal-head {
+    padding: 0.75rem;
+  }
+  
+  .gf-modal-foot {
+    padding: 0.75rem;
+    flex-direction: column;
+  }
+  
+  .gf-modal-foot button {
+    width: 100%;
+  }
 }
 .gf-field{
   display: grid;
   gap: .4rem;
+}
+
+.gf-field.full-width {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .gf-field.full-width {
+    grid-column: 1 / -1;
+  }
 }
 .gf-field span{
   font-weight: 700;

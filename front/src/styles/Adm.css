@@ -33,9 +33,10 @@
 
 .adm-header-content{
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 2rem;
+  position: relative;
 }
 
 .adm-title-section{
@@ -64,6 +65,10 @@
   align-items: center;
   gap: 1rem;
   flex-shrink: 0;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .adm-user-info{
@@ -118,9 +123,8 @@
 }
 
 .adm-panel{
-  display: grid;
-  grid-template-columns: 18.125rem 0.0625rem 1fr;
-  gap: 0;
+  display: flex;
+  justify-content: center;
   background: #e0dccb;
   border: 0.125rem solid var(--kh-brown-900);
   border-radius: 0.75rem;
@@ -132,7 +136,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
-  padding: .25rem .75rem .25rem .25rem;
+  padding: .25rem;
 }
 
 .adm-nav-btn{
@@ -161,73 +165,17 @@
   box-shadow: 0 0.125rem 0 rgba(0,0,0,.25), 0 0.375rem 0.625rem rgba(0,0,0,.14);
 }
 
-.adm-sep{
-  width: 0.0625rem;
-  background: #2b1a0d88;
-  margin: .25rem 1rem;
-}
 
-.adm-content{
-  padding: .25rem .25rem .25rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
 
-.adm-search{
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  background: #fff;
-  border-radius: 0.625rem;
-  padding: .6rem .8rem;
-  border: 0.125rem solid #eee3bf;
-  max-width: 33.75rem;
-  box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,.06);
-}
-
-.adm-search-icon{
-  display: inline-flex;
-  align-items: center;
-  color: var(--kh-brown-900);
-}
-
-.adm-search-input{
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  color: var(--kh-text);
-  background: transparent;
-}
-.adm-search-input::placeholder{
-  color: #7b6b58;
-}
-
-.adm-content-placeholder{
-  min-height: 20rem;
-  border-radius: 0.625rem;
-  background: radial-gradient(62.5rem 18.75rem at 85% -50%, rgba(71,35,4,.06), transparent 60%),
-              radial-gradient(50rem 18.75rem at -20% 120%, rgba(212,160,23,.10), transparent 50%);
-}
 
 @media (max-width: 60rem){
-  .adm-panel{
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  .adm-sep{ display: none; }
   .adm-sidebar{
     flex-direction: row;
     flex-wrap: wrap;
     gap: .75rem;
-    padding-right: 0;
   }
   .adm-nav-btn{
     flex: 1 1 13.75rem;
-  }
-  .adm-content{
-    padding-left: .25rem;
   }
 }
 
@@ -258,7 +206,6 @@
   .adm-page{ padding: 2.5rem .75rem; padding-top: calc(var(--kh-header-h) + 1rem); }
   .adm-title{ font-size: 2rem; }
   .adm-divider-img{ width: 8.75rem; }
-  .adm-search{ max-width: 100%; }
   
   .adm-welcome {
     font-size: 0.8rem;

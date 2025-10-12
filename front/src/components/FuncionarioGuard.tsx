@@ -14,8 +14,8 @@ const FuncionarioGuard: React.FC<FuncionarioGuardProps> = ({ children }) => {
     if (isAuthenticated && user) {
       const userRole = user.hierarquia || 'usuario';
       
-      // Se não é funcionário, redireciona para a página apropriada
-      if (userRole !== 'funcionario') {
+      // Se não é funcionário ou colaborador, redireciona para a página apropriada
+      if (userRole !== 'funcionario' && userRole !== 'colaborador') {
         if (userRole === 'admin') {
           navigate('/admin', { replace: true });
         } else {
@@ -33,8 +33,8 @@ const FuncionarioGuard: React.FC<FuncionarioGuardProps> = ({ children }) => {
     return null;
   }
 
-  // Se não é funcionário, não renderiza nada (já foi redirecionado)
-  if (user && user.hierarquia !== 'funcionario') {
+  // Se não é funcionário ou colaborador, não renderiza nada (já foi redirecionado)
+  if (user && user.hierarquia !== 'funcionario' && user.hierarquia !== 'colaborador') {
     return null;
   }
 

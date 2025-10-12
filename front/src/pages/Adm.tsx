@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Header from "../components/HeaderLogadoLoja.tsx";
 import Footer from "../components/Footer";
 import "../styles/Adm.css";
@@ -7,14 +7,8 @@ import douradoImg from "../assets/login/dourado.png";
 import { useAuth } from "../contexts/AuthContext";
 
 const Adm: React.FC = () => {
-  const [query, setQuery] = useState("");
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-
-  const onSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Buscar:", query);
-  };
 
   const handleLogout = () => {
     logout();
@@ -64,9 +58,6 @@ const Adm: React.FC = () => {
               <Link className="adm-nav-btn" to="/admin/historico">
                 Histórico de pedidos
               </Link>
-              <Link className="adm-nav-btn" to="/admin/avaliacoes">
-                Avaliações
-              </Link>
               <Link className="adm-nav-btn" to="/admin/categorias">
                 Gerenciar Cardápio
               </Link>
@@ -75,34 +66,6 @@ const Adm: React.FC = () => {
               </Link>
             </nav>
 
-            <div className="adm-sep" aria-hidden />
-
-            <div className="adm-content">
-              <form className="adm-search" onSubmit={onSearch} role="search">
-                <span className="adm-search-icon" aria-hidden>
-                  <svg viewBox="0 0 24 24" width="22" height="22">
-                    <path
-                      d="M21 21l-4.3-4.3m2.3-6.2a8 8 0 11-16 0 8 8 0 0116 0z"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-                <input
-                  className="adm-search-input"
-                  type="search"
-                  placeholder="Buscar por título ou nome"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </form>
-
-              <div className="adm-content-placeholder">
-              </div>
-            </div>
           </section>
         </div>
       </div>

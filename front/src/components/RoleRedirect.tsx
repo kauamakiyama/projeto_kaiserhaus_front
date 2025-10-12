@@ -16,8 +16,8 @@ const RoleRedirect: React.FC<RoleRedirectProps> = ({ children }) => {
       const userRole = user.hierarquia || 'usuario';
       const currentPath = location.pathname;
 
-      // Se é funcionário e não está na página de funcionário, redireciona
-      if (userRole === 'funcionario' && currentPath !== '/funcionario') {
+      // Se é funcionário ou colaborador e não está na página de funcionário, redireciona
+      if ((userRole === 'funcionario' || userRole === 'colaborador') && currentPath !== '/funcionario') {
         navigate('/funcionario', { replace: true });
         return;
       }

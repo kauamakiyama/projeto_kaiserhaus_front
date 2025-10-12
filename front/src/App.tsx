@@ -54,11 +54,7 @@ export default function App() {
                 <Route path="/historico-pedidos" element={<HistoricoPedidos />} />
 
                 <Route path="/funcionario" element={
-                  <ErrorBoundary>
-                    <FuncionarioGuard>
                       <Funcionario />
-                    </FuncionarioGuard>
-                  </ErrorBoundary>
                 } />
 
                 <Route path="/admin" element={<Adm />} />
