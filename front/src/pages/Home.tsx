@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "../styles/Home.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { apiGet } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 import hero from "../assets/home/Imagem principal.png";
 import emblem from "../assets/home/Logo da KaizerHaus.png";
 import imgSalao from "../assets/home/Restaurante interno.png";
@@ -10,7 +13,77 @@ import posterSP from "../assets/home/O melhor de sp.png";
 import chefWatermark from "../assets/home/Chef.png";
 import bandeira from "../assets/home/Bandeira da Alemanha de fundo.png";
 
+interface Produto {
+  _id: string;
+  titulo: string;
+  imagem?: string;
+  categoria?: string;
+  ativo: boolean;
+}
+
+interface Especialidade {
+  title: string;
+  img: string;
+}
+
 export default function Home() {
+  const { token } = useAuth();
+  const [especialidades, setEspecialidades] = useState<Especialidade[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Função para buscar produtos da API
+  const carregarEspecialidades = async () => {
+    try {
+      setLoading(true);
+      
+      // Tentar buscar produtos da API
+      const produtos = await apiGet<Produto[]>('/produtos/', token);
+      
+      if (produtos && Array.isArray(produtos)) {
+        // Filtrar produtos ativos e pegar os primeiros 6
+        const produtosAtivos = produtos
+          .filter(produto => produto.ativo)
+          .slice(0, 6);
+        
+        // Converter para formato de especialidades
+        const especialidadesFormatadas = produtosAtivos.map(produto => ({
+          title: produto.titulo,
+          img: produto.imagem || imgPrato // Fallback para imagem padrão
+        }));
+        
+        setEspecialidades(especialidadesFormatadas);
+      } else {
+        // Fallback para dados estáticos se API falhar
+        setEspecialidades([
+          { title: "Eisbein", img: imgPrato },
+          { title: "Schnitzel", img: imgPrato },
+          { title: "Salsicha Currywurst", img: imgPrato },
+          { title: "Schwarzbrot", img: imgPrato },
+          { title: "Strudel de Maçã", img: imgPrato },
+          { title: "Strudel de Queijo", img: imgPrato },
+        ]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar especialidades da API:', error);
+      
+      // Fallback para dados estáticos em caso de erro
+      setEspecialidades([
+        { title: "Eisbein", img: imgPrato },
+        { title: "Schnitzel", img: imgPrato },
+        { title: "Salsicha Currywurst", img: imgPrato },
+        { title: "Schwarzbrot", img: imgPrato },
+        { title: "Strudel de Maçã", img: imgPrato },
+        { title: "Strudel de Queijo", img: imgPrato },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    carregarEspecialidades();
+  }, [token]);
+
   return (
     <>
       <Header />
@@ -89,23 +162,30 @@ export default function Home() {
             </h2>
           </header>
 
-          <ul className="kh-spec__grid" role="list">
-            {[
-              { title: "Eisbein", img: imgPrato },
-              { title: "Schnitzel", img: imgPrato },
-              { title: "Salsicha Currywurst", img: imgPrato },
-              { title: "Schwarzbrot", img: imgPrato },
-              { title: "Strudel de Maçã", img: imgPrato },
-              { title: "Strudel de Queijo", img: imgPrato },
-            ].map((item) => (
-              <li key={item.title} className="kh-spec__card">
-                <figure className="kh-spec__figure">
-                  <img src={item.img} alt={item.title} loading="lazy" />
-                </figure>
-                <figcaption className="kh-spec__caption">{item.title}</figcaption>
-              </li>
-            ))}
-          </ul>
+          {loading ? (
+            <div className="kh-spec__loading">
+              <p>Carregando especialidades...</p>
+            </div>
+          ) : (
+            <ul className="kh-spec__grid" role="list">
+              {especialidades.map((item) => (
+                <li key={item.title} className="kh-spec__card">
+                  <figure className="kh-spec__figure">
+                    <img 
+                      src={item.img} 
+                      alt={item.title} 
+                      loading="lazy"
+                      onError={(e) => {
+                        // Fallback para imagem padrão se a imagem da API falhar
+                        (e.target as HTMLImageElement).src = imgPrato;
+                      }}
+                    />
+                  </figure>
+                  <figcaption className="kh-spec__caption">{item.title}</figcaption>
+                </li>
+              ))}
+            </ul>
+          )}
 
           <div className="kh-spec__actions">
             <Link to="/cardapio" className="btn btn--history">
