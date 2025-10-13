@@ -13,6 +13,7 @@ import PixPagamento from './pages/PixPagamento'
 import Conclusao from './pages/Conclusao'
 import HistoricoPedidos from './pages/HistoricoPedidos'
 import AcompanharPedido from './pages/AcompanharPedido'
+import ProblemasPedido from './pages/ProblemasPedido'
 import Funcionario from './pages/Funcionario'
 import RoleRedirect from './components/RoleRedirect'
 import Adm from './pages/Adm'
@@ -49,9 +50,10 @@ export default function App() {
                 <Route path="/conclusao" element={<Conclusao />} />
 
                 <Route path="/usuario" element={<Usuario />} />
-                <Route path="/usuario/dados" element={<MeusDados />} />
-                <Route path="/historico-pedidos" element={<HistoricoPedidos />} />
-                <Route path="/acompanhar-pedido/:pedidoId" element={<AcompanharPedido />} />
+                    <Route path="/usuario/dados" element={<MeusDados />} />
+                    <Route path="/historico-pedidos" element={<HistoricoPedidos />} />
+                    <Route path="/acompanhar-pedido/:pedidoId" element={<AcompanharPedido />} />
+                    <Route path="/problemas-pedido" element={<ProblemasPedido />} />
 
                 <Route path="/funcionario" element={
                       <Funcionario />
