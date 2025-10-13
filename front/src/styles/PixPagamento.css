@@ -1,16 +1,16 @@
 .pix-page{
   background:#F5F5DC;
-  min-height:calc(100vh - var(--kh-footer-h,60px));
-  padding: calc(var(--kh-header-h,96px) + 80px) 0 24px;
+  min-height:calc(100vh - var(--kh-footer-h,3.75rem));
+  padding: calc(var(--kh-header-h,6rem) + 5rem) 0 1.5rem;
 }
 
 .pix-card{
   max-width:980px;
   margin:0 auto 28px;
   background:#fff;
-  border:2px solid #b7b09a;
-  border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  border:0.125rem solid #b7b09a;
+  border-radius:0.75rem;
+  box-shadow:0 0.625rem 1.875rem rgba(0,0,0,.12);
   padding:32px 40px;
 }
 
@@ -50,11 +50,11 @@
 }
 
 .qr-code{
-  width:280px;
-  height:280px;
+  width:17.5rem;
+  height:17.5rem;
   background:#fff;
-  border:2px solid #e6d8c2;
-  border-radius:12px;
+  border:0.125rem solid #e6d8c2;
+  border-radius:0.75rem;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -79,8 +79,8 @@
 .btn-copy-pix{
   background:#fff;
   color:#d94f5c;
-  border:2px solid #d94f5c;
-  border-radius:8px;
+  border:0.125rem solid #d94f5c;
+  border-radius:0.5rem;
   padding:12px 24px;
   font-weight:600;
   font-size:16px;

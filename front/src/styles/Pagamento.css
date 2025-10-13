@@ -1,16 +1,16 @@
 .pagamento-page{
   background:#F5F5DC;
-  min-height:calc(100vh - var(--kh-footer-h,60px));
-  padding: calc(var(--kh-header-h,96px) + 80px) 0 24px;
+  min-height:calc(100vh - var(--kh-footer-h,3.75rem));
+  padding: calc(var(--kh-header-h,6rem) + 5rem) 0 1.5rem;
 }
 
 .pagamento-card{
   max-width:980px;
   margin:0 auto 28px;
   background:#e9e2cf;
-  border:2px solid #b7b09a;
-  border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  border:0.125rem solid #b7b09a;
+  border-radius:0.75rem;
+  box-shadow:0 0.625rem 1.875rem rgba(0,0,0,.12);
   padding:24px 28px;
 }
 
@@ -63,8 +63,8 @@
 .payment-label{
   display:flex;
   background:#fff;
-  border:2px solid #e6d8c2;
-  border-radius:12px;
+  border:0.125rem solid #e6d8c2;
+  border-radius:0.75rem;
   padding:16px 20px;
   cursor:pointer;
   transition:all 0.2s ease;
@@ -76,7 +76,7 @@
 .payment-radio:checked + .payment-label{
   border-color:#b78f54;
   background:#f9f6f0;
-  box-shadow:0 4px 12px rgba(183, 143, 84, 0.15);
+  box-shadow:0 0.25rem 0.75rem rgba(183, 143, 84, 0.15);
 }
 
 .payment-radio:checked + .payment-label .payment-radio-circle{
@@ -90,15 +90,15 @@
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
-  width:8px;
-  height:8px;
+  width:0.5rem;
+  height:0.5rem;
   background:#fff;
   border-radius:50%;
 }
 
 .payment-radio-circle{
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   border: 2px solid #e6d8c2;
   border-radius: 50%;
   background: #fff;
@@ -289,7 +289,7 @@
   right:0;
   background:#fff;
   border:1px solid #e6d8c2;
-  border-radius:12px;
+  border-radius:0.75rem;
   box-shadow:0 8px 24px rgba(0,0,0,0.15);
   z-index:5000;
   margin-top:4px;
@@ -320,8 +320,8 @@
 
 .card-option.selected{
   background:#f9f6f0;
-  border:2px solid #b78f54;
-  border-radius:8px;
+  border:0.125rem solid #b78f54;
+  border-radius:0.5rem;
 }
 
 .card-option.selected .card-radio{
@@ -335,8 +335,8 @@
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
-  width:8px;
-  height:8px;
+  width:0.5rem;
+  height:0.5rem;
   background:#fff;
   border-radius:50%;
 }
@@ -344,7 +344,7 @@
 .card-radio{
   width:20px;
   height:20px;
-  border:2px solid #e6d8c2;
+  border:0.125rem solid #e6d8c2;
   border-radius:50%;
   background:#fff;
   position:relative;
@@ -417,7 +417,7 @@
   font-size:18px;
   font-weight:700;
   color:#b78f54;
-  border:2px solid #b78f54;
+  border:0.125rem solid #b78f54;
   border-radius:50%;
 }
 
