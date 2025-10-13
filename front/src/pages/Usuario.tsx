@@ -298,6 +298,15 @@ const Usuario: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                  
+                  <div className="problems-section">
+                    <button 
+                      className="problems-btn"
+                      onClick={() => navigate('/problemas-pedido')}
+                    >
+                      ❓ Problemas com o pedido?
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="no-orders">

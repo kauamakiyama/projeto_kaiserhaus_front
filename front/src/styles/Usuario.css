@@ -246,6 +246,34 @@
   font-style: italic;
 }
 
+.problems-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e6d8c2;
+  text-align: center;
+}
+
+.problems-btn {
+  background: #f8f8f8;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.problems-btn:hover {
+  background: #e8e8e8;
+  color: #333;
+  border-color: #bbb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 @media (max-width: 768px) {
   .order-list-modal {
     width: 95vw;

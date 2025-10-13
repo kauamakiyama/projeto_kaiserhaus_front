@@ -1,0 +1,220 @@
+/* Estilos para a página de problemas com o pedido */
+
+.problemas-page {
+  background: #F5F5DC;
+  min-height: calc(100vh - var(--kh-footer-h, 60px));
+  padding: calc(var(--kh-header-h, 96px) + 40px) 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 75rem;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.problemas-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.problemas-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.problemas-title {
+  margin: 0;
+  font-size: clamp(2rem, 4.5vw, 2.5rem);
+  color: #4a1f0e;
+  font-weight: 700;
+  font-family: serif;
+}
+
+.problemas-divider {
+  width: 10rem;
+  opacity: 0.9;
+}
+
+.problemas-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0;
+}
+
+
+.problemas-info {
+  background: #f8f8f8;
+  border: 1px solid #e6d8c2;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.problemas-info h3 {
+  color: #472304;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+}
+
+.problemas-info ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.problemas-info li {
+  margin-bottom: 0.5rem;
+}
+
+/* Estilos para o WhatsApp */
+.whatsapp-section {
+  margin: 2rem 0;
+}
+
+.whatsapp-card {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 8px 32px rgba(37, 211, 102, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.whatsapp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(37, 211, 102, 0.4);
+}
+
+.whatsapp-icon {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.whatsapp-content {
+  flex: 1;
+  color: white;
+}
+
+.whatsapp-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.whatsapp-content p {
+  margin: 0 0 1.5rem 0;
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+.whatsapp-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.whatsapp-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.whatsapp-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Seção do botão voltar */
+.back-section {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.back-section .btn-voltar {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.back-section .btn-voltar:hover {
+  background: #e8e8e8;
+  color: #333;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .problemas-page {
+    padding: calc(var(--kh-header-h, 96px) + 20px) 0.5rem 1rem;
+    gap: 1rem;
+  }
+  
+  .whatsapp-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  
+  .whatsapp-content h3 {
+    font-size: 1.3rem;
+  }
+  
+  .whatsapp-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .back-section .btn-voltar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .problemas-container {
+    max-width: none;
+  }
+  
+  .problemas-info {
+    padding: 1rem;
+  }
+}
