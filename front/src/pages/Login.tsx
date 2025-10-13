@@ -152,9 +152,6 @@ const Login: React.FC = () => {
             
                     <div className="login-links">
                       <p className="login-link-text">
-                        Esqueceu a senha? <a href="#forgot-password" className="login-link">Clique aqui</a>
-                      </p>
-                      <p className="login-link-text">
                         Não tem um cadastro? <a href="/register" className="login-link">Cadastre-se aqui</a>
                       </p>
                     </div>
