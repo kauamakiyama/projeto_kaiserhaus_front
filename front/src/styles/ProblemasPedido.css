@@ -2,8 +2,8 @@
 
 .problemas-page {
   background: #F5F5DC;
-  min-height: calc(100vh - var(--kh-footer-h, 60px));
-  padding: calc(var(--kh-header-h, 96px) + 40px) 1rem 2rem;
+  min-height: calc(100vh - var(--kh-footer-h, 3.75rem));
+  padding: calc(var(--kh-header-h, 6rem) + 2.5rem) 1rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -185,7 +185,7 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .problemas-page {
-    padding: calc(var(--kh-header-h, 96px) + 20px) 0.5rem 1rem;
+    padding: calc(var(--kh-header-h, 6rem) + 1.25rem) 0.5rem 1rem;
     gap: 1rem;
   }
   

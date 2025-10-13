@@ -1,7 +1,7 @@
 .conclusao-page {
   background: #F5F5DC;
-  min-height: calc(100vh - var(--kh-footer-h, 60px));
-  padding: calc(var(--kh-header-h, 96px) + 40px) 1rem 2rem;
+  min-height: calc(100vh - var(--kh-footer-h, 3.75rem));
+  padding: calc(var(--kh-header-h, 6rem) + 2.5rem) 1rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,10 +16,10 @@
 
 .success-card {
   background: #fff;
-  border: 1px solid #e6d8c2;
-  border-radius: 12px;
+  border: 0.0625rem solid #e6d8c2;
+  border-radius: 0.75rem;
   padding: 3rem 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,19 +29,19 @@
 }
 
 .success-icon {
-  width: 80px;
-  height: 80px;
+  width: 5rem;
+  height: 5rem;
   background: #22c55e;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0.25rem 0.75rem rgba(34, 197, 94, 0.3);
 }
 
 .checkmark-image {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
@@ -72,7 +72,7 @@
   background: #4a2105;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   padding: 1rem 2rem;
   font-size: 1rem;
   font-weight: 600;
@@ -84,8 +84,8 @@
 
 .btn-track-order:hover {
   background: #5a2a15;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(74, 33, 5, 0.3);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.75rem rgba(74, 33, 5, 0.3);
 }
 
 .btn-skip {
@@ -97,7 +97,7 @@
   cursor: pointer;
   transition: color 0.3s ease;
   text-decoration: underline;
-  text-underline-offset: 4px;
+  text-underline-offset: 0.25rem;
 }
 
 .btn-skip:hover {
@@ -107,7 +107,7 @@
 /* Responsividade */
 @media (max-width: 48rem) {
   .conclusao-page {
-    padding: calc(var(--kh-header-h, 96px) + 20px) 1rem 1rem;
+    padding: calc(var(--kh-header-h, 6rem) + 1.25rem) 1rem 1rem;
     gap: 1.5rem;
   }
 
@@ -117,13 +117,13 @@
   }
 
   .success-icon {
-    width: 70px;
-    height: 70px;
+    width: 4.375rem;
+    height: 4.375rem;
   }
 
   .checkmark-image {
-    width: 35px;
-    height: 35px;
+    width: 2.1875rem;
+    height: 2.1875rem;
   }
 
   .success-title {
@@ -138,7 +138,7 @@
 
 @media (max-width: 30rem) {
   .conclusao-page {
-    padding: calc(var(--kh-header-h, 96px) + 15px) 1rem 1rem;
+    padding: calc(var(--kh-header-h, 6rem) + 0.9375rem) 1rem 1rem;
   }
 
   .success-card {
@@ -146,13 +146,13 @@
   }
 
   .success-icon {
-    width: 60px;
-    height: 60px;
+    width: 3.75rem;
+    height: 3.75rem;
   }
 
   .checkmark-image {
-    width: 30px;
-    height: 30px;
+    width: 1.875rem;
+    height: 1.875rem;
   }
 
   .success-title {

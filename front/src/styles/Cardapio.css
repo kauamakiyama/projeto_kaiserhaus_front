@@ -31,7 +31,7 @@
   padding: 0.875rem 1rem; border-bottom: 0.0625rem solid rgba(0,0,0,0.08);
 }
 .drawer-close { border: none; background: transparent; font-size: 1.375rem; cursor: pointer; }
-.cart-drawer-body { padding: 1.5rem 1rem 0.75rem; overflow: auto; margin-bottom: 80px; }
+.cart-drawer-body { padding: 1.5rem 1rem 0.75rem; overflow: auto; margin-bottom: 5rem; }
 .side-cart-items { display: grid; gap: 0.625rem; }
 .side-cart-item {
   display: grid;
@@ -82,7 +82,7 @@
 .menu-page {
   min-height: 100vh;
   background-color: #F5F5DC;
-  padding: calc(var(--kh-header-h, 96px) + 60px) 1rem 2rem;
+  padding: calc(var(--kh-header-h, 6rem) + 3.75rem) 1rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -373,7 +373,7 @@
 
 @media (max-width: 48rem) {
   .menu-page {
-    padding: calc(var(--kh-header-h, 96px) + 40px) 1rem 1rem;
+    padding: calc(var(--kh-header-h, 6rem) + 2.5rem) 1rem 1rem;
     gap: 0.5rem;
     width: 100%;
     box-sizing: border-box;
