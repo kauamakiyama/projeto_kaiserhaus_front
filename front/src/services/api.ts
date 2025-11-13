@@ -1,5 +1,7 @@
 // Pequeno helper de API para centralizar baseURL e headers de auth
-export const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:8001';
+export const BASE_URL =
+  (import.meta.env.VITE_API_URL as string | undefined) ||
+  (import.meta.env.DEV ? '/api' : 'http://localhost:8001');
 
 export function authHeaders(token?: string): HeadersInit {
   const headers: Record<string, string> = {

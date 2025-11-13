@@ -4,7 +4,7 @@ import Header from "../../components/HeaderLogadoLoja";
 import Footer from "../../components/Footer";
 import "../../styles/admin/GerenciarFuncionarios.css";
 import douradoImg from "../../assets/login/dourado.png";
-import { apiGet, apiPut, apiDelete } from "../../services/api";
+import { apiGet, apiPut, apiDelete, apiPost } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 
 type Cargo = "ADMIN" | "COLABORADOR";
@@ -67,7 +67,7 @@ const GerenciarFuncionarios: React.FC = () => {
       setErro("");
       try {
         // Buscar funcionários (usuários com hierarquia admin ou funcionario)
-        const funcionariosApi = await apiGet<any[]>('/usuarios/', token || undefined);
+        const funcionariosApi = await apiGet<any[]>('/usuarios', token || undefined);
         
         const funcionariosFormatados = funcionariosApi
           .filter((usuario: any) => 
@@ -172,6 +172,11 @@ const GerenciarFuncionarios: React.FC = () => {
         setErro("Data de nascimento é obrigatória.");
         return;
       }
+      const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dataRegex.test(fDataNascimento.trim())) {
+        setErro("Data de nascimento inválida. Use o formato AAAA-MM-DD.");
+        return;
+      }
       if (!fEndereco.trim()) {
         setErro("Endereço é obrigatório.");
         return;
@@ -210,10 +215,10 @@ const GerenciarFuncionarios: React.FC = () => {
         const requestData = {
           nome: fNome,
           email: fEmail,
-          data_nascimento: fDataNascimento,
+          data_nascimento: fDataNascimento || undefined,
           telefone: fTelefone.replace(/\D/g, ''), // Remover formatação
           endereco: fEndereco,
-          complemento: fComplemento,
+          complemento: fComplemento || undefined,
           senha: fSenha,
           cpf: fCpf.replace(/\D/g, ''), // Remover formatação
           hierarquia: hierarquia,
@@ -224,27 +229,7 @@ const GerenciarFuncionarios: React.FC = () => {
         console.log('Hierarquia que será enviada:', hierarquia);
         
         // Tentar com fetch direto para ter mais controle
-        const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
-        
-        const response = await fetch(`${BASE_URL}/usuarios`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(requestData),
-        });
-        
-        console.log('Status da resposta:', response.status);
-        console.log('Headers da resposta:', response.headers);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Erro da API:', errorText);
-          throw new Error(`Erro ${response.status}: ${errorText}`);
-        }
-        
-        const responseData = await response.json();
+        const responseData = await apiPost<any>('/usuarios', requestData, token || undefined);
         console.log('Resposta da API:', responseData);
         
         // Sempre tentar atualizar a hierarquia após criação
@@ -255,27 +240,17 @@ const GerenciarFuncionarios: React.FC = () => {
         // Sempre fazer uma segunda requisição para garantir a hierarquia correta
         console.log('Atualizando hierarquia para:', hierarquia);
         
-        const updateResponse = await fetch(`${BASE_URL}/usuarios/${responseData._id || responseData.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
+        try {
+          const updateData = await apiPut(`/usuarios/${responseData._id || responseData.id}`, {
             hierarquia: hierarquia,
-          }),
-        });
-        
-        if (updateResponse.ok) {
-          const updateData = await updateResponse.json();
+          }, token || undefined);
           console.log('Hierarquia atualizada com sucesso:', updateData);
-        } else {
-          const errorText = await updateResponse.text();
-          console.error('Erro ao atualizar hierarquia:', errorText);
+        } catch (updateError) {
+          console.error('Erro ao atualizar hierarquia:', updateError);
         }
         
         // Recarregar lista para incluir o novo funcionário
-        const funcionariosApi = await apiGet<any[]>('/usuarios/', token || undefined);
+        const funcionariosApi = await apiGet<any[]>('/usuarios', token || undefined);
         const funcionariosFormatados = funcionariosApi
           .filter((usuario: any) => 
             usuario.hierarquia === 'admin' || usuario.hierarquia === 'funcionario' || usuario.hierarquia === 'colaborador'

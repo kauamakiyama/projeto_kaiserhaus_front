@@ -268,19 +268,22 @@
   background: rgba(0,0,0,.35);
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding-inline: clamp(1rem, 2vw, 2rem);
+  padding-block: clamp(1.5rem, 3vw, 3rem);
+  padding-top: calc(var(--kh-header-h, 4.5rem) + clamp(1.5rem, 3vw, 3rem));
   z-index: 2000;
 }
 .gf-modal-box{
-  width: min(50rem, 95vw);
-  max-width: 95vw;
+  width: min(60rem, 92vw);
+  max-width: 92vw;
   background: var(--kh-cream-25);
   border: 0.125rem solid #00000012;
   border-radius: 1.125rem;
   box-shadow: var(--kh-shadow-soft);
   overflow: hidden;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: min(88vh, 56rem);
+  display: flex;
+  flex-direction: column;
 }
 .gf-modal-head{
   display: flex;
@@ -305,24 +308,12 @@
 }
 
 .gf-modal-body{
-  padding: 1rem 1.1rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
   display: grid;
-  gap: .9rem;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-  .gf-modal-body{
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem .9rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .gf-modal-body{
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem .9rem;
-  }
+  gap: clamp(.8rem, 1.5vw, 1.1rem);
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  overflow-y: auto;
+  flex: 1 1 auto;
 }
 
 @media (max-width: 767px) {
@@ -390,4 +381,6 @@
   justify-content: flex-end;
   gap: .6rem;
   padding: .9rem 1.1rem 1.1rem;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.8) 30%, rgba(255,255,255,1));
+  flex-shrink: 0;
 }
