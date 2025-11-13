@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Login.css';
-
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:8001';
+import { apiPost } from '../services/api';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -24,20 +23,12 @@ const Login: React.FC = () => {
     setSuccess('');
 
     try {
-      const response = await fetch(`${BASE_URL}/usuarios/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          senha: password,
-        }),
+      const data = await apiPost<any>('/usuarios/login', {
+        email,
+        senha: password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (data) {
         const tokenFromApi = (data as any)?.token as string | undefined;
         if (!tokenFromApi) {
           setError('API não retornou token no login.');
@@ -67,25 +58,9 @@ const Login: React.FC = () => {
           console.log('Redirecionando para página inicial');
           navigate('/', { replace: true });
         }
-      } else {
-        let errorMessage = `Erro ${response.status}: ${response.statusText}`;
-        
-        if (data?.detail) {
-          if (Array.isArray(data.detail)) {
-            errorMessage = data.detail.map((err: any) => err.msg || err.message || err).join(', ');
-          } else {
-            errorMessage = data.detail;
-          }
-        } else if (data?.message) {
-          errorMessage = data.message;
-        } else if (data?.error) {
-          errorMessage = data.error;
-        }
-        
-        setError(errorMessage);
       }
-    } catch (err) {
-      setError('Erro de conexão com a API');
+    } catch (err: any) {
+      setError(err?.message || 'Erro de conexão com a API');
     } finally {
       setIsLoading(false);
     }

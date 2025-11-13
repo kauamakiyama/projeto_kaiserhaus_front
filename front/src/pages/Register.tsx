@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import { Link } from 'react-router-dom';
 import douradoImg from '../assets/login/dourado.png';
 import '../styles/Register.css';
+import { apiPost } from '../services/api';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -63,53 +64,26 @@ const Register: React.FC = () => {
     setSuccess('');
 
     try {
+      const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dataRegex.test(formData.dataNascimento.trim())) {
+        setError('Data de nascimento inválida. Use o formato AAAA-MM-DD.');
+        setIsLoading(false);
+        return;
+      }
+
       // Mapear os campos do formulário para os campos esperados pelo backend
       const requestData = {
         nome: formData.nomeCompleto,
         email: formData.email,
-        data_nascimento: formData.dataNascimento,
+        data_nascimento: formData.dataNascimento || undefined,
         telefone: formData.telefone.replace(/\D/g, ''), // Remover formatação do telefone
         endereco: formData.endereco,
-        complemento: formData.complemento,
+        complemento: formData.complemento || undefined,
         senha: formData.senha,
         cpf: formData.cpf.replace(/\D/g, '') // Adicionar CPF sem formatação
       };
       
-      const response = await fetch('http://127.0.0.1:8001/usuarios', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      if (!response.ok) {
-        const responseText = await response.text();
-        let data;
-        
-        try {
-          data = JSON.parse(responseText);
-        } catch {
-          data = { message: responseText || `Erro ${response.status}: ${response.statusText}` };
-        }
-
-        let errorMessage = `Erro ${response.status}: ${response.statusText}`;
-        
-        if (data?.detail) {
-          if (Array.isArray(data.detail)) {
-            errorMessage = data.detail.map((err: any) => err.msg || err.message || err).join(', ');
-          } else {
-            errorMessage = data.detail;
-          }
-        } else if (data?.message) {
-          errorMessage = data.message;
-        } else if (data?.error) {
-          errorMessage = data.error;
-        }
-        
-        setError(errorMessage);
-        return;
-      }
+      await apiPost('/usuarios', requestData);
 
       setSuccess('Cadastro realizado com sucesso!');
       
@@ -125,8 +99,8 @@ const Register: React.FC = () => {
         dataNascimento: ''
       });
       
-    } catch (err) {
-      setError('Erro de conexão com a API. Verifique se o backend está rodando.');
+    } catch (err: any) {
+      setError(err?.message || 'Erro de conexão com a API. Verifique se o backend está rodando.');
     } finally {
       setIsLoading(false);
     }

@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../styles/MeusDados.css';
 import douradoImg from '../assets/login/dourado.png';
+import { apiGet } from '../services/api';
 
 type Usuario = {
   nome: string;
@@ -13,8 +14,6 @@ type Usuario = {
   data_nascimento?: string;
   cpf?: string;
 };
-
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:8001';
 
 const MeusDados: React.FC = () => {
   const [usuario, setUsuario] = useState<Usuario>({
@@ -48,20 +47,19 @@ const MeusDados: React.FC = () => {
     // Tenta atualizar com o backend (endpoint /usuarios/perfil)
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/usuarios/perfil`, { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          setUsuario({
-            nome: data.nome || usuario.nome,
-            email: data.email || usuario.email,
-            telefone: data.telefone || usuario.telefone,
-            endereco: data.endereco || usuario.endereco,
-            complemento: data.complemento || usuario.complemento,
-            data_nascimento: data.data_nascimento || data.dataNascimento || usuario.data_nascimento,
-            cpf: data.cpf || data.cpf_hash || usuario.cpf,
-          });
-        }
-      } catch {}
+        const data = await apiGet<any>('/usuarios/perfil');
+        setUsuario((prev) => ({
+          nome: data?.nome || prev.nome,
+          email: data?.email || prev.email,
+          telefone: data?.telefone || prev.telefone,
+          endereco: data?.endereco || prev.endereco,
+          complemento: data?.complemento || prev.complemento,
+          data_nascimento: data?.data_nascimento || data?.dataNascimento || prev.data_nascimento,
+          cpf: data?.cpf || data?.cpf_hash || prev.cpf,
+        }));
+      } catch (error) {
+        console.error('Não foi possível atualizar dados do usuário:', error);
+      }
     };
     fetchUser();
   }, []);
